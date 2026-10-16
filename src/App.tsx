@@ -19,6 +19,7 @@ import { ConfirmActionModal } from './components/ConfirmActionModal';
 import { AudioTranscriptItem, SavedWord, CourseLevel, CourseLesson } from './types';
 import { SAMPLE_AUDIO_ITEMS, INITIAL_COURSE_LEVELS, INITIAL_COURSE_LESSONS } from './data/sampleAudios';
 import { UnifiedAudioPlayer } from './utils/audioEngine';
+import { fetchServerLibrary, persistServerLibrary } from './services/apiSync';
 import { 
   getAllCustomItems, 
   saveItem, 
@@ -132,53 +133,94 @@ export default function App() {
     }
   }, [showHidden]);
 
-  // Load persisted custom items, levels, lessons & saved words on start
+  // Load persisted custom items, levels, lessons & saved words on start (Always merge IndexedDB and Server)
   useEffect(() => {
     async function loadData() {
       try {
-        const [loadedCustom, loadedWords, loadedLevels, loadedLessons] = await Promise.all([
-          getAllCustomItems(),
-          getAllWords(),
-          getAllCourseLevels(),
-          getAllCourseLessons(),
+        const [serverData, loadedCustom, loadedLevels, loadedLessons, loadedWords] = await Promise.all([
+          fetchServerLibrary(),
+          getAllCustomItems().catch(() => []),
+          getAllCourseLevels().catch(() => []),
+          getAllCourseLessons().catch(() => []),
+          getAllWords().catch(() => []),
         ]);
 
-        setCustomItems(loadedCustom);
-        setSavedWords(loadedWords);
+        setSavedWords(loadedWords || []);
 
-        // Merge initial levels with custom stored levels
-        if (loadedLevels && loadedLevels.length > 0) {
-          const mergedLevels = [...INITIAL_COURSE_LEVELS];
-          for (const l of loadedLevels) {
-            if (!mergedLevels.some(m => m.id === l.id)) {
-              mergedLevels.push(l);
-            }
-          }
-          setLevels(mergedLevels);
-        }
+        // 1. Merge Deleted IDs from both local and server
+        const combinedDeletedItems = Array.from(new Set([
+          ...deletedItemIds,
+          ...(serverData?.deletedItemIds || []),
+        ]));
+        const combinedDeletedLessons = Array.from(new Set([
+          ...deletedLessonIds,
+          ...(serverData?.deletedLessonIds || []),
+        ]));
 
-        // Merge initial lessons with custom stored lessons (filtering out deleted ones)
-        const activeStoredLessons = (loadedLessons || []).filter(l => !deletedLessonIds.includes(l.id));
-        const mergedLessonsMap = new Map<string, CourseLesson>();
-
-        for (const initLes of INITIAL_COURSE_LESSONS) {
-          if (!deletedLessonIds.includes(initLes.id)) {
-            mergedLessonsMap.set(initLes.id, initLes);
+        // 2. Merge Custom Items (Local IndexedDB + Server)
+        // This ensures any audio added by the user in this browser is never lost
+        const customMap = new Map<string, AudioTranscriptItem>();
+        for (const it of (loadedCustom || [])) {
+          if (!combinedDeletedItems.includes(it.id)) {
+            customMap.set(it.id, it);
           }
         }
-        for (const storedLes of activeStoredLessons) {
-          mergedLessonsMap.set(storedLes.id, storedLes);
+        for (const it of (serverData?.items || [])) {
+          if (!combinedDeletedItems.includes(it.id)) {
+            customMap.set(it.id, it);
+          }
         }
+        const mergedCustom = Array.from(customMap.values());
 
-        setLessons(Array.from(mergedLessonsMap.values()));
+        // 3. Merge Levels
+        const levelsMap = new Map<string, CourseLevel>();
+        for (const l of INITIAL_COURSE_LEVELS) levelsMap.set(l.id, l);
+        for (const l of (serverData?.levels || [])) levelsMap.set(l.id, l);
+        for (const l of (loadedLevels || [])) levelsMap.set(l.id, l);
+        const mergedLevels = Array.from(levelsMap.values());
 
-        // Default to first non-deleted B1 audio
-        const initialAudios = [...loadedCustom, ...SAMPLE_AUDIO_ITEMS].filter(it => !deletedItemIds.includes(it.id));
+        // 4. Merge Lessons
+        const lessonsMap = new Map<string, CourseLesson>();
+        for (const l of INITIAL_COURSE_LESSONS) {
+          if (!combinedDeletedLessons.includes(l.id)) lessonsMap.set(l.id, l);
+        }
+        for (const l of (serverData?.lessons || [])) {
+          if (!combinedDeletedLessons.includes(l.id)) lessonsMap.set(l.id, l);
+        }
+        for (const l of (loadedLessons || [])) {
+          if (!combinedDeletedLessons.includes(l.id)) lessonsMap.set(l.id, l);
+        }
+        const mergedLessons = Array.from(lessonsMap.values());
+
+        setCustomItems(mergedCustom);
+        setLevels(mergedLevels);
+        setLessons(mergedLessons);
+        setDeletedItemIds(combinedDeletedItems);
+        setDeletedLessonIds(combinedDeletedLessons);
+
+        // Select initial audio: prefer custom audio or first sample audio
+        const initialAudios = [...mergedCustom, ...SAMPLE_AUDIO_ITEMS].filter(it => !combinedDeletedItems.includes(it.id));
         if (initialAudios.length > 0) {
-          setSelectedItem(initialAudios[0]);
+          // If there is an audio in lesson 1, prefer it
+          const lesson1Audio = initialAudios.find(a => a.lessonId === 'b1_leccion_1' || a.levelId === 'ingles_b1');
+          setSelectedItem(lesson1Audio || initialAudios[0]);
+        }
+
+        // Persist merged state to the server so that ANY URL (including myaudios.ai.studio) has the exact same items
+        persistServerLibrary({
+          items: mergedCustom,
+          levels: mergedLevels,
+          lessons: mergedLessons,
+          deletedItemIds: combinedDeletedItems,
+          deletedLessonIds: combinedDeletedLessons,
+        }).catch(console.warn);
+
+        // Also ensure any items from server are stored in local IndexedDB for offline resilience
+        for (const it of mergedCustom) {
+          saveItem(it).catch(console.warn);
         }
       } catch (err) {
-        console.warn('Error loading from IndexedDB:', err);
+        console.warn('Error loading library data:', err);
       } finally {
         setIsLoading(false);
       }
@@ -244,6 +286,23 @@ export default function App() {
     setActiveView('player');
   };
 
+  // Helper to persist library state directly to backend server
+  const syncServer = (
+    updatedCustomItems: AudioTranscriptItem[] = customItems,
+    updatedLevels: CourseLevel[] = levels,
+    updatedLessons: CourseLesson[] = lessons,
+    updatedDeletedItems: string[] = deletedItemIds,
+    updatedDeletedLessons: string[] = deletedLessonIds
+  ) => {
+    persistServerLibrary({
+      items: updatedCustomItems,
+      levels: updatedLevels,
+      lessons: updatedLessons,
+      deletedItemIds: updatedDeletedItems,
+      deletedLessonIds: updatedDeletedLessons,
+    }).catch(err => console.warn('Could not sync with server:', err));
+  };
+
   // Add new level
   const handleAddLevel = (name: string): CourseLevel => {
     const id = `level_${Date.now()}_${name.toLowerCase().replace(/\s+/g, '_')}`;
@@ -253,8 +312,10 @@ export default function App() {
       order: levels.length + 1,
     };
     saveCourseLevel(newLevel).catch(console.error);
-    setLevels(prev => [...prev, newLevel]);
+    const nextLevels = [...levels, newLevel];
+    setLevels(nextLevels);
     setSelectedLevelId(id);
+    syncServer(customItems, nextLevels, lessons, deletedItemIds, deletedLessonIds);
     return newLevel;
   };
 
@@ -270,8 +331,10 @@ export default function App() {
       isHidden: false,
     };
     saveCourseLesson(newLesson).catch(console.error);
-    setLessons(prev => [...prev, newLesson]);
+    const nextLessons = [...lessons, newLesson];
+    setLessons(nextLessons);
     setSelectedLessonId(id);
+    syncServer(customItems, levels, nextLessons, deletedItemIds, deletedLessonIds);
     return newLesson;
   };
 
@@ -279,7 +342,9 @@ export default function App() {
   const handleSaveLesson = async (updatedLesson: CourseLesson) => {
     try {
       await saveCourseLesson(updatedLesson);
-      setLessons(prev => prev.map(l => l.id === updatedLesson.id ? updatedLesson : l));
+      const nextLessons = lessons.map(l => l.id === updatedLesson.id ? updatedLesson : l);
+      setLessons(nextLessons);
+      syncServer(customItems, levels, nextLessons, deletedItemIds, deletedLessonIds);
     } catch (err) {
       console.error('Error saving lesson:', err);
     }
@@ -305,8 +370,10 @@ export default function App() {
       onConfirm: async () => {
         try {
           await deleteCourseLesson(lessonId);
-          setDeletedLessonIds(prev => [...prev, lessonId]);
-          setLessons(prev => prev.filter(l => l.id !== lessonId));
+          const nextDeletedLessons = [...deletedLessonIds, lessonId];
+          const nextLessons = lessons.filter(l => l.id !== lessonId);
+          setDeletedLessonIds(nextDeletedLessons);
+          setLessons(nextLessons);
 
           // Unassign any audio assigned to this lesson
           const affectedAudios = allItems.filter(it => it.lessonId === lessonId);
@@ -314,13 +381,16 @@ export default function App() {
             const updated = { ...audio, lessonId: undefined };
             await saveItem(updated);
           }
-          setCustomItems(prev => prev.map(it => it.lessonId === lessonId ? { ...it, lessonId: undefined } : it));
+          const nextCustomItems = customItems.map(it => it.lessonId === lessonId ? { ...it, lessonId: undefined } : it);
+          setCustomItems(nextCustomItems);
 
           // Adjust selected lesson if current was deleted
           if (selectedLessonId === lessonId) {
             const remaining = lessons.filter(l => l.id !== lessonId && l.levelId === selectedLevelId);
             setSelectedLessonId(remaining[0]?.id || '');
           }
+
+          syncServer(nextCustomItems, levels, nextLessons, deletedItemIds, nextDeletedLessons);
         } catch (err) {
           console.error('Error deleting lesson:', err);
         } finally {
@@ -339,20 +409,29 @@ export default function App() {
 
       await saveItem(newItem);
 
+      let nextCustomItems: AudioTranscriptItem[] = [];
       setCustomItems(prev => {
         const existingIdx = prev.findIndex(it => it.id === newItem.id);
         if (existingIdx >= 0) {
           const copy = [...prev];
           copy[existingIdx] = newItem;
+          nextCustomItems = copy;
           return copy;
         }
-        return [newItem, ...prev];
+        nextCustomItems = [newItem, ...prev];
+        return nextCustomItems;
       });
 
       // Update selectedItem if it's currently selected
       if (selectedItem?.id === newItem.id) {
         setSelectedItem(newItem);
       }
+
+      // Sync with server directly
+      const updatedList = customItems.some(it => it.id === newItem.id)
+        ? customItems.map(it => it.id === newItem.id ? newItem : it)
+        : [newItem, ...customItems];
+      syncServer(updatedList, levels, lessons, deletedItemIds, deletedLessonIds);
     } catch (err) {
       console.error('Failed to save audio item:', err);
       alert('Hubo un error al guardar el archivo en la base de datos local.');
@@ -379,8 +458,10 @@ export default function App() {
       onConfirm: async () => {
         try {
           await deleteItem(itemId);
-          setDeletedItemIds(prev => [...prev, itemId]);
-          setCustomItems(prev => prev.filter(it => it.id !== itemId));
+          const nextDeletedItemIds = [...deletedItemIds, itemId];
+          const nextCustomItems = customItems.filter(it => it.id !== itemId);
+          setDeletedItemIds(nextDeletedItemIds);
+          setCustomItems(nextCustomItems);
 
           if (selectedItem?.id === itemId) {
             const remaining = allItems.filter(it => it.id !== itemId && !it.isHidden);
@@ -390,6 +471,8 @@ export default function App() {
               setActiveView('library');
             }
           }
+
+          syncServer(nextCustomItems, levels, lessons, nextDeletedItemIds, deletedLessonIds);
         } catch (err) {
           console.error('Failed to delete item:', err);
         } finally {
@@ -409,7 +492,9 @@ export default function App() {
         await saveItem(entry.item);
       }
 
-      setCustomItems(prev => [...batch.map(b => b.item), ...prev]);
+      const nextCustom = [...batch.map(b => b.item), ...customItems];
+      setCustomItems(nextCustom);
+      syncServer(nextCustom, levels, lessons, deletedItemIds, deletedLessonIds);
 
       if (batch.length > 0) {
         await handleSelectItem(batch[0].item);

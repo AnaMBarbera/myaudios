@@ -1,5 +1,7 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
+import type { Request, Response } from 'express';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 
@@ -11,7 +13,131 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+
+const DATA_DIR = path.resolve(__dirname, 'data');
+const LIBRARY_FILE = path.resolve(DATA_DIR, 'library.json');
+const AUDIOS_DIR = path.resolve(DATA_DIR, 'audios');
+
+// Ensure data directories exist
+if (!fs.existsSync(DATA_DIR)) {
+  fs.mkdirSync(DATA_DIR, { recursive: true });
+}
+if (!fs.existsSync(AUDIOS_DIR)) {
+  fs.mkdirSync(AUDIOS_DIR, { recursive: true });
+}
+
+/**
+ * Endpoint to get server-persisted library (audios, lessons, levels, deletions)
+ */
+app.get('/api/library', async (_req: Request, res: Response) => {
+  try {
+    if (fs.existsSync(LIBRARY_FILE)) {
+      const content = await fs.promises.readFile(LIBRARY_FILE, 'utf-8');
+      return res.json(JSON.parse(content));
+    }
+    return res.json({ initialized: false, items: [], levels: [], lessons: [], deletedItemIds: [], deletedLessonIds: [] });
+  } catch (err: any) {
+    console.error('Error reading server library:', err);
+    return res.status(500).json({ error: 'Failed to read server library', details: err?.message });
+  }
+});
+
+/**
+ * Endpoint to save server-persisted library so changes are stored across URLs, devices and sessions
+ */
+app.post('/api/library', async (req: Request, res: Response) => {
+  try {
+    const payload = req.body;
+    if (!payload || typeof payload !== 'object') {
+      return res.status(400).json({ error: 'Invalid payload' });
+    }
+    await fs.promises.writeFile(LIBRARY_FILE, JSON.stringify(payload, null, 2), 'utf-8');
+    return res.json({ success: true, savedAt: Date.now() });
+  } catch (err: any) {
+    console.error('Error saving server library:', err);
+    return res.status(500).json({ error: 'Failed to save server library', details: err?.message });
+  }
+});
+
+/**
+ * Endpoint to upload an audio blob so it is available across all URLs and devices
+ */
+app.post('/api/audio-blob', async (req: Request, res: Response) => {
+  try {
+    const { id, mimeType, base64 } = req.body;
+    if (!id || !base64) {
+      return res.status(400).json({ error: 'Missing id or base64 data' });
+    }
+    const safeId = id.replace(/[^a-zA-Z0-9_-]/g, '_');
+    const filePath = path.resolve(AUDIOS_DIR, `${safeId}.bin`);
+    const metaPath = path.resolve(AUDIOS_DIR, `${safeId}.json`);
+
+    const buffer = Buffer.from(base64, 'base64');
+    await fs.promises.writeFile(filePath, buffer);
+    await fs.promises.writeFile(metaPath, JSON.stringify({ mimeType: mimeType || 'audio/mpeg', size: buffer.length }), 'utf-8');
+
+    return res.json({ success: true, id: safeId, size: buffer.length });
+  } catch (err: any) {
+    console.error('Error saving audio blob on server:', err);
+    return res.status(500).json({ error: 'Failed to save audio blob', details: err?.message });
+  }
+});
+
+/**
+ * Endpoint to stream server-persisted audio blob
+ */
+app.get('/api/audio-blob/:id', async (req: Request, res: Response) => {
+  try {
+    const safeId = req.params.id.replace(/[^a-zA-Z0-9_-]/g, '_');
+    const filePath = path.resolve(AUDIOS_DIR, `${safeId}.bin`);
+    const metaPath = path.resolve(AUDIOS_DIR, `${safeId}.json`);
+
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).send('Audio file not found on server');
+    }
+
+    let mimeType = 'audio/mpeg';
+    if (fs.existsSync(metaPath)) {
+      try {
+        const meta = JSON.parse(await fs.promises.readFile(metaPath, 'utf-8'));
+        if (meta.mimeType) mimeType = meta.mimeType;
+      } catch (e) {}
+    }
+
+    const stat = await fs.promises.stat(filePath);
+    const total = stat.size;
+    const range = req.headers.range;
+
+    if (range) {
+      const parts = range.replace(/bytes=/, '').split('-');
+      const start = parseInt(parts[0], 10);
+      const end = parts[1] ? parseInt(parts[1], 10) : total - 1;
+      const chunksize = end - start + 1;
+      const file = fs.createReadStream(filePath, { start, end });
+
+      res.writeHead(206, {
+        'Content-Range': `bytes ${start}-${end}/${total}`,
+        'Accept-Ranges': 'bytes',
+        'Content-Length': chunksize,
+        'Content-Type': mimeType,
+        'Access-Control-Allow-Origin': '*',
+      });
+      file.pipe(res);
+    } else {
+      res.writeHead(200, {
+        'Content-Length': total,
+        'Content-Type': mimeType,
+        'Access-Control-Allow-Origin': '*',
+      });
+      fs.createReadStream(filePath).pipe(res);
+    }
+  } catch (err: any) {
+    console.error('Error serving audio blob:', err);
+    return res.status(500).send('Error serving audio');
+  }
+});
 
 /**
  * Proxy for Google Drive files and Google Docs to avoid CORS issues and support Range headers for audio seeking

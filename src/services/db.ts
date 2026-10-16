@@ -44,9 +44,32 @@ export function getDB(): Promise<IDBDatabase> {
   return dbPromise;
 }
 
-// Audio Blob operations
+function blobToBase64(blob: Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const dataUrl = reader.result as string;
+      const base64 = dataUrl.split(',')[1] || '';
+      resolve(base64);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+
+// Audio Blob operations (IndexedDB + Server sync)
 export async function saveAudioBlob(id: string, blob: Blob, name: string, duration?: number): Promise<void> {
   const db = await getDB();
+
+  // Background sync to server so it is accessible from any URL or device
+  blobToBase64(blob).then(base64 => {
+    fetch('/api/audio-blob', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, mimeType: blob.type || 'audio/mpeg', base64 }),
+    }).catch(err => console.warn('Could not sync audio blob to server:', err));
+  }).catch(console.warn);
+
   return new Promise((resolve, reject) => {
     const tx = db.transaction('audios', 'readwrite');
     const store = tx.objectStore('audios');
@@ -65,15 +88,40 @@ export async function saveAudioBlob(id: string, blob: Blob, name: string, durati
 
 export async function getAudioBlob(id: string): Promise<Blob | null> {
   const db = await getDB();
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const tx = db.transaction('audios', 'readonly');
     const store = tx.objectStore('audios');
     const req = store.get(id);
-    req.onsuccess = () => {
+    req.onsuccess = async () => {
       const rec = req.result as AudioBlobRecord | undefined;
-      resolve(rec ? rec.blob : null);
+      if (rec && rec.blob) {
+        resolve(rec.blob);
+        return;
+      }
+
+      // Fallback: fetch from server if accessing from a different URL or device
+      try {
+        const res = await fetch(`/api/audio-blob/${id}`);
+        if (res.ok) {
+          const serverBlob = await res.blob();
+          resolve(serverBlob);
+          return;
+        }
+      } catch (err) {
+        console.warn('Could not retrieve audio from server fallback:', err);
+      }
+      resolve(null);
     };
-    req.onerror = () => reject(req.error);
+    req.onerror = async () => {
+      try {
+        const res = await fetch(`/api/audio-blob/${id}`);
+        if (res.ok) {
+          resolve(await res.blob());
+          return;
+        }
+      } catch (e) {}
+      resolve(null);
+    };
   });
 }
 
