@@ -106,7 +106,7 @@ export const TopBar: React.FC<TopBarProps> = ({
             className="flex items-center gap-2 px-3.5 py-2 text-xs font-semibold text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 shadow-sm transition-colors whitespace-nowrap cursor-pointer"
           >
             <Plus className="w-4 h-4" />
-            <span>Subir Audio / Transcripción</span>
+            <span>+ Enlace Drive / .VTT</span>
           </button>
         </div>
 

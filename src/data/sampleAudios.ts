@@ -1,4 +1,21 @@
-import { AudioTranscriptItem } from '../types';
+import { AudioTranscriptItem, CourseLevel, CourseLesson } from '../types';
+
+export const INITIAL_COURSE_LEVELS: CourseLevel[] = [
+  { id: 'ingles_b1', name: 'Inglés B1', description: 'Nivel intermedio: conversaciones fluidas, reservas, opiniones y planes cotidianos.', order: 1 },
+  { id: 'ingles_b2', name: 'Inglés B2', description: 'Nivel intermedio alto: presentaciones, mundo corporativo, debate y argumentación.', order: 2 },
+  { id: 'ingles_a2', name: 'Inglés A2', description: 'Nivel elemental: situaciones de viaje, indicaciones y compras.', order: 3 },
+  { id: 'ingles_c1', name: 'Inglés C1', description: 'Nivel avanzado: discursos académicos, matices idiomáticos y pensamiento complejo.', order: 4 },
+  { id: 'ingles_a1', name: 'Inglés A1', description: 'Nivel inicial: presentaciones básicas y saludos en el entorno laboral.', order: 5 },
+];
+
+export const INITIAL_COURSE_LESSONS: CourseLesson[] = [
+  { id: 'b1_leccion_1', levelId: 'ingles_b1', title: 'Lección 1', subtitle: 'Reserva para cenar en Covent Garden', order: 1 },
+  { id: 'b1_leccion_2', levelId: 'ingles_b1', title: 'Lección 2', subtitle: 'Café, planes de senderismo y tiempo', order: 2 },
+  { id: 'b2_leccion_1', levelId: 'ingles_b2', title: 'Lección 1', subtitle: 'Estrategia de producto y retención Q3', order: 1 },
+  { id: 'a2_leccion_1', levelId: 'ingles_a2', title: 'Lección 1', subtitle: 'Control de seguridad en el aeropuerto y embarque', order: 1 },
+  { id: 'c1_leccion_1', levelId: 'ingles_c1', title: 'Lección 1', subtitle: 'La ciencia de la formación de hábitos', order: 1 },
+  { id: 'a1_leccion_1', levelId: 'ingles_a1', title: 'Lección 1', subtitle: 'Primer día en el estudio de diseño', order: 1 },
+];
 
 export const SAMPLE_AUDIO_ITEMS: AudioTranscriptItem[] = [
   {
@@ -7,11 +24,14 @@ export const SAMPLE_AUDIO_ITEMS: AudioTranscriptItem[] = [
     description: 'A realistic British English telephone reservation for dinner at a lively London bistro.',
     category: 'conversation',
     level: 'B1',
+    levelId: 'ingles_b1',
+    lessonId: 'b1_leccion_1',
     accent: 'UK',
     audioDuration: 38.5,
     createdAt: 1718000000000,
     tags: ['Restaurant', 'Booking', 'Polite English', 'UK Accent'],
     notes: 'Pay attention to polite modal verbs: "I was wondering if...", "Could we possibly..."',
+
     segments: [
       {
         id: 'cg_1',
@@ -77,6 +97,8 @@ export const SAMPLE_AUDIO_ITEMS: AudioTranscriptItem[] = [
     description: 'Essential travel dialogue navigating through TSA security and checking boarding status at the airport.',
     category: 'travel',
     level: 'A2',
+    levelId: 'ingles_a2',
+    lessonId: 'a2_leccion_1',
     accent: 'US',
     audioDuration: 36.0,
     createdAt: 1718010000000,
@@ -147,6 +169,8 @@ export const SAMPLE_AUDIO_ITEMS: AudioTranscriptItem[] = [
     description: 'A crisp executive summary of user retention metrics and quarterly product milestones.',
     category: 'business',
     level: 'B2',
+    levelId: 'ingles_b2',
+    lessonId: 'b2_leccion_1',
     accent: 'US',
     audioDuration: 35.0,
     createdAt: 1718020000000,
@@ -209,6 +233,8 @@ export const SAMPLE_AUDIO_ITEMS: AudioTranscriptItem[] = [
     description: 'An advanced documentary monologue exploring neurological cue-routine-reward loops and continuous concentration.',
     category: 'academic',
     level: 'C1',
+    levelId: 'ingles_c1',
+    lessonId: 'c1_leccion_1',
     accent: 'UK',
     audioDuration: 34.0,
     createdAt: 1718030000000,
@@ -271,6 +297,8 @@ export const SAMPLE_AUDIO_ITEMS: AudioTranscriptItem[] = [
     description: 'Friendly workplace introduction between a senior designer and an incoming team member.',
     category: 'conversation',
     level: 'A1',
+    levelId: 'ingles_a1',
+    lessonId: 'a1_leccion_1',
     accent: 'UK',
     audioDuration: 28.0,
     createdAt: 1718040000000,
@@ -333,6 +361,8 @@ export const SAMPLE_AUDIO_ITEMS: AudioTranscriptItem[] = [
     description: 'Casual conversation loaded with frequent English idioms and phrasal verbs.',
     category: 'conversation',
     level: 'B1',
+    levelId: 'ingles_b1',
+    lessonId: 'b1_leccion_2',
     accent: 'US',
     audioDuration: 32.0,
     createdAt: 1718050000000,

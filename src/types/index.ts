@@ -28,6 +28,22 @@ export interface TranscriptSegment {
   notes?: string;
 }
 
+export interface CourseLevel {
+  id: string;
+  name: string;        // e.g. "Inglés B1", "Inglés B2"
+  description?: string;
+  order: number;
+}
+
+export interface CourseLesson {
+  id: string;
+  levelId: string;     // connects to CourseLevel.id
+  title: string;       // e.g. "Lección 1"
+  subtitle?: string;   // e.g. "Conversación en el restaurante y reservas"
+  order: number;
+  isHidden?: boolean;  // whether user hid this lesson
+}
+
 export interface AudioTranscriptItem {
   id: string;
   title: string;
@@ -35,7 +51,9 @@ export interface AudioTranscriptItem {
   category: Category;
   level: CefrLevel;
   accent: Accent;
-  audioUrl?: string; // Blob URL, object URL, or synthetic fallback
+  levelId?: string;    // e.g. "ingles_b1"
+  lessonId?: string;   // e.g. "b1_leccion_1"
+  audioUrl?: string;   // Blob URL, object URL, or synthetic fallback
   audioFileName?: string;
   audioFileSize?: number;
   audioDuration?: number; // duration in seconds
@@ -45,6 +63,8 @@ export interface AudioTranscriptItem {
   createdAt: number;
   tags: string[];
   notes?: string;
+  driveFolderUrl?: string;
+  isHidden?: boolean;  // whether user hid this audio
 }
 
 export interface SavedWord {
@@ -70,6 +90,8 @@ export interface AudioTranscriptPairingDraft {
   format?: 'srt' | 'vtt' | 'plain' | 'json';
   title: string;
   level: CefrLevel;
+  levelId?: string;
+  lessonId?: string;
   category: Category;
   accent: Accent;
   tags: string[];

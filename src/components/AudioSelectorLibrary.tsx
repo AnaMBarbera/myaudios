@@ -4,85 +4,143 @@ import {
   Search, 
   FileText, 
   Clock, 
-  Globe, 
   Upload, 
-  SlidersHorizontal, 
   Trash2, 
   Download, 
-  CheckCircle2, 
-  AlertCircle,
-  Link2,
-  Sparkles
+  AlertCircle, 
+  Link2, 
+  FolderSync, 
+  Folder, 
+  BookOpen, 
+  Plus, 
+  ChevronRight, 
+  ExternalLink,
+  Pencil,
+  Eye,
+  EyeOff,
+  MoreVertical
 } from 'lucide-react';
-import { AudioTranscriptItem, Category, CefrLevel } from '../types';
+import { AudioTranscriptItem, CourseLevel, CourseLesson } from '../types';
 import { formatTime, exportToSRT, exportToVTT, exportToTXT } from '../utils/transcriptParser';
 
 interface AudioSelectorLibraryProps {
   items: AudioTranscriptItem[];
+  levels: CourseLevel[];
+  lessons: CourseLesson[];
+  selectedLevelId: string;
+  selectedLessonId: string;
   selectedItem: AudioTranscriptItem | null;
+  showHidden: boolean;
+  onToggleShowHidden: () => void;
+  onSelectLevel: (levelId: string) => void;
+  onSelectLesson: (lessonId: string) => void;
   onSelectItem: (item: AudioTranscriptItem) => void;
   onOpenUpload: () => void;
   onOpenPairing: (itemToPair?: AudioTranscriptItem) => void;
-  onDeleteItem: (id: string) => void;
+  onOpenDriveModal: () => void;
+  onOpenDriveLinksModal: () => void;
+  onAddLevel: (name: string) => CourseLevel;
+  onAddLesson: (levelId: string, title: string, subtitle?: string) => CourseLesson;
+  onEditLesson: (lesson: CourseLesson) => void;
+  onToggleHideLesson: (lessonId: string) => void;
+  onDeleteLesson: (lessonId: string) => void;
+  onEditAudio: (item: AudioTranscriptItem) => void;
+  onToggleHideAudio: (itemId: string) => void;
+  onDeleteAudio: (itemId: string) => void;
 }
 
 export const AudioSelectorLibrary: React.FC<AudioSelectorLibraryProps> = ({
   items,
+  levels,
+  lessons,
+  selectedLevelId,
+  selectedLessonId,
   selectedItem,
+  showHidden,
+  onToggleShowHidden,
+  onSelectLevel,
+  onSelectLesson,
   onSelectItem,
   onOpenUpload,
   onOpenPairing,
-  onDeleteItem,
+  onOpenDriveModal,
+  onOpenDriveLinksModal,
+  onAddLevel,
+  onAddLesson,
+  onEditLesson,
+  onToggleHideLesson,
+  onDeleteLesson,
+  onEditAudio,
+  onToggleHideAudio,
+  onDeleteAudio,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [selectedLevel, setSelectedLevel] = useState<string>('all');
-  const [syncStatusFilter, setSyncStatusFilter] = useState<'all' | 'synced' | 'pending'>('all');
+  const [viewMode, setViewMode] = useState<'hierarchy' | 'all'>('hierarchy');
 
-  // Filtered items
-  const filteredItems = useMemo(() => {
-    return items.filter(item => {
-      // Category filter
-      if (selectedCategory === 'custom' && !item.audioBlobId && item.isBuiltIn) {
-        return false;
-      } else if (selectedCategory !== 'all' && selectedCategory !== 'custom' && item.category !== selectedCategory) {
-        return false;
-      }
+  // Inline modal / input for new level or lesson
+  const [isAddingLevel, setIsAddingLevel] = useState(false);
+  const [newLevelName, setNewLevelName] = useState('');
+  const [isAddingLesson, setIsAddingLesson] = useState(false);
+  const [newLessonTitle, setNewLessonTitle] = useState('');
+  const [newLessonSubtitle, setNewLessonSubtitle] = useState('');
 
-      // Level filter
-      if (selectedLevel !== 'all' && item.level !== selectedLevel) {
-        return false;
-      }
+  const currentLevel = levels.find(l => l.id === selectedLevelId) || levels[0];
+  const allCurrentLessons = lessons.filter(l => l.levelId === (currentLevel?.id || 'ingles_b1'));
+  const currentLessons = showHidden ? allCurrentLessons : allCurrentLessons.filter(l => !l.isHidden);
 
-      // Sync status filter
-      const hasSegments = item.segments && item.segments.length > 0;
-      if (syncStatusFilter === 'synced' && !hasSegments) return false;
-      if (syncStatusFilter === 'pending' && hasSegments) return false;
+  // Hidden counts
+  const hiddenLessonsCount = allCurrentLessons.filter(l => l.isHidden).length;
+  const hiddenAudiosCount = items.filter(it => it.isHidden).length;
 
-      // Search query
-      if (searchQuery.trim()) {
-        const query = searchQuery.toLowerCase();
-        const matchesTitle = item.title.toLowerCase().includes(query);
-        const matchesDesc = (item.description || '').toLowerCase().includes(query);
-        const matchesTags = item.tags.some(t => t.toLowerCase().includes(query));
-        const matchesTranscript = item.segments.some(s => 
-          s.text.toLowerCase().includes(query) || (s.translation || '').toLowerCase().includes(query)
-        );
-        return matchesTitle || matchesDesc || matchesTags || matchesTranscript;
-      }
-
-      return true;
+  // Audios grouped for hierarchical view
+  const lessonsWithAudios = useMemo(() => {
+    return currentLessons.map(lesson => {
+      const lessonAudios = items.filter(it => {
+        if (it.lessonId !== lesson.id) return false;
+        if (!showHidden && it.isHidden) return false;
+        return true;
+      });
+      return {
+        lesson,
+        audios: lessonAudios,
+      };
     });
-  }, [items, searchQuery, selectedCategory, selectedLevel, syncStatusFilter]);
+  }, [currentLessons, items, showHidden]);
 
-  const totalMinutes = useMemo(() => {
-    const totalSecs = items.reduce((acc, it) => acc + (it.audioDuration || 0), 0);
-    return (totalSecs / 60).toFixed(1);
-  }, [items]);
+  // Filtered items for "All" view
+  const filteredAllItems = useMemo(() => {
+    let pool = showHidden ? items : items.filter(it => !it.isHidden);
+    if (!searchQuery.trim()) return pool;
+    const query = searchQuery.toLowerCase();
+    return pool.filter(item => {
+      const matchesTitle = item.title.toLowerCase().includes(query);
+      const matchesDesc = (item.description || '').toLowerCase().includes(query);
+      const matchesTags = item.tags.some(t => t.toLowerCase().includes(query));
+      const matchesTranscript = item.segments.some(s => 
+        s.text.toLowerCase().includes(query) || (s.translation || '').toLowerCase().includes(query)
+      );
+      return matchesTitle || matchesDesc || matchesTags || matchesTranscript;
+    });
+  }, [items, searchQuery, showHidden]);
 
-  const totalSegments = useMemo(() => {
-    return items.reduce((acc, it) => acc + (it.segments?.length || 0), 0);
-  }, [items]);
+  const handleCreateLevel = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newLevelName.trim()) return;
+    const created = onAddLevel(newLevelName.trim());
+    onSelectLevel(created.id);
+    setNewLevelName('');
+    setIsAddingLevel(false);
+  };
+
+  const handleCreateLesson = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newLessonTitle.trim() || !currentLevel) return;
+    const created = onAddLesson(currentLevel.id, newLessonTitle.trim(), newLessonSubtitle.trim());
+    onSelectLesson(created.id);
+    setNewLessonTitle('');
+    setNewLessonSubtitle('');
+    setIsAddingLesson(false);
+  };
 
   const handleDownloadTranscript = (item: AudioTranscriptItem, format: 'srt' | 'vtt' | 'txt') => {
     let content = '';
@@ -111,274 +169,555 @@ export const AudioSelectorLibrary: React.FC<AudioSelectorLibraryProps> = ({
 
   return (
     <div className="space-y-8">
-      {/* Hero Welcome & Stats */}
-      <div className="bg-gradient-to-br from-indigo-900 via-slate-900 to-slate-950 text-white rounded-2xl p-6 sm:p-8 shadow-sm">
-        <div className="max-w-3xl">
-          <div className="flex items-center gap-2 text-xs font-medium text-indigo-300 mb-2">
-            <span>Audio & Transcript Synchronization Hub</span>
-            <span aria-hidden="true">·</span>
-            <span>Estudio de Listening en Inglés</span>
+      {/* Top Banner with Google Drive Folder Link & Course Hierarchy Info */}
+      <div className="bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-950 text-white rounded-2xl p-6 sm:p-7 shadow-sm border border-indigo-900/40">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+          <div className="max-w-2xl space-y-2">
+            <div className="flex items-center gap-2 text-xs font-semibold text-indigo-300">
+              <Folder className="w-4 h-4" />
+              <span>Estructura de Aprendizaje: Niveles &gt; Lecciones &gt; Audios</span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white leading-tight">
+              Organizador de Audios y Transcripciones de Inglés
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              Gestiona, reproduce y sincroniza tus lecciones de inglés. Puedes editar, ocultar o eliminar cualquier lección o audio en cualquier momento.
+            </p>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white mb-3 text-balance">
-            Selecciona tus audios de inglés y practica con transcripciones sincronizadas
-          </h1>
-          <p className="text-sm sm:text-base text-slate-300 mb-6 leading-relaxed">
-            Explora lecciones de diálogo preparadas o sube tus propios archivos de audio con sus correspondientes subtítulos y textos. Salta a cualquier segundo pulsando en el texto y domina la pronunciación nativa.
-          </p>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-slate-800 text-xs">
-            <div>
-              <span className="text-slate-400 block mb-0.5">Audios Disponibles</span>
-              <span className="text-lg font-bold text-white font-mono tabular-nums">{items.length} pistas</span>
-            </div>
-            <div>
-              <span className="text-slate-400 block mb-0.5">Oraciones Sincronizadas</span>
-              <span className="text-lg font-bold text-white font-mono tabular-nums">{totalSegments} líneas</span>
-            </div>
-            <div>
-              <span className="text-slate-400 block mb-0.5">Tiempo de Escucha</span>
-              <span className="text-lg font-bold text-white font-mono tabular-nums">~{totalMinutes} min</span>
-            </div>
-            <div>
-              <span className="text-slate-400 block mb-0.5">Niveles Cubiertos</span>
-              <span className="text-lg font-bold text-white">A1 hasta C1</span>
-            </div>
+          <div className="flex flex-wrap items-center gap-2.5">
+            <button
+              onClick={onOpenDriveLinksModal}
+              className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl shadow-md shadow-indigo-600/30 transition-all cursor-pointer flex items-center gap-2"
+            >
+              <Link2 className="w-4 h-4" />
+              <span>+ Enlace Drive / .VTT</span>
+            </button>
+
+            <button
+              onClick={() => onOpenPairing()}
+              className="px-4 py-2.5 bg-slate-800/90 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700/80 transition-all cursor-pointer flex items-center gap-2"
+            >
+              <Upload className="w-4 h-4 text-indigo-400" />
+              <span>Subir Archivo Local</span>
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Control Deck: Search & Filters */}
-      <div className="bg-white dark:bg-slate-900 rounded-xl p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-xs space-y-4">
-        {/* Search Input Row */}
-        <div className="flex flex-col sm:flex-row gap-3">
-          <div className="relative flex-1">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Buscar por título, palabra en la transcripción, etiqueta..."
-              className="w-full pl-9 pr-4 py-2.5 text-sm bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-slate-900 dark:text-slate-100 placeholder:text-slate-400"
-            />
-            {searchQuery && (
+      {/* Library View Toolbar: View Mode, Search & Hidden Items Toggle */}
+      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 sm:p-5 shadow-xs space-y-4">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+          {/* View selector tabs */}
+          <div className="flex items-center gap-1.5 p-1 bg-slate-100 dark:bg-slate-800 rounded-lg self-start sm:self-center overflow-x-auto max-w-full">
+            <button
+              onClick={() => setViewMode('hierarchy')}
+              className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors cursor-pointer flex items-center gap-1.5 ${
+                viewMode === 'hierarchy'
+                  ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+              }`}
+            >
+              <BookOpen className="w-3.5 h-3.5" />
+              <span>Vista por Lecciones ({currentLevel?.name} &gt; Lecciones)</span>
+            </button>
+
+            <button
+              onClick={() => setViewMode('all')}
+              className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors cursor-pointer flex items-center gap-1.5 ${
+                viewMode === 'all'
+                  ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+              }`}
+            >
+              <FileText className="w-3.5 h-3.5" />
+              <span>Todas las Pistas ({items.length})</span>
+            </button>
+          </div>
+
+          <div className="flex items-center gap-2.5 w-full sm:w-auto">
+            {/* Toggle show/hide hidden items */}
+            <button
+              onClick={onToggleShowHidden}
+              className={`px-3 py-2 text-xs font-semibold rounded-lg transition-colors cursor-pointer flex items-center gap-1.5 border shrink-0 ${
+                showHidden
+                  ? 'bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-700 shadow-xs'
+                  : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:bg-slate-200'
+              }`}
+              title="Muestra u oculta las lecciones y audios archivados"
+            >
+              {showHidden ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
+              <span>
+                {showHidden ? 'Viendo Ocultos' : 'Ver Ocultos'}
+                {(hiddenLessonsCount > 0 || hiddenAudiosCount > 0) && (
+                  <span className="ml-1 px-1.5 py-0.2 bg-amber-200 dark:bg-amber-800 text-amber-900 dark:text-amber-100 rounded-full text-[10px]">
+                    {hiddenLessonsCount + hiddenAudiosCount}
+                  </span>
+                )}
+              </span>
+            </button>
+
+            {/* Search bar */}
+            <div className="relative flex-1 sm:w-64">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Buscar por texto o título..."
+                className="w-full pl-9 pr-3 py-2 text-xs bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Level Tabs strip (e.g. Inglés B1, Inglés B2...) */}
+        <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-slate-100 dark:border-slate-800 text-xs">
+          <div className="flex flex-wrap items-center gap-1.5">
+            <span className="text-slate-400 font-semibold mr-1">Nivel:</span>
+            {levels.map(lvl => (
               <button
-                onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+                key={lvl.id}
+                onClick={() => onSelectLevel(lvl.id)}
+                className={`px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                  currentLevel?.id === lvl.id
+                    ? 'bg-indigo-600 text-white shadow-xs'
+                    : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-750'
+                }`}
               >
-                Limpiar
+                <Folder className="w-3.5 h-3.5" />
+                <span>{lvl.name}</span>
+              </button>
+            ))}
+
+            {isAddingLevel ? (
+              <form onSubmit={handleCreateLevel} className="flex items-center gap-1 ml-1">
+                <input
+                  type="text"
+                  value={newLevelName}
+                  onChange={(e) => setNewLevelName(e.target.value)}
+                  placeholder="Ej: Inglés B2"
+                  className="px-2.5 py-1 text-xs bg-slate-50 dark:bg-slate-800 border border-indigo-400 rounded-md"
+                  autoFocus
+                />
+                <button
+                  type="submit"
+                  className="px-2.5 py-1 text-xs bg-indigo-600 text-white font-medium rounded-md cursor-pointer"
+                >
+                  Guardar
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsAddingLevel(false)}
+                  className="px-2 py-1 text-xs text-slate-400 hover:text-slate-600 cursor-pointer"
+                >
+                  ✕
+                </button>
+              </form>
+            ) : (
+              <button
+                onClick={() => setIsAddingLevel(true)}
+                className="px-2.5 py-1.5 rounded-lg border border-dashed border-slate-300 dark:border-slate-700 text-indigo-600 dark:text-indigo-400 hover:border-indigo-500 font-medium transition-colors cursor-pointer flex items-center gap-1"
+                title="Añadir nuevo nivel de curso (ej: Inglés B2, Inglés C1...)"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>Añadir Nivel (ej: B2)</span>
               </button>
             )}
           </div>
-
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => onOpenPairing()}
-              className="px-3.5 py-2.5 text-xs font-semibold text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800/60 rounded-lg hover:bg-indigo-100 dark:hover:bg-indigo-900/60 transition-colors flex items-center gap-2 cursor-pointer whitespace-nowrap"
-              title="Emparejar un nuevo audio con un archivo de subtítulo o texto"
-            >
-              <Link2 className="w-4 h-4" />
-              <span>Nuevo Emparejamiento</span>
-            </button>
-
-            <button
-              onClick={onOpenUpload}
-              className="px-3.5 py-2.5 text-xs font-semibold text-white bg-slate-900 dark:bg-slate-800 rounded-lg hover:bg-slate-800 dark:hover:bg-slate-700 transition-colors flex items-center gap-2 cursor-pointer whitespace-nowrap"
-            >
-              <Upload className="w-4 h-4" />
-              <span>Subir Archivo</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Categories & Filter Tabs */}
-        <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-100 dark:border-slate-800 text-xs">
-          {/* Categories Segmented Control */}
-          <div className="flex items-center gap-1 overflow-x-auto pb-1 sm:pb-0 max-w-full">
-            <span className="text-slate-400 dark:text-slate-500 mr-1 font-medium whitespace-nowrap">Tema:</span>
-            {[
-              { id: 'all', label: 'Todos' },
-              { id: 'conversation', label: 'Conversación' },
-              { id: 'travel', label: 'Viajes' },
-              { id: 'business', label: 'Negocios' },
-              { id: 'academic', label: 'Académico' },
-              { id: 'custom', label: 'Mis Audios' },
-            ].map(tab => (
-              <button
-                key={tab.id}
-                onClick={() => setSelectedCategory(tab.id)}
-                className={`px-2.5 py-1.5 rounded-md font-medium transition-colors whitespace-nowrap cursor-pointer ${
-                  selectedCategory === tab.id
-                    ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800'
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Level Filter */}
-          <div className="flex items-center gap-1.5">
-            <span className="text-slate-400 dark:text-slate-500 font-medium whitespace-nowrap">Nivel MCER:</span>
-            <select
-              value={selectedLevel}
-              onChange={(e) => setSelectedLevel(e.target.value)}
-              className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md px-2 py-1 text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-indigo-500 cursor-pointer"
-            >
-              <option value="all">Todos los niveles</option>
-              <option value="A1">A1 - Principiante</option>
-              <option value="A2">A2 - Elemental</option>
-              <option value="B1">B1 - Intermedio</option>
-              <option value="B2">B2 - Intermedio Alto</option>
-              <option value="C1">C1 - Avanzado</option>
-            </select>
-          </div>
         </div>
       </div>
 
-      {/* Grid of Audio-Transcript Items */}
-      <div className="space-y-3">
-        <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 px-1">
-          <span>Mostrando {filteredItems.length} de {items.length} audios</span>
-          <span>Pulsa en una tarjeta para cargarla en el reproductor</span>
-        </div>
+      {/* Main Content Area */}
+      {viewMode === 'hierarchy' ? (
+        <div className="space-y-8">
+          {/* Header of Active Level */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200 dark:border-slate-800">
+            <div>
+              <div className="flex items-center gap-2 text-xs font-semibold text-indigo-600 dark:text-indigo-400">
+                <span>Nivel Seleccionado</span>
+                <span aria-hidden="true">·</span>
+                <span>{currentLessons.length} lecciones visibles</span>
+              </div>
+              <h2 className="text-xl font-bold text-slate-900 dark:text-white mt-0.5">
+                {currentLevel ? currentLevel.name : 'Inglés B1'}
+              </h2>
+              {currentLevel?.description && (
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                  {currentLevel.description}
+                </p>
+              )}
+            </div>
 
-        {filteredItems.length === 0 ? (
-          <div className="bg-white dark:bg-slate-900 rounded-xl border border-dashed border-slate-300 dark:border-slate-800 p-12 text-center">
-            <FileText className="w-10 h-10 text-slate-400 mx-auto mb-3" />
-            <h3 className="text-base font-semibold text-slate-900 dark:text-white mb-1">
-              No se encontraron pistas de audio
-            </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto mb-4">
-              Prueba cambiando los filtros de búsqueda o sube un nuevo audio con su archivo de transcripción.
-            </p>
             <button
-              onClick={onOpenUpload}
-              className="px-4 py-2 text-xs font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors cursor-pointer"
+              onClick={() => setIsAddingLesson(true)}
+              className="self-start sm:self-center px-3.5 py-2 text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/60 rounded-lg hover:bg-indigo-100 cursor-pointer flex items-center gap-1.5"
             >
-              Subir Audio o Transcripción
+              <Plus className="w-3.5 h-3.5" />
+              <span>Añadir Lección a {currentLevel?.name || 'este nivel'}</span>
             </button>
           </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredItems.map(item => {
-              const isSelected = selectedItem?.id === item.id;
-              const hasSegments = item.segments && item.segments.length > 0;
-              const durationFormatted = formatTime(item.audioDuration || 0);
 
-              return (
-                <div
-                  key={item.id}
-                  className={`group relative bg-white dark:bg-slate-900 rounded-xl border transition-all duration-150 p-5 flex flex-col justify-between ${
-                    isSelected 
-                      ? 'border-indigo-600 dark:border-indigo-500 ring-2 ring-indigo-500/20 shadow-sm'
-                      : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-xs'
-                  }`}
-                >
-                  <div>
-                    {/* Unboxed Metadata with Typographic Separator */}
-                    <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mb-2">
-                      <span className="font-semibold text-indigo-600 dark:text-indigo-400">
-                        Nivel {item.level}
-                      </span>
-                      <span aria-hidden="true">·</span>
-                      <span className="font-mono tabular-nums">{durationFormatted}</span>
-                      <span aria-hidden="true">·</span>
-                      <span>Acento {item.accent}</span>
-                      {item.isBuiltIn && (
-                        <>
-                          <span aria-hidden="true">·</span>
-                          <span className="text-emerald-600 dark:text-emerald-400">Lección Lista</span>
-                        </>
-                      )}
-                    </div>
+          {/* Inline Add Lesson Form */}
+          {isAddingLesson && (
+            <div className="bg-indigo-50/50 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-800 p-5 rounded-2xl space-y-3">
+              <h3 className="text-xs font-bold text-indigo-900 dark:text-indigo-200 uppercase tracking-wider">
+                Nueva Lección para {currentLevel?.name || 'Inglés B1'}
+              </h3>
+              <form onSubmit={handleCreateLesson} className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                <input
+                  type="text"
+                  value={newLessonTitle}
+                  onChange={(e) => setNewLessonTitle(e.target.value)}
+                  placeholder="Título (ej: Lección 2, Lección 3...)"
+                  className="px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg"
+                  autoFocus
+                />
+                <input
+                  type="text"
+                  value={newLessonSubtitle}
+                  onChange={(e) => setNewLessonSubtitle(e.target.value)}
+                  placeholder="Tema opcional (ej: Planes de Fin de Semana)"
+                  className="px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg"
+                />
+                <div className="flex gap-2">
+                  <button
+                    type="submit"
+                    className="flex-1 py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 cursor-pointer"
+                  >
+                    Guardar Lección
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setIsAddingLesson(false)}
+                    className="px-3 py-2 text-slate-500 hover:text-slate-700 cursor-pointer"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </form>
+            </div>
+          )}
 
-                    {/* Title */}
-                    <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1.5 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors leading-snug">
-                      {item.title}
-                    </h3>
-
-                    {/* Description */}
-                    {item.description && (
-                      <p className="text-xs text-slate-600 dark:text-slate-300 line-clamp-2 mb-3 leading-relaxed">
-                        {item.description}
-                      </p>
-                    )}
-
-                    {/* Transcript Segment Preview Snippet */}
-                    {hasSegments ? (
-                      <div className="bg-slate-50 dark:bg-slate-800/60 rounded-lg p-2.5 mb-4 text-xs text-slate-600 dark:text-slate-400 italic border border-slate-100 dark:border-slate-800">
-                        <span className="font-semibold not-italic text-slate-700 dark:text-slate-300 mr-1">
-                          {item.segments[0].speaker ? `${item.segments[0].speaker}: ` : '“'}
-                        </span>
-                        {item.segments[0].text.substring(0, 85)}...
-                        <div className="mt-1 text-[11px] not-italic text-slate-400 dark:text-slate-500 font-mono">
-                          {item.segments.length} oraciones sincronizadas
+          {/* Lessons List for this Level */}
+          {lessonsWithAudios.length === 0 ? (
+            <div className="bg-white dark:bg-slate-900 rounded-xl border border-dashed border-slate-300 dark:border-slate-800 p-10 text-center space-y-3">
+              <BookOpen className="w-8 h-8 text-slate-400 mx-auto" />
+              <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200">
+                Aún no has creado lecciones en {currentLevel?.name || 'este nivel'}
+              </h3>
+              <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                Crea tu primera lección (ej: "Lección 1") y asígnale los audios y transcripciones correspondientes.
+              </p>
+              <button
+                onClick={() => setIsAddingLesson(true)}
+                className="px-4 py-2 text-xs font-semibold bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 cursor-pointer"
+              >
+                + Crear Lección 1
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {lessonsWithAudios.map(({ lesson, audios }) => {
+                return (
+                  <div
+                    key={lesson.id}
+                    className={`bg-white dark:bg-slate-900 rounded-2xl border transition-all p-5 sm:p-6 shadow-xs space-y-4 ${
+                      lesson.isHidden
+                        ? 'border-amber-300 dark:border-amber-800/80 bg-amber-50/20 dark:bg-amber-950/10'
+                        : 'border-slate-200 dark:border-slate-800'
+                    }`}
+                  >
+                    {/* Lesson Header with Edit, Hide & Delete actions */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs ${
+                          lesson.isHidden 
+                            ? 'bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300' 
+                            : 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400'
+                        }`}>
+                          {lesson.order || '1'}
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                              {currentLevel?.name} &gt; {lesson.title}
+                            </h3>
+                            {lesson.isHidden && (
+                              <span className="text-[10px] font-semibold px-2 py-0.5 bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-200 rounded-full border border-amber-300 dark:border-amber-700">
+                                Lección Oculta
+                              </span>
+                            )}
+                          </div>
+                          {lesson.subtitle && (
+                            <span className="text-xs text-slate-500 dark:text-slate-400 block">
+                              {lesson.subtitle}
+                            </span>
+                          )}
                         </div>
                       </div>
+
+                      {/* Lesson Management Buttons (Editar, Ocultar, Eliminar) */}
+                      <div className="flex items-center gap-1.5 self-start sm:self-auto text-xs">
+                        <span className="text-slate-400 font-mono text-[11px] mr-1">
+                          {audios.length} {audios.length === 1 ? 'audio' : 'audios'}
+                        </span>
+
+                        {/* Edit Lesson */}
+                        <button
+                          onClick={() => onEditLesson(lesson)}
+                          title="Editar título, tema o nivel de esta lección"
+                          className="p-1.5 text-slate-500 hover:text-indigo-600 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg cursor-pointer flex items-center gap-1 font-medium transition-colors"
+                        >
+                          <Pencil className="w-3.5 h-3.5" />
+                          <span className="hidden sm:inline">Editar</span>
+                        </button>
+
+                        {/* Hide / Unhide Lesson */}
+                        <button
+                          onClick={() => onToggleHideLesson(lesson.id)}
+                          title={lesson.isHidden ? 'Mostrar lección en los menús' : 'Ocultar lección'}
+                          className={`p-1.5 rounded-lg cursor-pointer flex items-center gap-1 font-medium transition-colors ${
+                            lesson.isHidden
+                              ? 'text-amber-700 dark:text-amber-300 bg-amber-100 dark:bg-amber-950/60 hover:bg-amber-200'
+                              : 'text-slate-500 hover:text-amber-600 hover:bg-slate-100 dark:hover:bg-slate-800'
+                          }`}
+                        >
+                          {lesson.isHidden ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                          <span className="hidden sm:inline">{lesson.isHidden ? 'Desocultar' : 'Ocultar'}</span>
+                        </button>
+
+                        {/* Delete Lesson */}
+                        <button
+                          onClick={() => onDeleteLesson(lesson.id)}
+                          title="Eliminar lección"
+                          className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg cursor-pointer flex items-center gap-1 font-medium transition-colors"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                          <span className="hidden sm:inline">Eliminar</span>
+                        </button>
+
+                        <div className="w-px h-4 bg-slate-200 dark:bg-slate-700 mx-1" />
+
+                        {/* Add audio to this lesson */}
+                        <button
+                          onClick={() => {
+                            onSelectLevel(currentLevel.id);
+                            onSelectLesson(lesson.id);
+                            onOpenDriveLinksModal();
+                          }}
+                          className="px-2.5 py-1 text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 rounded-md cursor-pointer flex items-center gap-1"
+                        >
+                          <Plus className="w-3 h-3" />
+                          <span>Añadir Audio</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Audios in this lesson */}
+                    {audios.length === 0 ? (
+                      <div className="p-4 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-dashed border-slate-200 dark:border-slate-700 text-center">
+                        <p className="text-xs text-slate-500 mb-2">
+                          Esta lección aún no tiene pistas de audio asignadas.
+                        </p>
+                        <button
+                          onClick={() => {
+                            onSelectLevel(currentLevel.id);
+                            onSelectLesson(lesson.id);
+                            onOpenDriveLinksModal();
+                          }}
+                          className="px-3 py-1.5 text-xs font-semibold bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 cursor-pointer inline-flex items-center gap-1.5"
+                        >
+                          <Plus className="w-3.5 h-3.5" />
+                          <span>Conectar Audio con Enlace / .VTT</span>
+                        </button>
+                      </div>
                     ) : (
-                      <div className="bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 text-xs rounded-lg p-2.5 mb-4 border border-amber-200 dark:border-amber-800/40 flex items-center gap-2">
-                        <AlertCircle className="w-4 h-4 shrink-0" />
-                        <span>Sin transcripción asociada aún</span>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {audios.map(item => {
+                          const isSelected = selectedItem?.id === item.id;
+                          return (
+                            <div
+                              key={item.id}
+                              className={`p-4 rounded-xl border transition-all flex flex-col justify-between ${
+                                isSelected
+                                  ? 'bg-indigo-50/70 dark:bg-indigo-950/40 border-indigo-500 ring-2 ring-indigo-500/20 shadow-xs'
+                                  : item.isHidden
+                                  ? 'bg-amber-50/40 dark:bg-amber-950/20 border-amber-300 dark:border-amber-800/80'
+                                  : 'bg-slate-50/60 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700/80 hover:border-slate-300'
+                              }`}
+                            >
+                              <div className="space-y-2">
+                                <div className="flex items-center justify-between text-xs text-slate-500 font-mono">
+                                  <div className="flex items-center gap-2">
+                                    <span className="font-semibold text-indigo-600 dark:text-indigo-400">
+                                      {formatTime(item.audioDuration || 0)}
+                                    </span>
+                                    <span aria-hidden="true">·</span>
+                                    <span>{item.segments.length} marcas</span>
+                                    <span aria-hidden="true">·</span>
+                                    <span>{item.accent}</span>
+                                  </div>
+
+                                  {item.isHidden && (
+                                    <span className="px-1.5 py-0.2 bg-amber-200 dark:bg-amber-800 text-amber-900 dark:text-amber-100 rounded text-[10px] font-bold uppercase tracking-wider font-sans">
+                                      Oculto
+                                    </span>
+                                  )}
+                                </div>
+
+                                <h4 className="text-sm font-bold text-slate-900 dark:text-white leading-snug">
+                                  {item.title}
+                                </h4>
+
+                                {item.segments.length > 0 && (
+                                  <p className="text-xs text-slate-600 dark:text-slate-300 italic line-clamp-2">
+                                    "{item.segments[0].text}"
+                                  </p>
+                                )}
+                              </div>
+
+                              {/* Audio card actions: Play, Edit, Hide, Delete */}
+                              <div className="pt-3 mt-3 border-t border-slate-200/80 dark:border-slate-700/60 flex items-center justify-between gap-1.5">
+                                <button
+                                  onClick={() => {
+                                    onSelectLevel(currentLevel.id);
+                                    onSelectLesson(lesson.id);
+                                    onSelectItem(item);
+                                  }}
+                                  className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold cursor-pointer flex items-center justify-center gap-1.5 transition-colors ${
+                                    isSelected
+                                      ? 'bg-indigo-600 text-white'
+                                      : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:bg-indigo-50 hover:text-indigo-600'
+                                  }`}
+                                >
+                                  <Play className="w-3 h-3 fill-current" />
+                                  <span>{isSelected ? 'Cargado' : 'Reproducir'}</span>
+                                </button>
+
+                                {/* Edit Audio */}
+                                <button
+                                  onClick={() => onEditAudio(item)}
+                                  title="Editar audio (título, nivel, lección, descripción)"
+                                  className="p-1.5 text-slate-400 hover:text-indigo-600 rounded hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer"
+                                >
+                                  <Pencil className="w-3.5 h-3.5" />
+                                </button>
+
+                                {/* Hide / Unhide Audio */}
+                                <button
+                                  onClick={() => onToggleHideAudio(item.id)}
+                                  title={item.isHidden ? 'Mostrar audio' : 'Ocultar audio'}
+                                  className={`p-1.5 rounded cursor-pointer ${
+                                    item.isHidden
+                                      ? 'text-amber-600 bg-amber-100 dark:bg-amber-950 hover:bg-amber-200'
+                                      : 'text-slate-400 hover:text-amber-600 hover:bg-slate-200 dark:hover:bg-slate-700'
+                                  }`}
+                                >
+                                  {item.isHidden ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                                </button>
+
+                                {/* Delete Audio */}
+                                <button
+                                  onClick={() => onDeleteAudio(item.id)}
+                                  title="Eliminar este audio"
+                                  className="p-1.5 text-slate-400 hover:text-rose-600 rounded hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+
+                                <button
+                                  onClick={() => handleDownloadTranscript(item, 'srt')}
+                                  title="Descargar subtítulos SRT"
+                                  className="p-1.5 text-slate-400 hover:text-slate-700 rounded hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer"
+                                >
+                                  <Download className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })}
                       </div>
                     )}
                   </div>
-
-                  {/* Actions Row */}
-                  <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
-                    <button
-                      onClick={() => onSelectItem(item)}
-                      className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-semibold cursor-pointer transition-colors ${
-                        isSelected
-                          ? 'bg-indigo-600 text-white hover:bg-indigo-700'
-                          : 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 hover:bg-indigo-50 dark:hover:bg-slate-750 hover:text-indigo-600 dark:hover:text-indigo-300'
-                      }`}
-                    >
-                      <Play className="w-3.5 h-3.5 fill-current" />
-                      <span>{isSelected ? 'Cargado en Reproductor' : 'Seleccionar & Escuchar'}</span>
-                    </button>
-
-                    {/* Quick export / edit menu */}
-                    <div className="flex items-center gap-1">
-                      {hasSegments && (
-                        <button
-                          onClick={() => handleDownloadTranscript(item, 'srt')}
-                          title="Descargar subtítulos SRT"
-                          className="p-2 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
-                        >
-                          <Download className="w-3.5 h-3.5" />
-                        </button>
-                      )}
-
-                      <button
-                        onClick={() => onOpenPairing(item)}
-                        title="Editar sincronización o transcripción"
-                        className="p-2 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
-                      >
-                        <Link2 className="w-3.5 h-3.5" />
-                      </button>
-
-                      {!item.isBuiltIn && (
-                        <button
-                          onClick={() => {
-                            if (window.confirm(`¿Eliminar "${item.title}" de tu biblioteca?`)) {
-                              onDeleteItem(item.id);
-                            }
-                          }}
-                          title="Eliminar de mi biblioteca"
-                          className="p-2 text-slate-400 hover:text-red-600 dark:hover:text-red-400 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      )}
-                    </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      ) : (
+        /* All items list */
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filteredAllItems.map(item => (
+            <div
+              key={item.id}
+              className={`rounded-xl border p-4 space-y-3 flex flex-col justify-between ${
+                item.isHidden
+                  ? 'bg-amber-50/30 dark:bg-amber-950/20 border-amber-300 dark:border-amber-800/70'
+                  : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800'
+              }`}
+            >
+              <div>
+                <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold text-indigo-600">Nivel {item.level}</span>
+                    <span aria-hidden="true">·</span>
+                    <span className="font-mono">{formatTime(item.audioDuration || 0)}</span>
                   </div>
+
+                  {item.isHidden && (
+                    <span className="px-1.5 py-0.2 bg-amber-200 dark:bg-amber-800 text-amber-900 dark:text-amber-100 rounded text-[10px] font-bold">
+                      Oculto
+                    </span>
+                  )}
                 </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
+                <h4 className="text-sm font-bold text-slate-900 dark:text-white">
+                  {item.title}
+                </h4>
+                {item.description && (
+                  <p className="text-xs text-slate-500 mt-1 line-clamp-2">
+                    {item.description}
+                  </p>
+                )}
+              </div>
+
+              <div className="pt-2 flex items-center gap-1.5">
+                <button
+                  onClick={() => onSelectItem(item)}
+                  className="flex-1 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white hover:bg-indigo-700 cursor-pointer flex items-center justify-center gap-1.5"
+                >
+                  <Play className="w-3.5 h-3.5 fill-current" />
+                  <span>Reproducir</span>
+                </button>
+
+                <button
+                  onClick={() => onEditAudio(item)}
+                  title="Editar audio"
+                  className="p-1.5 text-slate-400 hover:text-indigo-600 rounded hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                >
+                  <Pencil className="w-3.5 h-3.5" />
+                </button>
+
+                <button
+                  onClick={() => onToggleHideAudio(item.id)}
+                  title={item.isHidden ? 'Mostrar audio' : 'Ocultar audio'}
+                  className="p-1.5 text-slate-400 hover:text-amber-600 rounded hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                >
+                  {item.isHidden ? <EyeOff className="w-3.5 h-3.5 text-amber-500" /> : <Eye className="w-3.5 h-3.5" />}
+                </button>
+
+                <button
+                  onClick={() => onDeleteAudio(item.id)}
+                  title="Eliminar audio"
+                  className="p-1.5 text-slate-400 hover:text-rose-600 rounded hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

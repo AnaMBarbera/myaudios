@@ -12,16 +12,21 @@ import {
   Trash2, 
   Clock, 
   Sparkles,
-  RotateCcw
+  RotateCcw,
+  CheckCircle2
 } from 'lucide-react';
-import { AudioTranscriptItem, CefrLevel, Category, Accent, TranscriptSegment } from '../types';
-import { parseSRT, parseVTT, parsePlainText, formatTime } from '../utils/transcriptParser';
+import { AudioTranscriptItem, CefrLevel, Category, Accent, TranscriptSegment, CourseLevel, CourseLesson } from '../types';
+import { parseSRT, parseVTT, parsePlainText, autoDetectAndParseTranscript, formatTime } from '../utils/transcriptParser';
 
 interface AudioTranscriptPairingModalProps {
   initialItem?: AudioTranscriptItem | null;
   onSave: (newItem: AudioTranscriptItem, audioBlob?: Blob) => void;
   onClose: () => void;
   existingItems: AudioTranscriptItem[];
+  levels?: CourseLevel[];
+  lessons?: CourseLesson[];
+  defaultLevelId?: string;
+  defaultLessonId?: string;
 }
 
 export const AudioTranscriptPairingModal: React.FC<AudioTranscriptPairingModalProps> = ({
@@ -29,6 +34,10 @@ export const AudioTranscriptPairingModal: React.FC<AudioTranscriptPairingModalPr
   onSave,
   onClose,
   existingItems,
+  levels = [],
+  lessons = [],
+  defaultLevelId = 'ingles_b1',
+  defaultLessonId,
 }) => {
   // Step 1: Audio selection / upload
   const [audioFile, setAudioFile] = useState<File | null>(null);
@@ -40,6 +49,8 @@ export const AudioTranscriptPairingModal: React.FC<AudioTranscriptPairingModalPr
   const [title, setTitle] = useState<string>(initialItem?.title || '');
   const [description, setDescription] = useState<string>(initialItem?.description || '');
   const [level, setLevel] = useState<CefrLevel>(initialItem?.level || 'B1');
+  const [selectedLevelId, setSelectedLevelId] = useState<string>(initialItem?.levelId || defaultLevelId);
+  const [selectedLessonId, setSelectedLessonId] = useState<string>(initialItem?.lessonId || defaultLessonId || '');
   const [category, setCategory] = useState<Category>(initialItem?.category || 'conversation');
   const [accent, setAccent] = useState<Accent>(initialItem?.accent || 'US');
   const [tagsInput, setTagsInput] = useState<string>(initialItem?.tags?.join(', ') || '');
@@ -48,6 +59,7 @@ export const AudioTranscriptPairingModal: React.FC<AudioTranscriptPairingModalPr
   const [rawText, setRawText] = useState<string>('');
   const [transcriptType, setTranscriptType] = useState<'upload' | 'paste' | 'existing'>('paste');
   const [segments, setSegments] = useState<TranscriptSegment[]>(initialItem?.segments || []);
+  const [detectedFormat, setDetectedFormat] = useState<'vtt' | 'srt' | 'plain' | null>(null);
 
   // Step 3: Live Tap-to-Sync Alignment
   const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false);
@@ -77,24 +89,15 @@ export const AudioTranscriptPairingModal: React.FC<AudioTranscriptPairingModalPr
   // Handle transcript file upload
   const handleTranscriptFileInput = (file: File) => {
     const reader = new FileReader();
-    const ext = file.name.split('.').pop()?.toLowerCase();
 
     reader.onload = (e) => {
       const content = e.target?.result as string;
       if (!content) return;
 
-      if (ext === 'srt') {
-        const parsed = parseSRT(content);
-        setSegments(parsed);
-      } else if (ext === 'vtt') {
-        const parsed = parseVTT(content);
-        setSegments(parsed);
-      } else {
-        // Plain text
-        setRawText(content);
-        const parsed = parsePlainText(content, audioDuration || 30);
-        setSegments(parsed);
-      }
+      const detection = autoDetectAndParseTranscript(content, audioDuration || 30);
+      setSegments(detection.segments);
+      setDetectedFormat(detection.format);
+      setSyncingSentenceIdx(0);
     };
     reader.readAsText(file);
   };
@@ -102,8 +105,9 @@ export const AudioTranscriptPairingModal: React.FC<AudioTranscriptPairingModalPr
   // Auto-generate segments from raw text
   const handleGenerateSegmentsFromText = () => {
     if (!rawText.trim()) return;
-    const parsed = parsePlainText(rawText, audioDuration || 30);
-    setSegments(parsed);
+    const detection = autoDetectAndParseTranscript(rawText, audioDuration || 30);
+    setSegments(detection.segments);
+    setDetectedFormat(detection.format);
     setSyncingSentenceIdx(0);
   };
 
@@ -160,6 +164,8 @@ export const AudioTranscriptPairingModal: React.FC<AudioTranscriptPairingModalPr
       description: description.trim(),
       category,
       level,
+      levelId: selectedLevelId,
+      lessonId: selectedLessonId || undefined,
       accent,
       audioDuration: audioDuration || 30,
       audioFileName: audioFile?.name || initialItem?.audioFileName,
@@ -333,6 +339,28 @@ export const AudioTranscriptPairingModal: React.FC<AudioTranscriptPairingModalPr
               </div>
             </div>
           )}
+
+          {/* VTT / SRT Detection confirmation banner */}
+          {detectedFormat === 'vtt' && segments.length > 0 && (
+            <div className="p-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800 rounded-xl text-xs text-emerald-800 dark:text-emerald-300 flex items-center gap-2">
+              <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+              <div>
+                <span className="font-bold block">
+                  🎯 Archivo .VTT detectado con éxito ({segments.length} marcas de tiempo)
+                </span>
+                <span className="text-[11px] opacity-90 block">
+                  Se usarán las marcas de tiempo exactas del archivo .VTT sin dividirlas en frases automáticas.
+                </span>
+              </div>
+            </div>
+          )}
+
+          {detectedFormat === 'srt' && segments.length > 0 && (
+            <div className="p-3 bg-blue-50 dark:bg-blue-950/40 border border-blue-300 dark:border-blue-800 rounded-xl text-xs text-blue-800 dark:text-blue-300 flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-blue-600 shrink-0" />
+              <span>✓ Subtítulos .SRT detectados: {segments.length} marcas de tiempo exactas preservadas.</span>
+            </div>
+          )}
         </div>
 
         {/* Step 3: Interactive Alignment / Segment Preview */}
@@ -443,7 +471,7 @@ export const AudioTranscriptPairingModal: React.FC<AudioTranscriptPairingModalPr
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-100 dark:border-slate-800 text-xs">
           <div>
             <label className="text-slate-600 dark:text-slate-400 font-medium block mb-1">
-              Título de la lección / audio:
+              Título del audio / diálogo:
             </label>
             <input
               type="text"
@@ -452,6 +480,37 @@ export const AudioTranscriptPairingModal: React.FC<AudioTranscriptPairingModalPr
               placeholder="Ej: English Job Interview Practice"
               className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs"
             />
+          </div>
+
+          <div>
+            <label className="text-slate-600 dark:text-slate-400 font-medium block mb-1">
+              Asignar a Nivel de Curso:
+            </label>
+            <select
+              value={selectedLevelId}
+              onChange={(e) => setSelectedLevelId(e.target.value)}
+              className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs cursor-pointer font-medium"
+            >
+              {levels.map(l => (
+                <option key={l.id} value={l.id}>{l.name}</option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="text-slate-600 dark:text-slate-400 font-medium block mb-1">
+              Asignar a Lección:
+            </label>
+            <select
+              value={selectedLessonId}
+              onChange={(e) => setSelectedLessonId(e.target.value)}
+              className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs cursor-pointer font-medium"
+            >
+              <option value="">(Sin lección específica)</option>
+              {lessons.filter(les => les.levelId === selectedLevelId).map(les => (
+                <option key={les.id} value={les.id}>{les.title} {les.subtitle ? `- ${les.subtitle}` : ''}</option>
+              ))}
+            </select>
           </div>
 
           <div>

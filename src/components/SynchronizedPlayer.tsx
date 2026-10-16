@@ -20,12 +20,17 @@ import {
   ArrowLeft,
   ChevronRight,
   HelpCircle,
-  Volume1
+  Volume1,
+  Pencil,
+  Trash2,
+  FileText,
+  Upload
 } from 'lucide-react';
 import { AudioTranscriptItem, TranscriptSegment, SavedWord } from '../types';
 import { UnifiedAudioPlayer } from '../utils/audioEngine';
-import { formatTime } from '../utils/transcriptParser';
+import { formatTime, autoDetectAndParseTranscript } from '../utils/transcriptParser';
 import { lookupWord, playWordSpeech, WordDefinitionResult } from '../utils/dictionary';
+import { VTTAttachModal } from './VTTAttachModal';
 
 interface SynchronizedPlayerProps {
   item: AudioTranscriptItem;
@@ -34,6 +39,10 @@ interface SynchronizedPlayerProps {
   onBackToLibrary: () => void;
   onSaveWord: (word: SavedWord) => void;
   savedWords: SavedWord[];
+  onUpdateItem?: (updatedItem: AudioTranscriptItem) => void;
+  onEditItem?: (item: AudioTranscriptItem) => void;
+  onToggleHideItem?: (itemId: string) => void;
+  onDeleteItem?: (itemId: string) => void;
 }
 
 export const SynchronizedPlayer: React.FC<SynchronizedPlayerProps> = ({
@@ -43,6 +52,10 @@ export const SynchronizedPlayer: React.FC<SynchronizedPlayerProps> = ({
   onBackToLibrary,
   onSaveWord,
   savedWords,
+  onUpdateItem,
+  onEditItem,
+  onToggleHideItem,
+  onDeleteItem,
 }) => {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [currentTime, setCurrentTime] = useState<number>(0);
@@ -54,6 +67,14 @@ export const SynchronizedPlayer: React.FC<SynchronizedPlayerProps> = ({
   const [showTranslations, setShowTranslations] = useState<boolean>(true);
   const [isLoopingSegment, setIsLoopingSegment] = useState<boolean>(false);
   const [isAutoPause, setIsAutoPause] = useState<boolean>(false);
+  const [isVttModalOpen, setIsVttModalOpen] = useState<boolean>(false);
+
+  // Determine if item has a valid parsed transcript or only placeholder/empty
+  const hasRealSegments = Boolean(
+    item.segments &&
+    item.segments.length > 0 &&
+    !(item.segments.length === 1 && item.segments[0].text.includes('Audio enlazado desde Google Drive'))
+  );
 
   // Active study mode tab
   const [activeTab, setActiveTab] = useState<'transcript' | 'dictation' | 'shadowing' | 'vocab'>('transcript');
@@ -303,6 +324,55 @@ export const SynchronizedPlayer: React.FC<SynchronizedPlayerProps> = ({
           <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-1">
             {item.title}
           </h1>
+
+          {/* Quick Audio Actions: Edit, VTT, Hide, Delete */}
+          <div className="flex flex-wrap items-center gap-2 mt-2">
+            <button
+              onClick={() => setIsVttModalOpen(true)}
+              className="px-2.5 py-1 text-xs rounded-lg border border-indigo-200 dark:border-indigo-800 bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 flex items-center gap-1 cursor-pointer font-semibold transition-colors shadow-2xs"
+              title="Cargar o actualizar el archivo .VTT para este audio"
+            >
+              <FileText className="w-3.5 h-3.5" />
+              <span>{hasRealSegments ? 'Actualizar .VTT' : '+ Cargar / Pegar .VTT'}</span>
+            </button>
+
+            {onEditItem && (
+              <button
+                onClick={() => onEditItem(item)}
+                className="px-2.5 py-1 text-xs rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center gap-1 cursor-pointer font-medium transition-colors"
+                title="Editar este audio"
+              >
+                <Pencil className="w-3 h-3" />
+                <span>Editar Audio</span>
+              </button>
+            )}
+
+            {onToggleHideItem && (
+              <button
+                onClick={() => onToggleHideItem(item.id)}
+                className={`px-2.5 py-1 text-xs rounded-lg border flex items-center gap-1 cursor-pointer font-medium transition-colors ${
+                  item.isHidden 
+                    ? 'bg-amber-100 border-amber-300 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300' 
+                    : 'border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300'
+                }`}
+                title={item.isHidden ? 'Mostrar audio en los menús' : 'Ocultar audio'}
+              >
+                {item.isHidden ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
+                <span>{item.isHidden ? 'Desocultar' : 'Ocultar Audio'}</span>
+              </button>
+            )}
+
+            {onDeleteItem && (
+              <button
+                onClick={() => onDeleteItem(item.id)}
+                className="px-2.5 py-1 text-xs rounded-lg border border-rose-200 dark:border-rose-800/60 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-rose-600 flex items-center gap-1 cursor-pointer font-medium transition-colors"
+                title="Eliminar este audio"
+              >
+                <Trash2 className="w-3 h-3" />
+                <span>Eliminar</span>
+              </button>
+            )}
+          </div>
         </div>
 
         {/* View Mode Tabs (Single-line interactive buttons) */}
@@ -446,16 +516,16 @@ export const SynchronizedPlayer: React.FC<SynchronizedPlayerProps> = ({
           {/* Speed & Volume settings */}
           <div className="flex items-center gap-4">
             {/* Speed selector */}
-            <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-lg">
-              <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 px-2">Velocidad:</span>
-              {[0.75, 0.85, 1.0, 1.25].map(rate => (
+            <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-lg overflow-x-auto max-w-full">
+              <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 px-2 shrink-0">Velocidad:</span>
+              {[0.5, 0.75, 0.85, 1.0, 1.25, 1.5, 2.0].map(rate => (
                 <button
                   key={rate}
                   onClick={() => handleSpeedChange(rate)}
-                  className={`px-2 py-1 text-xs font-mono font-medium rounded-md transition-colors cursor-pointer ${
+                  className={`px-2 py-1 text-xs font-mono font-medium rounded-md transition-colors cursor-pointer shrink-0 ${
                     speed === rate
-                      ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs'
-                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                      ? 'bg-indigo-600 text-white shadow-xs'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                   }`}
                 >
                   {rate}x
@@ -494,13 +564,22 @@ export const SynchronizedPlayer: React.FC<SynchronizedPlayerProps> = ({
               <div className="flex items-center gap-2">
                 <span>Pulsa cualquier palabra para ver su significado y pronunciación</span>
               </div>
-              <button
-                onClick={() => setShowTranslations(!showTranslations)}
-                className="flex items-center gap-1.5 text-indigo-600 dark:text-indigo-400 hover:underline font-medium cursor-pointer"
-              >
-                {showTranslations ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-                <span>{showTranslations ? 'Ocultar traducciones' : 'Mostrar traducciones'}</span>
-              </button>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setIsVttModalOpen(true)}
+                  className="flex items-center gap-1.5 text-indigo-600 dark:text-indigo-400 hover:underline font-semibold cursor-pointer"
+                >
+                  <FileText className="w-3.5 h-3.5" />
+                  <span>{hasRealSegments ? 'Actualizar .VTT' : '+ Cargar .VTT'}</span>
+                </button>
+                <button
+                  onClick={() => setShowTranslations(!showTranslations)}
+                  className="flex items-center gap-1.5 text-indigo-600 dark:text-indigo-400 hover:underline font-medium cursor-pointer"
+                >
+                  {showTranslations ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                  <span>{showTranslations ? 'Ocultar traducciones' : 'Mostrar traducciones'}</span>
+                </button>
+              </div>
             </div>
 
             {/* Scrollable Transcript List */}
@@ -508,9 +587,67 @@ export const SynchronizedPlayer: React.FC<SynchronizedPlayerProps> = ({
               ref={transcriptContainerRef}
               className="space-y-3 max-h-[600px] overflow-y-auto pr-1 transcript-scroll"
             >
-              {item.segments.map((seg, idx) => {
+              {!hasRealSegments ? (
+                <div 
+                  className="p-8 bg-indigo-50/50 dark:bg-indigo-950/20 border-2 border-dashed border-indigo-200 dark:border-indigo-800 rounded-2xl text-center space-y-4 my-2 transition-colors hover:border-indigo-400"
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                      const file = e.dataTransfer.files[0];
+                      const reader = new FileReader();
+                      reader.onload = (ev) => {
+                        const content = ev.target?.result as string;
+                        if (!content) return;
+                        const detection = autoDetectAndParseTranscript(content, duration || item.audioDuration);
+                        if (detection.segments.length > 0) {
+                          const updated = { ...item, segments: detection.segments };
+                          if (onUpdateItem) onUpdateItem(updated);
+                          playerEngine.loadTrack(updated, audioBlobUrl);
+                        }
+                      };
+                      reader.readAsText(file);
+                    }
+                  }}
+                >
+                  <div className="w-12 h-12 rounded-2xl bg-indigo-600 text-white flex items-center justify-center mx-auto shadow-md">
+                    <FileText className="w-6 h-6" />
+                  </div>
+                  <div className="max-w-md mx-auto space-y-1.5">
+                    <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                      No aparece la transcripción .VTT para este audio
+                    </h3>
+                    <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                      Para que el texto aparezca y se sincronice frase a frase con las marcas de tiempo exactas del audio, sube tu archivo <strong>.vtt</strong> o pega su contenido aquí.
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap items-center justify-center gap-3 pt-1">
+                    <button
+                      onClick={() => setIsVttModalOpen(true)}
+                      className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-md cursor-pointer flex items-center gap-2 transition-all transform active:scale-95"
+                    >
+                      <Upload className="w-4 h-4" />
+                      <span>Subir o Pegar Archivo .VTT</span>
+                    </button>
+                  </div>
+                  <p className="text-[11px] text-slate-400 dark:text-slate-500">
+                    También puedes arrastrar y soltar el archivo .vtt directamente sobre este recuadro.
+                  </p>
+                </div>
+              ) : (
+                item.segments.map((seg, idx) => {
                 const isActive = activeSegment?.id === seg.id;
                 const words = seg.text.split(/\s+/);
+                
+                // Calculate sentence-internal progress
+                const segDuration = Math.max(0.1, seg.endTime - seg.startTime);
+                const segElapsed = Math.max(0, Math.min(currentTime - seg.startTime, segDuration));
+                const segProgressPercent = isActive ? (segElapsed / segDuration) * 100 : 0;
+                
+                // Approximate active word index in sentence
+                const activeWordIndex = isActive 
+                  ? Math.floor((segElapsed / segDuration) * words.length) 
+                  : -1;
 
                 return (
                   <div
@@ -519,20 +656,30 @@ export const SynchronizedPlayer: React.FC<SynchronizedPlayerProps> = ({
                       if (el) segmentRefs.current.set(seg.id, el);
                       else segmentRefs.current.delete(seg.id);
                     }}
-                    className={`p-4 rounded-xl transition-all duration-200 border ${
+                    className={`relative p-4 sm:p-5 rounded-xl transition-all duration-200 border overflow-hidden ${
                       isActive
-                        ? 'bg-indigo-50/70 dark:bg-indigo-950/40 border-indigo-300 dark:border-indigo-700/80 shadow-xs'
+                        ? 'bg-indigo-50/90 dark:bg-indigo-950/50 border-indigo-500 dark:border-indigo-500 shadow-md ring-2 ring-indigo-500/20'
                         : 'bg-white dark:bg-slate-900 border-slate-200/80 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
                     }`}
                   >
-                    <div className="flex items-start justify-between gap-3 mb-1.5">
-                      {/* Timestamp & Speaker Tag */}
-                      <div className="flex items-center gap-2">
+                    {/* Live Sentence Progress Indicator Bar */}
+                    {isActive && (
+                      <div className="absolute top-0 left-0 right-0 h-1 bg-indigo-100 dark:bg-indigo-900/60 overflow-hidden">
+                        <div 
+                          className="h-full bg-indigo-600 transition-all duration-75"
+                          style={{ width: `${segProgressPercent}%` }}
+                        />
+                      </div>
+                    )}
+
+                    <div className="flex items-start justify-between gap-3 mb-2">
+                      {/* Timestamp, Speaker Tag & Live Playing Badge */}
+                      <div className="flex flex-wrap items-center gap-2">
                         <button
                           onClick={() => handleJumpToSegment(seg)}
                           className={`px-2 py-0.5 rounded text-xs font-mono font-medium transition-colors cursor-pointer flex items-center gap-1 ${
                             isActive
-                              ? 'bg-indigo-600 text-white'
+                              ? 'bg-indigo-600 text-white shadow-xs'
                               : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
                           }`}
                         >
@@ -541,8 +688,15 @@ export const SynchronizedPlayer: React.FC<SynchronizedPlayerProps> = ({
                         </button>
 
                         {seg.speaker && (
-                          <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                            {seg.speaker}
+                          <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                            {seg.speaker}:
+                          </span>
+                        )}
+
+                        {isActive && isPlaying && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold uppercase tracking-wider animate-pulse">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                            <span>Reproduciendo ahora ({formatTime(currentTime, true)})</span>
                           </span>
                         )}
                       </div>
@@ -554,35 +708,49 @@ export const SynchronizedPlayer: React.FC<SynchronizedPlayerProps> = ({
                           setIsLoopingSegment(true);
                           playerEngine.setLoopSegment(seg);
                         }}
-                        title="Repetir esta oración"
-                        className="text-xs text-slate-400 hover:text-amber-600 dark:hover:text-amber-400 p-1 rounded hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                        title="Repetir solo esta frase"
+                        className={`text-xs p-1.5 rounded transition-colors cursor-pointer flex items-center gap-1 ${
+                          isLoopingSegment && activeSegment?.id === seg.id
+                            ? 'bg-amber-500 text-white'
+                            : 'text-slate-400 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+                        }`}
                       >
                         <Repeat className="w-3.5 h-3.5" />
+                        <span className="text-[10px] font-semibold hidden sm:inline">
+                          {isLoopingSegment && activeSegment?.id === seg.id ? 'Repitiendo' : 'Bucle'}
+                        </span>
                       </button>
                     </div>
 
-                    {/* Interactive English Sentence Text */}
-                    <p className="text-base sm:text-lg leading-relaxed text-slate-900 dark:text-slate-100">
-                      {words.map((w, wIdx) => (
-                        <span
-                          key={wIdx}
-                          onClick={() => handleWordClick(w)}
-                          className="hover:bg-indigo-100 dark:hover:bg-indigo-900/60 hover:text-indigo-900 dark:hover:text-indigo-200 rounded px-0.5 cursor-pointer transition-colors inline-block"
-                        >
-                          {w}{' '}
-                        </span>
-                      ))}
+                    {/* Interactive English Sentence Text with word highlight */}
+                    <p className="text-base sm:text-lg leading-relaxed text-slate-900 dark:text-slate-100 font-normal">
+                      {words.map((w, wIdx) => {
+                        const isCurrentSpokenWord = isActive && wIdx === activeWordIndex;
+                        return (
+                          <span
+                            key={wIdx}
+                            onClick={() => handleWordClick(w)}
+                            className={`rounded px-1 py-0.5 cursor-pointer transition-all inline-block ${
+                              isCurrentSpokenWord
+                                ? 'bg-indigo-600 text-white font-semibold scale-105 shadow-xs'
+                                : 'hover:bg-indigo-100 dark:hover:bg-indigo-900/60 hover:text-indigo-900 dark:hover:text-indigo-200'
+                            }`}
+                          >
+                            {w}{' '}
+                          </span>
+                        );
+                      })}
                     </p>
 
                     {/* Spanish Translation */}
                     {showTranslations && seg.translation && (
-                      <p className="mt-2 text-xs sm:text-sm text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-800/80 pt-1.5 leading-normal">
+                      <p className="mt-2.5 text-xs sm:text-sm text-slate-600 dark:text-slate-400 border-t border-slate-100 dark:border-slate-800/80 pt-2 leading-relaxed font-light">
                         {seg.translation}
                       </p>
                     )}
                   </div>
                 );
-              })}
+              }))}
             </div>
           </div>
 
@@ -836,6 +1004,27 @@ export const SynchronizedPlayer: React.FC<SynchronizedPlayerProps> = ({
             </div>
           </div>
         </div>
+      )}
+
+      {/* VTT Transcript Attachment Modal */}
+      {isVttModalOpen && (
+        <VTTAttachModal
+          audioTitle={item.title}
+          audioDuration={duration || item.audioDuration}
+          currentSegmentsCount={hasRealSegments ? item.segments.length : 0}
+          onClose={() => setIsVttModalOpen(false)}
+          onSaveSegments={(newSegments) => {
+            const updatedItem: AudioTranscriptItem = {
+              ...item,
+              segments: newSegments,
+              tags: Array.from(new Set([...item.tags, 'VTT Sincronizado'])),
+            };
+            if (onUpdateItem) {
+              onUpdateItem(updatedItem);
+            }
+            playerEngine.loadTrack(updatedItem, audioBlobUrl);
+          }}
+        />
       )}
     </div>
   );

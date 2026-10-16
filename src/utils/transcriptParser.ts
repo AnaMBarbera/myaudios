@@ -15,22 +15,161 @@ export function formatTime(seconds: number, includeMs: boolean = false): string 
 }
 
 export function parseTimestampToSeconds(timestamp: string): number {
-  // Support both 00:01:23,456 (SRT) and 00:01:23.456 (VTT) and 01:23.45
-  const clean = timestamp.trim().replace(',', '.');
-  const parts = clean.split(':').map(Number);
+  if (!timestamp) return 0;
+  // Clean whitespace, comma to dot, and any cue settings (like line:0, align:center, etc)
+  const token = timestamp.trim().replace(',', '.').split(/\s+/)[0];
+  const parts = token.split(':').map(Number);
   
   if (parts.length === 3) {
     // HH:MM:SS.mmm
-    return parts[0] * 3600 + parts[1] * 60 + parts[2];
+    return (parts[0] || 0) * 3600 + (parts[1] || 0) * 60 + (parts[2] || 0);
   } else if (parts.length === 2) {
     // MM:SS.mmm
-    return parts[0] * 60 + parts[1];
+    return (parts[0] || 0) * 60 + (parts[1] || 0);
   } else if (parts.length === 1 && !isNaN(parts[0])) {
     return parts[0];
   }
   return 0;
 }
 
+/**
+ * Clean VTT/HTML tags like <v Speaker>, <c.color>, <i>, <b>, inline timestamps <00:12.000>
+ */
+export function cleanVTTText(rawText: string): { speaker?: string; text: string } {
+  let speaker: string | undefined;
+  let text = rawText;
+
+  // Check WebVTT voice tag <v Speaker Name> or <v.narrator Speaker>
+  const vTagMatch = text.match(/<v(?:\.[^>]+)?\s+([^>]+)>([\s\S]*?)<\/v>/i) ||
+                     text.match(/<v(?:\.[^>]+)?\s+([^>]+)>([\s\S]*)$/i);
+  if (vTagMatch) {
+    speaker = vTagMatch[1].trim();
+    text = vTagMatch[2].trim();
+  }
+
+  // Strip all other HTML/VTT tags like <c.yellow>, <i>, </b>, <00:01.000>, etc.
+  text = text.replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').trim();
+
+  // If speaker wasn't in <v> tag, check if line starts with Speaker Name:
+  if (!speaker) {
+    const speakerMatch = text.match(/^([A-Za-z0-9_\s]{2,25}):\s*(.*)$/);
+    if (speakerMatch) {
+      speaker = speakerMatch[1].trim();
+      text = speakerMatch[2].trim();
+    }
+  }
+
+  return { speaker, text };
+}
+
+/**
+ * Comprehensive WebVTT Parser
+ * Preserves the exact timestamps of every cue block without modifying them or splitting into phrases.
+ * Supports Google Docs normalized dashes (en-dash and em-dash to -->) and all WebVTT variants.
+ */
+export function parseVTT(content: string): TranscriptSegment[] {
+  // Strip UTF-8 BOM if present, normalize dashes that Google Docs auto-converts, and normalize newlines
+  const normalized = content
+    .replace(/^\uFEFF/, '')
+    .replace(/[—–]>/g, '-->')
+    .replace(/--\s*>/g, '-->')
+    .replace(/\r\n/g, '\n')
+    .replace(/\r/g, '\n');
+
+  const segments: TranscriptSegment[] = [];
+  const lines = normalized.split('\n');
+  let i = 0;
+
+  while (i < lines.length) {
+    const line = lines[i].trim();
+
+    // Skip empty lines
+    if (!line) {
+      i++;
+      continue;
+    }
+
+    // Skip WEBVTT header line or comments/regions/styles
+    const upperLine = line.toUpperCase();
+    if (
+      upperLine.startsWith('WEBVTT') || 
+      upperLine.startsWith('NOTE') || 
+      upperLine.startsWith('STYLE') || 
+      upperLine.startsWith('REGION') ||
+      upperLine.startsWith('KIND:') ||
+      upperLine.startsWith('LANGUAGE:')
+    ) {
+      i++;
+      // Skip until blank line if it was a block like NOTE, STYLE, REGION
+      if (upperLine.startsWith('NOTE') || upperLine.startsWith('STYLE') || upperLine.startsWith('REGION')) {
+        while (i < lines.length && lines[i].trim() !== '') {
+          i++;
+        }
+      }
+      continue;
+    }
+
+    // Check if this line contains the cue arrow '-->' or if next line contains it (with current line being cue ID)
+    let timeLine = '';
+    let cueIdFromLine = '';
+
+    if (line.includes('-->')) {
+      timeLine = line;
+      i++;
+    } else if (i + 1 < lines.length && lines[i + 1].includes('-->')) {
+      // Current line was a cue identifier (e.g. "1" or "cue-01" or speaker title)
+      cueIdFromLine = line;
+      timeLine = lines[i + 1].trim();
+      i += 2;
+    } else {
+      i++;
+      continue;
+    }
+
+    // Extract start and end times
+    const [startRaw, endRaw] = timeLine.split('-->');
+    if (!startRaw || !endRaw) continue;
+
+    const startTime = parseTimestampToSeconds(startRaw.trim());
+    const endTime = parseTimestampToSeconds(endRaw.trim());
+
+    // Collect text payload lines until next blank line or next cue
+    const textLines: string[] = [];
+    while (i < lines.length && lines[i].trim() !== '' && !lines[i].includes('-->')) {
+      // Check if next line contains '-->', meaning current line is actually the cue ID of the next cue
+      if (i + 1 < lines.length && lines[i + 1].includes('-->')) {
+        break;
+      }
+      textLines.push(lines[i].trim());
+      i++;
+    }
+
+    const rawPayload = textLines.join(' ').trim();
+    if (rawPayload) {
+      const { speaker, text } = cleanVTTText(rawPayload);
+      if (text) {
+        segments.push({
+          id: `vtt_cue_${segments.length + 1}_${Math.random().toString(36).substring(2, 6)}`,
+          startTime,
+          endTime: Math.max(startTime + 0.1, endTime),
+          speaker: speaker || (cueIdFromLine && isNaN(Number(cueIdFromLine)) ? cueIdFromLine : undefined),
+          text,
+        });
+      }
+    }
+
+    // Skip any trailing blank lines
+    while (i < lines.length && lines[i].trim() === '') {
+      i++;
+    }
+  }
+
+  return segments;
+}
+
+/**
+ * Standard SRT Parser
+ */
 export function parseSRT(content: string): TranscriptSegment[] {
   const normalized = content.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
   const blocks = normalized.split(/\n\s*\n/);
@@ -41,7 +180,6 @@ export function parseSRT(content: string): TranscriptSegment[] {
     if (lines.length < 2) continue;
 
     let timeLineIdx = 0;
-    // Check if line 0 is numeric index
     if (/^\d+$/.test(lines[0].trim())) {
       timeLineIdx = 1;
     }
@@ -54,125 +192,72 @@ export function parseSRT(content: string): TranscriptSegment[] {
     const endTime = parseTimestampToSeconds(endStr);
 
     const textLines = lines.slice(timeLineIdx + 1);
-    const rawText = textLines.join(' ').replace(/<[^>]+>/g, '').trim();
+    const rawText = textLines.join(' ').trim();
 
     if (rawText) {
-      let speaker: string | undefined;
-      let text = rawText;
-      const speakerMatch = rawText.match(/^([A-Za-z0-9_\s]{2,20}):\s*(.*)$/);
-      if (speakerMatch) {
-        speaker = speakerMatch[1].trim();
-        text = speakerMatch[2].trim();
+      const { speaker, text } = cleanVTTText(rawText);
+      if (text) {
+        segments.push({
+          id: `srt_${Date.now()}_${segments.length}_${Math.random().toString(36).substring(2, 6)}`,
+          startTime,
+          endTime: Math.max(startTime + 0.1, endTime),
+          speaker,
+          text,
+        });
       }
-
-      segments.push({
-        id: `seg_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
-        startTime,
-        endTime: Math.max(startTime + 0.5, endTime),
-        speaker,
-        text,
-      });
     }
   }
 
   return segments;
 }
 
-export function parseVTT(content: string): TranscriptSegment[] {
-  const normalized = content.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-  const lines = normalized.split('\n');
-  const segments: TranscriptSegment[] = [];
-  
-  let currentStart = 0;
-  let currentEnd = 0;
-  let currentTextLines: string[] = [];
-  let inCue = false;
+/**
+ * Auto-detect format and parse transcript
+ * If the content is WebVTT or SRT, it preserves the exact timestamps of every cue.
+ * Only if it's plain text without timestamps does it split by sentences.
+ */
+export function autoDetectAndParseTranscript(
+  content: string, 
+  audioDuration?: number
+): { segments: TranscriptSegment[]; format: 'vtt' | 'srt' | 'plain'; cueCount: number } {
+  const cleaned = content.replace(/^\uFEFF/, '').trim();
+  if (!cleaned) {
+    return { segments: [], format: 'plain', cueCount: 0 };
+  }
 
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
-    if (line.startsWith('WEBVTT') || line.startsWith('NOTE')) continue;
+  const cleanedWithArrow = cleaned.replace(/[—–]>/g, '-->').replace(/--\s*>/g, '-->');
+  const upper = cleanedWithArrow.toUpperCase();
 
-    if (line.includes('-->')) {
-      if (inCue && currentTextLines.length > 0) {
-        const fullText = currentTextLines.join(' ').replace(/<[^>]+>/g, '').trim();
-        if (fullText) {
-          let speaker: string | undefined;
-          let text = fullText;
-          const speakerMatch = fullText.match(/^([A-Za-z0-9_\s]{2,20}):\s*(.*)$/);
-          if (speakerMatch) {
-            speaker = speakerMatch[1].trim();
-            text = speakerMatch[2].trim();
-          }
-          segments.push({
-            id: `seg_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
-            startTime: currentStart,
-            endTime: Math.max(currentStart + 0.5, currentEnd),
-            speaker,
-            text,
-          });
-        }
-        currentTextLines = [];
-      }
+  // 1. Check if it's WebVTT: explicit header or timestamp arrow pattern with millisecond dots/colons
+  const isVTT = upper.includes('WEBVTT') || 
+                cleanedWithArrow.includes('-->') ||
+                /-->\s*(?:\d{1,2}:)?\d{1,2}:\d{2}/.test(cleanedWithArrow);
 
-      const [startStr, endStr] = line.split('-->').map(s => s.trim().split(' ')[0]);
-      currentStart = parseTimestampToSeconds(startStr);
-      currentEnd = parseTimestampToSeconds(endStr);
-      inCue = true;
-    } else if (inCue) {
-      if (line === '') {
-        const fullText = currentTextLines.join(' ').replace(/<[^>]+>/g, '').trim();
-        if (fullText) {
-          let speaker: string | undefined;
-          let text = fullText;
-          const speakerMatch = fullText.match(/^([A-Za-z0-9_\s]{2,20}):\s*(.*)$/);
-          if (speakerMatch) {
-            speaker = speakerMatch[1].trim();
-            text = speakerMatch[2].trim();
-          }
-          segments.push({
-            id: `seg_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
-            startTime: currentStart,
-            endTime: Math.max(currentStart + 0.5, currentEnd),
-            speaker,
-            text,
-          });
-        }
-        currentTextLines = [];
-        inCue = false;
-      } else {
-        currentTextLines.push(line);
-      }
+  if (isVTT) {
+    const segments = parseVTT(cleanedWithArrow);
+    if (segments.length > 0) {
+      return { segments, format: 'vtt', cueCount: segments.length };
     }
   }
 
-  // Flush remaining
-  if (inCue && currentTextLines.length > 0) {
-    const fullText = currentTextLines.join(' ').replace(/<[^>]+>/g, '').trim();
-    if (fullText) {
-      let speaker: string | undefined;
-      let text = fullText;
-      const speakerMatch = fullText.match(/^([A-Za-z0-9_\s]{2,20}):\s*(.*)$/);
-      if (speakerMatch) {
-        speaker = speakerMatch[1].trim();
-        text = speakerMatch[2].trim();
-      }
-      segments.push({
-        id: `seg_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
-        startTime: currentStart,
-        endTime: Math.max(currentStart + 0.5, currentEnd),
-        speaker,
-        text,
-      });
+  // 2. Check if it's SRT: standard 00:00:00,000 --> 00:00:00,000
+  const isSRT = /-->\s*\d{1,2}:\d{2}:\d{2}/.test(cleanedWithArrow) || 
+                /\d+\s*\n\s*\d{1,2}:\d{2}:\d{2}/.test(cleanedWithArrow);
+
+  if (isSRT) {
+    const segments = parseSRT(cleanedWithArrow);
+    if (segments.length > 0) {
+      return { segments, format: 'srt', cueCount: segments.length };
     }
   }
 
-  return segments;
+  // 3. Fallback: Plain text sentence segmentation only if no timestamp cues were found
+  const segments = parsePlainText(cleaned, audioDuration);
+  return { segments, format: 'plain', cueCount: segments.length };
 }
 
 export function parsePlainText(content: string, audioDuration?: number): TranscriptSegment[] {
   const normalized = content.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-  
-  // Try splitting by paragraph or sentence ends
   const rawSentences: string[] = [];
   const lines = normalized.split('\n');
 
@@ -211,7 +296,7 @@ export function parsePlainText(content: string, audioDuration?: number): Transcr
     const endTime = Number(((idx + 1) * avgDuration).toFixed(2));
 
     return {
-      id: `seg_${Date.now()}_${idx}`,
+      id: `plain_${Date.now()}_${idx}`,
       startTime,
       endTime,
       speaker,
@@ -233,8 +318,9 @@ export function exportToVTT(segments: TranscriptSegment[]): string {
   const body = segments.map(seg => {
     const startStr = formatVTTTimestamp(seg.startTime);
     const endStr = formatVTTTimestamp(seg.endTime);
-    const speakerPrefix = seg.speaker ? `${seg.speaker}: ` : '';
-    return `${startStr} --> ${endStr}\n${speakerPrefix}${seg.text}\n`;
+    const speakerPrefix = seg.speaker ? `<v ${seg.speaker}>` : '';
+    const speakerSuffix = seg.speaker ? '</v>' : '';
+    return `${startStr} --> ${endStr}\n${speakerPrefix}${seg.text}${speakerSuffix}\n`;
   }).join('\n');
 
   return `WEBVTT\n\n${body}`;
@@ -246,7 +332,6 @@ export function exportToTXT(segments: TranscriptSegment[]): string {
     return `${speakerPrefix}${seg.text}`;
   }).join('\n\n');
 }
-
 
 function formatSRTTimestamp(seconds: number): string {
   const hrs = Math.floor(seconds / 3600);

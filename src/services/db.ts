@@ -1,7 +1,7 @@
-import { AudioTranscriptItem, SavedWord } from '../types';
+import { AudioTranscriptItem, SavedWord, CourseLevel, CourseLesson } from '../types';
 
 const DB_NAME = 'LingoSyncDB';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 interface AudioBlobRecord {
   id: string;
@@ -28,6 +28,12 @@ export function getDB(): Promise<IDBDatabase> {
         }
         if (!db.objectStoreNames.contains('words')) {
           db.createObjectStore('words', { keyPath: 'id' });
+        }
+        if (!db.objectStoreNames.contains('levels')) {
+          db.createObjectStore('levels', { keyPath: 'id' });
+        }
+        if (!db.objectStoreNames.contains('lessons')) {
+          db.createObjectStore('lessons', { keyPath: 'id' });
         }
       };
 
@@ -107,7 +113,6 @@ export async function getAllCustomItems(): Promise<AudioTranscriptItem[]> {
 
 export async function deleteItem(id: string): Promise<void> {
   const db = await getDB();
-  // Also delete associated audio blob if stored
   try {
     await deleteAudioBlob(id);
   } catch (err) {
@@ -117,6 +122,73 @@ export async function deleteItem(id: string): Promise<void> {
   return new Promise((resolve, reject) => {
     const tx = db.transaction('items', 'readwrite');
     const store = tx.objectStore('items');
+    const req = store.delete(id);
+    req.onsuccess = () => resolve();
+    req.onerror = () => reject(req.error);
+  });
+}
+
+// Course Levels & Lessons persistence
+export async function saveCourseLevel(level: CourseLevel): Promise<void> {
+  const db = await getDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('levels', 'readwrite');
+    const store = tx.objectStore('levels');
+    const req = store.put(level);
+    req.onsuccess = () => resolve();
+    req.onerror = () => reject(req.error);
+  });
+}
+
+export async function getAllCourseLevels(): Promise<CourseLevel[]> {
+  const db = await getDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('levels', 'readonly');
+    const store = tx.objectStore('levels');
+    const req = store.getAll();
+    req.onsuccess = () => resolve(req.result || []);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+export async function saveCourseLesson(lesson: CourseLesson): Promise<void> {
+  const db = await getDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('lessons', 'readwrite');
+    const store = tx.objectStore('lessons');
+    const req = store.put(lesson);
+    req.onsuccess = () => resolve();
+    req.onerror = () => reject(req.error);
+  });
+}
+
+export async function getAllCourseLessons(): Promise<CourseLesson[]> {
+  const db = await getDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('lessons', 'readonly');
+    const store = tx.objectStore('lessons');
+    const req = store.getAll();
+    req.onsuccess = () => resolve(req.result || []);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+export async function deleteCourseLesson(id: string): Promise<void> {
+  const db = await getDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('lessons', 'readwrite');
+    const store = tx.objectStore('lessons');
+    const req = store.delete(id);
+    req.onsuccess = () => resolve();
+    req.onerror = () => reject(req.error);
+  });
+}
+
+export async function deleteCourseLevel(id: string): Promise<void> {
+  const db = await getDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('levels', 'readwrite');
+    const store = tx.objectStore('levels');
     const req = store.delete(id);
     req.onsuccess = () => resolve();
     req.onerror = () => reject(req.error);
