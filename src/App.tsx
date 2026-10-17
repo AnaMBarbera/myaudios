@@ -568,41 +568,43 @@ export default function App() {
       />
 
       {/* Hierarchical Breadcrumb Navigation Bar: Ingles B1 > lección 1 > Audio */}
-      <CourseHierarchyBar
-        levels={levels}
-        lessons={lessons}
-        allItems={allItems}
-        selectedLevelId={selectedLevelId}
-        selectedLessonId={selectedLessonId}
-        selectedItem={selectedItem}
-        showHidden={showHidden}
-        onToggleShowHidden={() => setShowHidden(prev => !prev)}
-        onSelectLevel={(levelId) => {
-          setSelectedLevelId(levelId);
-          const firstLesson = lessons.find(l => l.levelId === levelId && (!l.isHidden || showHidden));
-          if (firstLesson) {
-            setSelectedLessonId(firstLesson.id);
-            const firstAudio = allItems.find(a => a.lessonId === firstLesson.id && (!a.isHidden || showHidden));
+      <div className={activeView === 'player' ? 'hidden md:block' : ''}>
+        <CourseHierarchyBar
+          levels={levels}
+          lessons={lessons}
+          allItems={allItems}
+          selectedLevelId={selectedLevelId}
+          selectedLessonId={selectedLessonId}
+          selectedItem={selectedItem}
+          showHidden={showHidden}
+          onToggleShowHidden={() => setShowHidden(prev => !prev)}
+          onSelectLevel={(levelId) => {
+            setSelectedLevelId(levelId);
+            const firstLesson = lessons.find(l => l.levelId === levelId && (!l.isHidden || showHidden));
+            if (firstLesson) {
+              setSelectedLessonId(firstLesson.id);
+              const firstAudio = allItems.find(a => a.lessonId === firstLesson.id && (!a.isHidden || showHidden));
+              if (firstAudio) handleSelectItem(firstAudio);
+            }
+          }}
+          onSelectLesson={(lessonId) => {
+            setSelectedLessonId(lessonId);
+            const firstAudio = allItems.find(a => a.lessonId === lessonId && (!a.isHidden || showHidden));
             if (firstAudio) handleSelectItem(firstAudio);
-          }
-        }}
-        onSelectLesson={(lessonId) => {
-          setSelectedLessonId(lessonId);
-          const firstAudio = allItems.find(a => a.lessonId === lessonId && (!a.isHidden || showHidden));
-          if (firstAudio) handleSelectItem(firstAudio);
-        }}
-        onSelectAudioItem={handleSelectItem}
-        onOpenDriveModal={() => setIsDriveModalOpen(true)}
-        onOpenDriveLinksModal={() => setIsDriveLinksModalOpen(true)}
-        onAddLevel={handleAddLevel}
-        onAddLesson={handleAddLesson}
-        onEditLesson={(les) => setLessonToEdit(les)}
-        onToggleHideLesson={handleToggleHideLesson}
-        onDeleteLesson={handleRequestDeleteLesson}
-        onEditAudio={(audio) => setAudioToEdit(audio)}
-        onToggleHideAudio={handleToggleHideAudio}
-        onDeleteAudio={handleRequestDeleteAudio}
-      />
+          }}
+          onSelectAudioItem={handleSelectItem}
+          onOpenDriveModal={() => setIsDriveModalOpen(true)}
+          onOpenDriveLinksModal={() => setIsDriveLinksModalOpen(true)}
+          onAddLevel={handleAddLevel}
+          onAddLesson={handleAddLesson}
+          onEditLesson={(les) => setLessonToEdit(les)}
+          onToggleHideLesson={handleToggleHideLesson}
+          onDeleteLesson={handleRequestDeleteLesson}
+          onEditAudio={(audio) => setAudioToEdit(audio)}
+          onToggleHideAudio={handleToggleHideAudio}
+          onDeleteAudio={handleRequestDeleteAudio}
+        />
+      </div>
 
       {/* Main View Container */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">

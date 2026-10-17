@@ -124,12 +124,26 @@ export const SynchronizedPlayer: React.FC<SynchronizedPlayerProps> = ({
     };
   }, [item, audioBlobUrl]);
 
-  // Scroll active segment into view
+  // Scroll active segment strictly inside the transcript container (NEVER scroll the browser window)
   useEffect(() => {
     if (activeSegment && activeTab === 'transcript') {
+      const container = transcriptContainerRef.current;
       const el = segmentRefs.current.get(activeSegment.id);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      if (container && el) {
+        const containerRect = container.getBoundingClientRect();
+        const elRect = el.getBoundingClientRect();
+
+        // Check if element is outside the visible area of the transcript container
+        const isOutside = elRect.top < containerRect.top + 20 || elRect.bottom > containerRect.bottom - 20;
+
+        if (isOutside) {
+          const currentScroll = container.scrollTop;
+          const targetTop = currentScroll + (elRect.top - containerRect.top) - (container.clientHeight / 2) + (elRect.height / 2);
+          container.scrollTo({
+            top: Math.max(0, targetTop),
+            behavior: 'smooth',
+          });
+        }
       }
     }
   }, [activeSegment, activeTab]);
@@ -415,8 +429,8 @@ export const SynchronizedPlayer: React.FC<SynchronizedPlayerProps> = ({
         </div>
       </div>
 
-      {/* Main Persistent Audio Control Deck */}
-      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 sm:p-6 shadow-sm space-y-4">
+      {/* Main Persistent Audio Control Deck (Sticky top-0 on mobile, top-16 on desktop) */}
+      <div className="sticky top-0 md:top-16 z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md rounded-2xl border border-slate-200 dark:border-slate-800 p-3 sm:p-5 shadow-md space-y-2.5 sm:space-y-4">
         {/* Timeline Waveform & Scrubber */}
         <div className="space-y-1.5">
           <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 font-mono tabular-nums">
@@ -425,11 +439,25 @@ export const SynchronizedPlayer: React.FC<SynchronizedPlayerProps> = ({
           </div>
 
           <div 
-            className="relative h-4 bg-slate-100 dark:bg-slate-800 rounded-full cursor-pointer overflow-hidden group"
+            className="relative h-3.5 sm:h-4 bg-slate-100 dark:bg-slate-800 rounded-full cursor-pointer overflow-hidden group touch-none"
             onClick={(e) => {
               const rect = e.currentTarget.getBoundingClientRect();
               const pos = (e.clientX - rect.left) / rect.width;
               handleSeek(pos * duration);
+            }}
+            onTouchStart={(e) => {
+              if (e.touches && e.touches[0]) {
+                const rect = e.currentTarget.getBoundingClientRect();
+                const pos = Math.max(0, Math.min(1, (e.touches[0].clientX - rect.left) / rect.width));
+                handleSeek(pos * duration);
+              }
+            }}
+            onTouchMove={(e) => {
+              if (e.touches && e.touches[0]) {
+                const rect = e.currentTarget.getBoundingClientRect();
+                const pos = Math.max(0, Math.min(1, (e.touches[0].clientX - rect.left) / rect.width));
+                handleSeek(pos * duration);
+              }
             }}
           >
             {/* Visual sentence boundary markers on the scrubber */}
@@ -454,13 +482,13 @@ export const SynchronizedPlayer: React.FC<SynchronizedPlayerProps> = ({
         </div>
 
         {/* Transport Controls Row */}
-        <div className="flex flex-wrap items-center justify-between gap-4 pt-2">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-1">
           {/* Main playback buttons */}
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
             <button
               onClick={() => handleSkip(-5)}
               title="Retroceder 5 segundos (Flecha izquierda)"
-              className="p-2.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
+              className="p-2 sm:p-2.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
             >
               <RotateCcw className="w-4 h-4" />
             </button>
@@ -468,7 +496,7 @@ export const SynchronizedPlayer: React.FC<SynchronizedPlayerProps> = ({
             <button
               onClick={handleTogglePlay}
               title={isPlaying ? 'Pausar (Espacio)' : 'Reproducir (Espacio)'}
-              className="w-12 h-12 rounded-full bg-indigo-600 text-white flex items-center justify-center hover:bg-indigo-700 shadow-md shadow-indigo-600/30 active:scale-95 transition-all cursor-pointer"
+              className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-indigo-600 text-white flex items-center justify-center hover:bg-indigo-700 shadow-md shadow-indigo-600/30 active:scale-95 transition-all cursor-pointer shrink-0"
             >
               {isPlaying ? (
                 <Pause className="w-5 h-5 fill-current" />
@@ -480,7 +508,7 @@ export const SynchronizedPlayer: React.FC<SynchronizedPlayerProps> = ({
             <button
               onClick={() => handleSkip(5)}
               title="Adelantar 5 segundos (Flecha derecha)"
-              className="p-2.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
+              className="p-2 sm:p-2.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
             >
               <RotateCw className="w-4 h-4" />
             </button>
@@ -489,40 +517,40 @@ export const SynchronizedPlayer: React.FC<SynchronizedPlayerProps> = ({
             <button
               onClick={handleToggleLoop}
               title={isLoopingSegment ? 'Desactivar repetición de frase' : 'Repetir en bucle la frase activa'}
-              className={`flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg transition-colors cursor-pointer ${
+              className={`flex items-center gap-1 px-2.5 py-1.5 sm:px-3 sm:py-2 text-xs font-semibold rounded-lg transition-colors cursor-pointer ${
                 isLoopingSegment
                   ? 'bg-amber-500 text-white shadow-xs'
                   : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
               }`}
             >
-              <Repeat className="w-3.5 h-3.5" />
-              <span>{isLoopingSegment ? 'Repitiendo frase' : 'Repetir frase'}</span>
+              <Repeat className="w-3.5 h-3.5 shrink-0" />
+              <span className="whitespace-nowrap">{isLoopingSegment ? 'Bucle' : 'Repetir'}</span>
             </button>
 
             {/* Auto-pause after sentence */}
             <button
               onClick={handleToggleAutoPause}
               title="Pausar automáticamente al final de cada oración para practicar repetición (Shadowing)"
-              className={`flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg transition-colors cursor-pointer ${
+              className={`flex items-center gap-1 px-2.5 py-1.5 sm:px-3 sm:py-2 text-xs font-semibold rounded-lg transition-colors cursor-pointer ${
                 isAutoPause
                   ? 'bg-emerald-600 text-white shadow-xs'
                   : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
               }`}
             >
-              <span>{isAutoPause ? 'Auto-pausa Activa' : 'Auto-pausa Frase'}</span>
+              <span className="whitespace-nowrap">{isAutoPause ? 'Auto-pausa ON' : 'Auto-pausa'}</span>
             </button>
           </div>
 
           {/* Speed & Volume settings */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4 overflow-x-auto max-w-full pb-1 sm:pb-0">
             {/* Speed selector */}
-            <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-lg overflow-x-auto max-w-full">
-              <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 px-2 shrink-0">Velocidad:</span>
+            <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-lg shrink-0">
+              <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 px-1.5 shrink-0">Vel:</span>
               {[0.5, 0.75, 0.85, 1.0, 1.25, 1.5, 2.0].map(rate => (
                 <button
                   key={rate}
                   onClick={() => handleSpeedChange(rate)}
-                  className={`px-2 py-1 text-xs font-mono font-medium rounded-md transition-colors cursor-pointer shrink-0 ${
+                  className={`px-1.5 sm:px-2 py-1 text-xs font-mono font-medium rounded-md transition-colors cursor-pointer shrink-0 ${
                     speed === rate
                       ? 'bg-indigo-600 text-white shadow-xs'
                       : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
@@ -534,7 +562,7 @@ export const SynchronizedPlayer: React.FC<SynchronizedPlayerProps> = ({
             </div>
 
             {/* Volume control */}
-            <div className="hidden sm:flex items-center gap-2">
+            <div className="hidden md:flex items-center gap-2">
               <button
                 onClick={handleToggleMute}
                 className="text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 cursor-pointer"
@@ -560,32 +588,36 @@ export const SynchronizedPlayer: React.FC<SynchronizedPlayerProps> = ({
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Synchronized Transcript View (2 Columns) */}
           <div className="lg:col-span-2 space-y-4">
-            <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 px-1">
-              <div className="flex items-center gap-2">
-                <span>Pulsa cualquier palabra para ver su significado y pronunciación</span>
+            {/* Guidance banner and VTT/Translation tools - hidden while audio is playing to maximize screen space */}
+            {!isPlaying && (
+              <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500 dark:text-slate-400 px-1 py-1 transition-all duration-200">
+                <div className="flex items-center gap-2">
+                  <span>Pulsa cualquier palabra para ver su significado y pronunciación</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => setIsVttModalOpen(true)}
+                    className="flex items-center gap-1.5 text-indigo-600 dark:text-indigo-400 hover:underline font-semibold cursor-pointer"
+                  >
+                    <FileText className="w-3.5 h-3.5" />
+                    <span>{hasRealSegments ? 'Actualizar .VTT' : '+ Cargar .VTT'}</span>
+                  </button>
+                  <button
+                    onClick={() => setShowTranslations(!showTranslations)}
+                    className="flex items-center gap-1.5 text-indigo-600 dark:text-indigo-400 hover:underline font-medium cursor-pointer"
+                  >
+                    {showTranslations ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                    <span>{showTranslations ? 'Ocultar traducciones' : 'Mostrar traducciones'}</span>
+                  </button>
+                </div>
               </div>
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => setIsVttModalOpen(true)}
-                  className="flex items-center gap-1.5 text-indigo-600 dark:text-indigo-400 hover:underline font-semibold cursor-pointer"
-                >
-                  <FileText className="w-3.5 h-3.5" />
-                  <span>{hasRealSegments ? 'Actualizar .VTT' : '+ Cargar .VTT'}</span>
-                </button>
-                <button
-                  onClick={() => setShowTranslations(!showTranslations)}
-                  className="flex items-center gap-1.5 text-indigo-600 dark:text-indigo-400 hover:underline font-medium cursor-pointer"
-                >
-                  {showTranslations ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-                  <span>{showTranslations ? 'Ocultar traducciones' : 'Mostrar traducciones'}</span>
-                </button>
-              </div>
-            </div>
+            )}
 
             {/* Scrollable Transcript List */}
             <div 
               ref={transcriptContainerRef}
-              className="space-y-3 max-h-[600px] overflow-y-auto pr-1 transcript-scroll"
+              className="space-y-3 max-h-[50vh] sm:max-h-[58vh] lg:max-h-[620px] overflow-y-auto pr-1 transcript-scroll overscroll-contain touch-pan-y"
+              style={{ WebkitOverflowScrolling: 'touch' }}
             >
               {!hasRealSegments ? (
                 <div 
@@ -729,8 +761,13 @@ export const SynchronizedPlayer: React.FC<SynchronizedPlayerProps> = ({
                         return (
                           <span
                             key={wIdx}
-                            onClick={() => handleWordClick(w)}
-                            className={`rounded px-1 py-0.5 cursor-pointer transition-all inline-block ${
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleWordClick(w);
+                            }}
+                            role="button"
+                            tabIndex={0}
+                            className={`rounded px-1 py-0.5 cursor-pointer transition-all inline-block select-none active:bg-indigo-300 dark:active:bg-indigo-700 ${
                               isCurrentSpokenWord
                                 ? 'bg-indigo-600 text-white font-semibold scale-105 shadow-xs'
                                 : 'hover:bg-indigo-100 dark:hover:bg-indigo-900/60 hover:text-indigo-900 dark:hover:text-indigo-200'
