@@ -1,11 +1,51 @@
 import { AudioTranscriptItem, CourseLevel, CourseLesson } from '../types';
 
 export const INITIAL_COURSE_LEVELS: CourseLevel[] = [
-  { id: 'ingles_b1', name: 'Inglés B1', description: 'Nivel intermedio: conversaciones fluidas, reservas, opiniones y planes cotidianos.', order: 1 },
-  { id: 'ingles_b2', name: 'Inglés B2', description: 'Nivel intermedio alto: presentaciones, mundo corporativo, debate y argumentación.', order: 2 },
-  { id: 'ingles_a2', name: 'Inglés A2', description: 'Nivel elemental: situaciones de viaje, indicaciones y compras.', order: 3 },
-  { id: 'ingles_c1', name: 'Inglés C1', description: 'Nivel avanzado: discursos académicos, matices idiomáticos y pensamiento complejo.', order: 4 },
-  { id: 'ingles_a1', name: 'Inglés A1', description: 'Nivel inicial: presentaciones básicas y saludos en el entorno laboral.', order: 5 },
+  { 
+    id: 'ingles_b1', 
+    name: 'Inglés B1', 
+    description: 'Nivel intermedio: conversaciones fluidas, reservas, opiniones y planes cotidianos.', 
+    order: 1,
+    teacherIds: ['user_admin_1', 'user_teacher_1'],
+    createdById: 'user_admin_1',
+    createdAt: 1718000000000,
+  },
+  { 
+    id: 'ingles_b2', 
+    name: 'Inglés B2', 
+    description: 'Nivel intermedio alto: presentaciones, mundo corporativo, debate y argumentación.', 
+    order: 2,
+    teacherIds: ['user_teacher_1'],
+    createdById: 'user_teacher_1',
+    createdAt: 1718000000000,
+  },
+  { 
+    id: 'ingles_a2', 
+    name: 'Inglés A2', 
+    description: 'Nivel elemental: situaciones de viaje, indicaciones y compras.', 
+    order: 3,
+    teacherIds: ['user_admin_1'],
+    createdById: 'user_admin_1',
+    createdAt: 1718000000000,
+  },
+  { 
+    id: 'ingles_c1', 
+    name: 'Inglés C1', 
+    description: 'Nivel avanzado: discursos académicos, matices idiomáticos y pensamiento complejo.', 
+    order: 4,
+    teacherIds: ['user_admin_1'],
+    createdById: 'user_admin_1',
+    createdAt: 1718000000000,
+  },
+  { 
+    id: 'ingles_a1', 
+    name: 'Inglés A1', 
+    description: 'Nivel inicial: presentaciones básicas y saludos en el entorno laboral.', 
+    order: 5,
+    teacherIds: ['user_admin_1'],
+    createdById: 'user_admin_1',
+    createdAt: 1718000000000,
+  },
 ];
 
 export const INITIAL_COURSE_LESSONS: CourseLesson[] = [

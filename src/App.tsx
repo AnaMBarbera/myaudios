@@ -16,10 +16,14 @@ import { LearningGuide } from './components/LearningGuide';
 import { EditLessonModal } from './components/EditLessonModal';
 import { EditAudioModal } from './components/EditAudioModal';
 import { ConfirmActionModal } from './components/ConfirmActionModal';
-import { AudioTranscriptItem, SavedWord, CourseLevel, CourseLesson } from './types';
+import { AudioTranscriptItem, SavedWord, CourseLevel, CourseLesson, AppUser } from './types';
 import { SAMPLE_AUDIO_ITEMS, INITIAL_COURSE_LEVELS, INITIAL_COURSE_LESSONS } from './data/sampleAudios';
 import { UnifiedAudioPlayer } from './utils/audioEngine';
 import { fetchServerLibrary, persistServerLibrary } from './services/apiSync';
+import { getCurrentUser, setCurrentUser, logout, getPermissions } from './services/authService';
+import { LoginModal } from './components/LoginModal';
+import { UserManagementModal } from './components/UserManagementModal';
+import { AuthGate } from './components/AuthGate';
 import { 
   getAllCustomItems, 
   saveItem, 
@@ -41,6 +45,25 @@ export default function App() {
   const [customItems, setCustomItems] = useState<AudioTranscriptItem[]>([]);
   const [selectedItem, setSelectedItem] = useState<AudioTranscriptItem | null>(null);
   const [selectedBlobUrl, setSelectedBlobUrl] = useState<string | null>(null);
+
+  // User Authentication & Role-Based Access Control (RBAC)
+  const [currentUser, setCurrentUserState] = useState<AppUser | null>(() => getCurrentUser());
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
+  const [isUserManagementModalOpen, setIsUserManagementModalOpen] = useState<boolean>(false);
+
+  const permissions = useMemo(() => {
+    return getPermissions(currentUser ? currentUser.role : 'student');
+  }, [currentUser]);
+
+  const handleLoginSuccess = (user: AppUser) => {
+    setCurrentUserState(user);
+    setCurrentUser(user);
+  };
+
+  const handleLogout = () => {
+    logout();
+    setCurrentUserState(null);
+  };
 
   // Deleted tracking for persistent deletions across sample & custom items
   const [deletedItemIds, setDeletedItemIds] = useState<string[]>(() => {
@@ -255,6 +278,82 @@ export default function App() {
     return combined;
   }, [customItems, deletedItemIds]);
 
+  // Role-based course & content filtering:
+  // - Students only see and access their enrolled courses, lessons, and audios
+  // - Teachers only see and access their assigned/created courses for clarity in their work
+  // - Admins have full access to all courses
+  const { visibleLevels, visibleLessons, visibleItems } = useMemo(() => {
+    if (!currentUser) {
+      return { visibleLevels: [], visibleLessons: [], visibleItems: [] };
+    }
+
+    if (currentUser.role === 'student') {
+      const enrolled = currentUser.enrolledCourseIds || [];
+      const filteredLevels = levels.filter(lvl => enrolled.includes(lvl.id));
+      const filteredLessons = lessons.filter(les => enrolled.includes(les.levelId));
+      const filteredItems = allItems.filter(item => item.levelId && enrolled.includes(item.levelId));
+      return {
+        visibleLevels: filteredLevels,
+        visibleLessons: filteredLessons,
+        visibleItems: filteredItems,
+      };
+    }
+
+    if (currentUser.role === 'teacher') {
+      // Teachers only access the courses they teach or created
+      const teacherCourseIds = levels
+        .filter(lvl => lvl.teacherIds?.includes(currentUser.id) || lvl.createdById === currentUser.id)
+        .map(lvl => lvl.id);
+      const filteredLevels = levels.filter(lvl => teacherCourseIds.includes(lvl.id));
+      const filteredLessons = lessons.filter(les => teacherCourseIds.includes(les.levelId));
+      const filteredItems = allItems.filter(item => item.levelId && teacherCourseIds.includes(item.levelId));
+      return {
+        visibleLevels: filteredLevels,
+        visibleLessons: filteredLessons,
+        visibleItems: filteredItems,
+      };
+    }
+
+    // Admin has access to all courses
+    return {
+      visibleLevels: levels,
+      visibleLessons: lessons,
+      visibleItems: allItems,
+    };
+  }, [currentUser, levels, lessons, allItems]);
+
+  // Keep selectedLevelId, selectedLessonId, and selectedItem synchronized with the user's accessible courses
+  useEffect(() => {
+    const isRestrictedRole = currentUser?.role === 'student' || currentUser?.role === 'teacher';
+    if (isRestrictedRole && visibleLevels.length > 0) {
+      const isLevelValid = visibleLevels.some(l => l.id === selectedLevelId);
+      if (!isLevelValid) {
+        const nextLevel = visibleLevels[0];
+        setSelectedLevelId(nextLevel.id);
+        const firstLesson = visibleLessons.find(l => l.levelId === nextLevel.id && (!l.isHidden || showHidden));
+        if (firstLesson) {
+          setSelectedLessonId(firstLesson.id);
+          const firstAudio = visibleItems.find(a => a.lessonId === firstLesson.id && (!a.isHidden || showHidden));
+          if (firstAudio) setSelectedItem(firstAudio);
+        } else {
+          setSelectedLessonId('');
+        }
+      }
+    }
+  }, [currentUser, visibleLevels, selectedLevelId, visibleLessons, visibleItems, showHidden]);
+
+  // If active audio is not within the user's accessible courses, fallback to first available audio
+  useEffect(() => {
+    const isRestrictedRole = currentUser?.role === 'student' || currentUser?.role === 'teacher';
+    if (isRestrictedRole && selectedItem) {
+      const validLevelIds = visibleLevels.map(l => l.id);
+      if (selectedItem.levelId && !validLevelIds.includes(selectedItem.levelId)) {
+        const fallback = visibleItems.find(a => !a.isHidden || showHidden) || null;
+        setSelectedItem(fallback);
+      }
+    }
+  }, [currentUser, selectedItem, visibleLevels, visibleItems, showHidden]);
+
   // Handle selecting an audio item to play
   const handleSelectItem = async (item: AudioTranscriptItem) => {
     if (selectedBlobUrl && selectedBlobUrl.startsWith('blob:')) {
@@ -303,13 +402,17 @@ export default function App() {
     }).catch(err => console.warn('Could not sync with server:', err));
   };
 
-  // Add new level
-  const handleAddLevel = (name: string): CourseLevel => {
+  // Add new course / level
+  const handleAddLevel = (name: string, description?: string, teacherIds?: string[]): CourseLevel => {
     const id = `level_${Date.now()}_${name.toLowerCase().replace(/\s+/g, '_')}`;
     const newLevel: CourseLevel = {
       id,
       name,
+      description: description || '',
       order: levels.length + 1,
+      teacherIds: teacherIds && teacherIds.length > 0 ? teacherIds : (currentUser ? [currentUser.id] : []),
+      createdById: currentUser?.id,
+      createdAt: Date.now(),
     };
     saveCourseLevel(newLevel).catch(console.error);
     const nextLevels = [...levels, newLevel];
@@ -317,6 +420,18 @@ export default function App() {
     setSelectedLevelId(id);
     syncServer(customItems, nextLevels, lessons, deletedItemIds, deletedLessonIds);
     return newLevel;
+  };
+
+  // Save / update existing course / level
+  const handleSaveLevel = async (updatedLevel: CourseLevel) => {
+    try {
+      await saveCourseLevel(updatedLevel);
+      const nextLevels = levels.map(lvl => lvl.id === updatedLevel.id ? updatedLevel : lvl);
+      setLevels(nextLevels);
+      syncServer(customItems, nextLevels, lessons, deletedItemIds, deletedLessonIds);
+    } catch (e) {
+      console.error('Error saving level:', e);
+    }
   };
 
   // Add new lesson to a level
@@ -565,50 +680,64 @@ export default function App() {
         hasActiveTrack={Boolean(selectedItem)}
         activeTrackTitle={selectedItem?.title}
         savedWordsCount={savedWords.length}
+        currentUser={currentUser}
+        levels={levels}
+        onOpenLogin={() => setIsLoginModalOpen(true)}
+        onOpenUserManagement={() => setIsUserManagementModalOpen(true)}
+        onLogout={handleLogout}
+        canEditContent={permissions.canEditContent}
+        canManageUsers={permissions.canManageUsers}
       />
 
-      {/* Hierarchical Breadcrumb Navigation Bar: Ingles B1 > lección 1 > Audio */}
-      <div className={activeView === 'player' ? 'hidden md:block' : ''}>
-        <CourseHierarchyBar
-          levels={levels}
-          lessons={lessons}
-          allItems={allItems}
-          selectedLevelId={selectedLevelId}
-          selectedLessonId={selectedLessonId}
-          selectedItem={selectedItem}
-          showHidden={showHidden}
-          onToggleShowHidden={() => setShowHidden(prev => !prev)}
-          onSelectLevel={(levelId) => {
-            setSelectedLevelId(levelId);
-            const firstLesson = lessons.find(l => l.levelId === levelId && (!l.isHidden || showHidden));
-            if (firstLesson) {
-              setSelectedLessonId(firstLesson.id);
-              const firstAudio = allItems.find(a => a.lessonId === firstLesson.id && (!a.isHidden || showHidden));
+      {/* Hierarchical Breadcrumb Navigation Bar: only when user is logged in */}
+      {currentUser && (
+        <div className={activeView === 'player' ? 'hidden md:block' : ''}>
+          <CourseHierarchyBar
+            levels={visibleLevels}
+            lessons={visibleLessons}
+            allItems={visibleItems}
+            selectedLevelId={selectedLevelId}
+            selectedLessonId={selectedLessonId}
+            selectedItem={selectedItem}
+            showHidden={showHidden}
+            onToggleShowHidden={() => setShowHidden(prev => !prev)}
+            onSelectLevel={(levelId) => {
+              setSelectedLevelId(levelId);
+              const firstLesson = visibleLessons.find(l => l.levelId === levelId && (!l.isHidden || showHidden));
+              if (firstLesson) {
+                setSelectedLessonId(firstLesson.id);
+                const firstAudio = visibleItems.find(a => a.lessonId === firstLesson.id && (!a.isHidden || showHidden));
+                if (firstAudio) handleSelectItem(firstAudio);
+              }
+            }}
+            onSelectLesson={(lessonId) => {
+              setSelectedLessonId(lessonId);
+              const firstAudio = visibleItems.find(a => a.lessonId === lessonId && (!a.isHidden || showHidden));
               if (firstAudio) handleSelectItem(firstAudio);
-            }
-          }}
-          onSelectLesson={(lessonId) => {
-            setSelectedLessonId(lessonId);
-            const firstAudio = allItems.find(a => a.lessonId === lessonId && (!a.isHidden || showHidden));
-            if (firstAudio) handleSelectItem(firstAudio);
-          }}
-          onSelectAudioItem={handleSelectItem}
-          onOpenDriveModal={() => setIsDriveModalOpen(true)}
-          onOpenDriveLinksModal={() => setIsDriveLinksModalOpen(true)}
-          onAddLevel={handleAddLevel}
-          onAddLesson={handleAddLesson}
-          onEditLesson={(les) => setLessonToEdit(les)}
-          onToggleHideLesson={handleToggleHideLesson}
-          onDeleteLesson={handleRequestDeleteLesson}
-          onEditAudio={(audio) => setAudioToEdit(audio)}
-          onToggleHideAudio={handleToggleHideAudio}
-          onDeleteAudio={handleRequestDeleteAudio}
-        />
-      </div>
+            }}
+            onSelectAudioItem={handleSelectItem}
+            onOpenDriveModal={() => setIsDriveModalOpen(true)}
+            onOpenDriveLinksModal={() => setIsDriveLinksModalOpen(true)}
+            onAddLevel={handleAddLevel}
+            onAddLesson={handleAddLesson}
+            onEditLesson={(les) => setLessonToEdit(les)}
+            onToggleHideLesson={handleToggleHideLesson}
+            onDeleteLesson={handleRequestDeleteLesson}
+            onEditAudio={(audio) => setAudioToEdit(audio)}
+            onToggleHideAudio={handleToggleHideAudio}
+            onDeleteAudio={handleRequestDeleteAudio}
+            canEditContent={permissions.canEditContent}
+            canDeleteContent={permissions.canDeleteContent}
+          />
+        </div>
+      )}
 
       {/* Main View Container */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-        {isLoading ? (
+        {!currentUser ? (
+          /* Authentication Gate: User must log in to access the virtual classroom & course content */
+          <AuthGate onLoginSuccess={handleLoginSuccess} />
+        ) : isLoading ? (
           <div className="py-24 text-center text-sm text-slate-500">
             Cargando niveles, lecciones y audios sincronizados...
           </div>
@@ -616,9 +745,9 @@ export default function App() {
           <>
             {activeView === 'library' && (
               <AudioSelectorLibrary
-                items={allItems}
-                levels={levels}
-                lessons={lessons}
+                items={visibleItems}
+                levels={visibleLevels}
+                lessons={visibleLessons}
                 selectedLevelId={selectedLevelId}
                 selectedLessonId={selectedLessonId}
                 selectedItem={selectedItem}
@@ -639,6 +768,8 @@ export default function App() {
                 onEditAudio={(audio) => setAudioToEdit(audio)}
                 onToggleHideAudio={handleToggleHideAudio}
                 onDeleteAudio={handleRequestDeleteAudio}
+                canEditContent={permissions.canEditContent}
+                canDeleteContent={permissions.canDeleteContent}
               />
             )}
 
@@ -654,6 +785,8 @@ export default function App() {
                 onEditItem={(item) => setAudioToEdit(item)}
                 onToggleHideItem={handleToggleHideAudio}
                 onDeleteItem={handleRequestDeleteAudio}
+                canEditContent={permissions.canEditContent}
+                canDeleteContent={permissions.canDeleteContent}
               />
             )}
 
@@ -755,6 +888,24 @@ export default function App() {
           defaultLessonId={selectedLessonId}
         />
       )}
+
+      {/* Login & User Switcher Modal */}
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+        onLoginSuccess={handleLoginSuccess}
+        currentUser={currentUser}
+      />
+
+      {/* User Management & Manual Registration Modal (Admin / Teacher) */}
+      <UserManagementModal
+        isOpen={isUserManagementModalOpen}
+        onClose={() => setIsUserManagementModalOpen(false)}
+        currentUser={currentUser}
+        levels={visibleLevels}
+        onSaveLevel={handleSaveLevel}
+        onCreateLevel={handleAddLevel}
+      />
 
       {/* Quiet Footer */}
       <footer className="mt-auto border-t border-slate-200 dark:border-slate-800 py-6 text-center text-xs text-slate-500 dark:text-slate-400">

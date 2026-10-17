@@ -33,6 +33,9 @@ export interface CourseLevel {
   name: string;        // e.g. "Inglés B1", "Inglés B2"
   description?: string;
   order: number;
+  teacherIds?: string[]; // IDs of teachers who impart this course (multi-teacher support)
+  createdById?: string;  // User ID who created the course
+  createdAt?: number;
 }
 
 export interface CourseLesson {
@@ -96,4 +99,29 @@ export interface AudioTranscriptPairingDraft {
   accent: Accent;
   tags: string[];
   segments: TranscriptSegment[];
+}
+
+export type UserRole = 'admin' | 'teacher' | 'student';
+
+export interface AppUser {
+  id: string;
+  username: string;
+  name: string;
+  email?: string;
+  role: UserRole;
+  password?: string;
+  createdAt: number;
+  lastLoginAt?: number;
+  isActive: boolean;
+  notes?: string;
+  enrolledCourseIds?: string[]; // IDs of courses/levels the student is enrolled in
+}
+
+export interface UserPermissions {
+  canManageUsers: boolean;
+  canEditContent: boolean;
+  canDeleteContent: boolean;
+  canUploadAudios: boolean;
+  canViewAudios: boolean;
+  canCreateCourses: boolean;
 }

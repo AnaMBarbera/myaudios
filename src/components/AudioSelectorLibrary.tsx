@@ -47,6 +47,8 @@ interface AudioSelectorLibraryProps {
   onEditAudio: (item: AudioTranscriptItem) => void;
   onToggleHideAudio: (itemId: string) => void;
   onDeleteAudio: (itemId: string) => void;
+  canEditContent?: boolean;
+  canDeleteContent?: boolean;
 }
 
 export const AudioSelectorLibrary: React.FC<AudioSelectorLibraryProps> = ({
@@ -73,6 +75,8 @@ export const AudioSelectorLibrary: React.FC<AudioSelectorLibraryProps> = ({
   onEditAudio,
   onToggleHideAudio,
   onDeleteAudio,
+  canEditContent = true,
+  canDeleteContent = true,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<'hierarchy' | 'all'>('hierarchy');
@@ -167,6 +171,22 @@ export const AudioSelectorLibrary: React.FC<AudioSelectorLibraryProps> = ({
     URL.revokeObjectURL(url);
   };
 
+  if (levels.length === 0) {
+    return (
+      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-12 text-center max-w-xl mx-auto space-y-4 my-8 shadow-sm">
+        <div className="w-14 h-14 rounded-2xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center mx-auto shadow-inner">
+          <BookOpen className="w-7 h-7" />
+        </div>
+        <h3 className="text-base font-bold text-slate-900 dark:text-white">
+          Aún no tienes cursos asignados
+        </h3>
+        <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+          Tu profesor o administrador debe darte de alta y matricularte en tu curso correspondiente para que puedas acceder al contenido y las grabaciones sincronizadas.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8">
       {/* Top Banner with Google Drive Folder Link & Course Hierarchy Info */}
@@ -185,23 +205,25 @@ export const AudioSelectorLibrary: React.FC<AudioSelectorLibraryProps> = ({
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2.5">
-            <button
-              onClick={onOpenDriveLinksModal}
-              className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl shadow-md shadow-indigo-600/30 transition-all cursor-pointer flex items-center gap-2"
-            >
-              <Link2 className="w-4 h-4" />
-              <span>+ Enlace Drive / .VTT</span>
-            </button>
+          {canEditContent && (
+            <div className="flex flex-wrap items-center gap-2.5">
+              <button
+                onClick={onOpenDriveLinksModal}
+                className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl shadow-md shadow-indigo-600/30 transition-all cursor-pointer flex items-center gap-2"
+              >
+                <Link2 className="w-4 h-4" />
+                <span>+ Enlace Drive / .VTT</span>
+              </button>
 
-            <button
-              onClick={() => onOpenPairing()}
-              className="px-4 py-2.5 bg-slate-800/90 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700/80 transition-all cursor-pointer flex items-center gap-2"
-            >
-              <Upload className="w-4 h-4 text-indigo-400" />
-              <span>Subir Archivo Local</span>
-            </button>
-          </div>
+              <button
+                onClick={() => onOpenPairing()}
+                className="px-4 py-2.5 bg-slate-800/90 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700/80 transition-all cursor-pointer flex items-center gap-2"
+              >
+                <Upload className="w-4 h-4 text-indigo-400" />
+                <span>Subir Archivo Local</span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -290,39 +312,41 @@ export const AudioSelectorLibrary: React.FC<AudioSelectorLibraryProps> = ({
               </button>
             ))}
 
-            {isAddingLevel ? (
-              <form onSubmit={handleCreateLevel} className="flex items-center gap-1 ml-1">
-                <input
-                  type="text"
-                  value={newLevelName}
-                  onChange={(e) => setNewLevelName(e.target.value)}
-                  placeholder="Ej: Inglés B2"
-                  className="px-2.5 py-1 text-xs bg-slate-50 dark:bg-slate-800 border border-indigo-400 rounded-md"
-                  autoFocus
-                />
+            {canEditContent && (
+              isAddingLevel ? (
+                <form onSubmit={handleCreateLevel} className="flex items-center gap-1 ml-1">
+                  <input
+                    type="text"
+                    value={newLevelName}
+                    onChange={(e) => setNewLevelName(e.target.value)}
+                    placeholder="Ej: Inglés B2"
+                    className="px-2.5 py-1 text-xs bg-slate-50 dark:bg-slate-800 border border-indigo-400 rounded-md"
+                    autoFocus
+                  />
+                  <button
+                    type="submit"
+                    className="px-2.5 py-1 text-xs bg-indigo-600 text-white font-medium rounded-md cursor-pointer"
+                  >
+                    Guardar
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setIsAddingLevel(false)}
+                    className="px-2 py-1 text-xs text-slate-400 hover:text-slate-600 cursor-pointer"
+                  >
+                    ✕
+                  </button>
+                </form>
+              ) : (
                 <button
-                  type="submit"
-                  className="px-2.5 py-1 text-xs bg-indigo-600 text-white font-medium rounded-md cursor-pointer"
+                  onClick={() => setIsAddingLevel(true)}
+                  className="px-2.5 py-1.5 rounded-lg border border-dashed border-slate-300 dark:border-slate-700 text-indigo-600 dark:text-indigo-400 hover:border-indigo-500 font-medium transition-colors cursor-pointer flex items-center gap-1"
+                  title="Añadir nuevo nivel de curso (ej: Inglés B2, Inglés C1...)"
                 >
-                  Guardar
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Añadir Nivel (ej: B2)</span>
                 </button>
-                <button
-                  type="button"
-                  onClick={() => setIsAddingLevel(false)}
-                  className="px-2 py-1 text-xs text-slate-400 hover:text-slate-600 cursor-pointer"
-                >
-                  ✕
-                </button>
-              </form>
-            ) : (
-              <button
-                onClick={() => setIsAddingLevel(true)}
-                className="px-2.5 py-1.5 rounded-lg border border-dashed border-slate-300 dark:border-slate-700 text-indigo-600 dark:text-indigo-400 hover:border-indigo-500 font-medium transition-colors cursor-pointer flex items-center gap-1"
-                title="Añadir nuevo nivel de curso (ej: Inglés B2, Inglés C1...)"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                <span>Añadir Nivel (ej: B2)</span>
-              </button>
+              )
             )}
           </div>
         </div>
@@ -349,17 +373,19 @@ export const AudioSelectorLibrary: React.FC<AudioSelectorLibraryProps> = ({
               )}
             </div>
 
-            <button
-              onClick={() => setIsAddingLesson(true)}
-              className="self-start sm:self-center px-3.5 py-2 text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/60 rounded-lg hover:bg-indigo-100 cursor-pointer flex items-center gap-1.5"
-            >
-              <Plus className="w-3.5 h-3.5" />
-              <span>Añadir Lección a {currentLevel?.name || 'este nivel'}</span>
-            </button>
+            {canEditContent && (
+              <button
+                onClick={() => setIsAddingLesson(true)}
+                className="self-start sm:self-center px-3.5 py-2 text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/60 rounded-lg hover:bg-indigo-100 cursor-pointer flex items-center gap-1.5"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>Añadir Lección a {currentLevel?.name || 'este nivel'}</span>
+              </button>
+            )}
           </div>
 
           {/* Inline Add Lesson Form */}
-          {isAddingLesson && (
+          {canEditContent && isAddingLesson && (
             <div className="bg-indigo-50/50 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-800 p-5 rounded-2xl space-y-3">
               <h3 className="text-xs font-bold text-indigo-900 dark:text-indigo-200 uppercase tracking-wider">
                 Nueva Lección para {currentLevel?.name || 'Inglés B1'}
@@ -409,12 +435,14 @@ export const AudioSelectorLibrary: React.FC<AudioSelectorLibraryProps> = ({
               <p className="text-xs text-slate-500 max-w-sm mx-auto">
                 Crea tu primera lección (ej: "Lección 1") y asígnale los audios y transcripciones correspondientes.
               </p>
-              <button
-                onClick={() => setIsAddingLesson(true)}
-                className="px-4 py-2 text-xs font-semibold bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 cursor-pointer"
-              >
-                + Crear Lección 1
-              </button>
+              {canEditContent && (
+                <button
+                  onClick={() => setIsAddingLesson(true)}
+                  className="px-4 py-2 text-xs font-semibold bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 cursor-pointer"
+                >
+                  + Crear Lección 1
+                </button>
+              )}
             </div>
           ) : (
             <div className="space-y-6">
@@ -464,53 +492,63 @@ export const AudioSelectorLibrary: React.FC<AudioSelectorLibraryProps> = ({
                         </span>
 
                         {/* Edit Lesson */}
-                        <button
-                          onClick={() => onEditLesson(lesson)}
-                          title="Editar título, tema o nivel de esta lección"
-                          className="p-1.5 text-slate-500 hover:text-indigo-600 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg cursor-pointer flex items-center gap-1 font-medium transition-colors"
-                        >
-                          <Pencil className="w-3.5 h-3.5" />
-                          <span className="hidden sm:inline">Editar</span>
-                        </button>
+                        {canEditContent && (
+                          <button
+                            onClick={() => onEditLesson(lesson)}
+                            title="Editar título, tema o nivel de esta lección"
+                            className="p-1.5 text-slate-500 hover:text-indigo-600 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg cursor-pointer flex items-center gap-1 font-medium transition-colors"
+                          >
+                            <Pencil className="w-3.5 h-3.5" />
+                            <span className="hidden sm:inline">Editar</span>
+                          </button>
+                        )}
 
                         {/* Hide / Unhide Lesson */}
-                        <button
-                          onClick={() => onToggleHideLesson(lesson.id)}
-                          title={lesson.isHidden ? 'Mostrar lección en los menús' : 'Ocultar lección'}
-                          className={`p-1.5 rounded-lg cursor-pointer flex items-center gap-1 font-medium transition-colors ${
-                            lesson.isHidden
-                              ? 'text-amber-700 dark:text-amber-300 bg-amber-100 dark:bg-amber-950/60 hover:bg-amber-200'
-                              : 'text-slate-500 hover:text-amber-600 hover:bg-slate-100 dark:hover:bg-slate-800'
-                          }`}
-                        >
-                          {lesson.isHidden ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-                          <span className="hidden sm:inline">{lesson.isHidden ? 'Desocultar' : 'Ocultar'}</span>
-                        </button>
+                        {canEditContent && (
+                          <button
+                            onClick={() => onToggleHideLesson(lesson.id)}
+                            title={lesson.isHidden ? 'Mostrar lección en los menús' : 'Ocultar lección'}
+                            className={`p-1.5 rounded-lg cursor-pointer flex items-center gap-1 font-medium transition-colors ${
+                              lesson.isHidden
+                                ? 'text-amber-700 dark:text-amber-300 bg-amber-100 dark:bg-amber-950/60 hover:bg-amber-200'
+                                : 'text-slate-500 hover:text-amber-600 hover:bg-slate-100 dark:hover:bg-slate-800'
+                            }`}
+                          >
+                            {lesson.isHidden ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                            <span className="hidden sm:inline">{lesson.isHidden ? 'Desocultar' : 'Ocultar'}</span>
+                          </button>
+                        )}
 
                         {/* Delete Lesson */}
-                        <button
-                          onClick={() => onDeleteLesson(lesson.id)}
-                          title="Eliminar lección"
-                          className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg cursor-pointer flex items-center gap-1 font-medium transition-colors"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                          <span className="hidden sm:inline">Eliminar</span>
-                        </button>
+                        {canDeleteContent && (
+                          <button
+                            onClick={() => onDeleteLesson(lesson.id)}
+                            title="Eliminar lección"
+                            className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg cursor-pointer flex items-center gap-1 font-medium transition-colors"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                            <span className="hidden sm:inline">Eliminar</span>
+                          </button>
+                        )}
 
-                        <div className="w-px h-4 bg-slate-200 dark:bg-slate-700 mx-1" />
+                        {canEditContent && (
+                          <>
+                            <div className="w-px h-4 bg-slate-200 dark:bg-slate-700 mx-1" />
 
-                        {/* Add audio to this lesson */}
-                        <button
-                          onClick={() => {
-                            onSelectLevel(currentLevel.id);
-                            onSelectLesson(lesson.id);
-                            onOpenDriveLinksModal();
-                          }}
-                          className="px-2.5 py-1 text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 rounded-md cursor-pointer flex items-center gap-1"
-                        >
-                          <Plus className="w-3 h-3" />
-                          <span>Añadir Audio</span>
-                        </button>
+                            {/* Add audio to this lesson */}
+                            <button
+                              onClick={() => {
+                                onSelectLevel(currentLevel.id);
+                                onSelectLesson(lesson.id);
+                                onOpenDriveLinksModal();
+                              }}
+                              className="px-2.5 py-1 text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 rounded-md cursor-pointer flex items-center gap-1"
+                            >
+                              <Plus className="w-3 h-3" />
+                              <span>Añadir Audio</span>
+                            </button>
+                          </>
+                        )}
                       </div>
                     </div>
 
@@ -520,17 +558,19 @@ export const AudioSelectorLibrary: React.FC<AudioSelectorLibraryProps> = ({
                         <p className="text-xs text-slate-500 mb-2">
                           Esta lección aún no tiene pistas de audio asignadas.
                         </p>
-                        <button
-                          onClick={() => {
-                            onSelectLevel(currentLevel.id);
-                            onSelectLesson(lesson.id);
-                            onOpenDriveLinksModal();
-                          }}
-                          className="px-3 py-1.5 text-xs font-semibold bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 cursor-pointer inline-flex items-center gap-1.5"
-                        >
-                          <Plus className="w-3.5 h-3.5" />
-                          <span>Conectar Audio con Enlace / .VTT</span>
-                        </button>
+                        {canEditContent && (
+                          <button
+                            onClick={() => {
+                              onSelectLevel(currentLevel.id);
+                              onSelectLesson(lesson.id);
+                              onOpenDriveLinksModal();
+                            }}
+                            className="px-3 py-1.5 text-xs font-semibold bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 cursor-pointer inline-flex items-center gap-1.5"
+                          >
+                            <Plus className="w-3.5 h-3.5" />
+                            <span>Conectar Audio con Enlace / .VTT</span>
+                          </button>
+                        )}
                       </div>
                     ) : (
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -596,35 +636,41 @@ export const AudioSelectorLibrary: React.FC<AudioSelectorLibraryProps> = ({
                                 </button>
 
                                 {/* Edit Audio */}
-                                <button
-                                  onClick={() => onEditAudio(item)}
-                                  title="Editar audio (título, nivel, lección, descripción)"
-                                  className="p-1.5 text-slate-400 hover:text-indigo-600 rounded hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer"
-                                >
-                                  <Pencil className="w-3.5 h-3.5" />
-                                </button>
+                                {canEditContent && (
+                                  <button
+                                    onClick={() => onEditAudio(item)}
+                                    title="Editar audio (título, nivel, lección, descripción)"
+                                    className="p-1.5 text-slate-400 hover:text-indigo-600 rounded hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer"
+                                  >
+                                    <Pencil className="w-3.5 h-3.5" />
+                                  </button>
+                                )}
 
                                 {/* Hide / Unhide Audio */}
-                                <button
-                                  onClick={() => onToggleHideAudio(item.id)}
-                                  title={item.isHidden ? 'Mostrar audio' : 'Ocultar audio'}
-                                  className={`p-1.5 rounded cursor-pointer ${
-                                    item.isHidden
-                                      ? 'text-amber-600 bg-amber-100 dark:bg-amber-950 hover:bg-amber-200'
-                                      : 'text-slate-400 hover:text-amber-600 hover:bg-slate-200 dark:hover:bg-slate-700'
-                                  }`}
-                                >
-                                  {item.isHidden ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-                                </button>
+                                {canEditContent && (
+                                  <button
+                                    onClick={() => onToggleHideAudio(item.id)}
+                                    title={item.isHidden ? 'Mostrar audio' : 'Ocultar audio'}
+                                    className={`p-1.5 rounded cursor-pointer ${
+                                      item.isHidden
+                                        ? 'text-amber-600 bg-amber-100 dark:bg-amber-950 hover:bg-amber-200'
+                                        : 'text-slate-400 hover:text-amber-600 hover:bg-slate-200 dark:hover:bg-slate-700'
+                                    }`}
+                                  >
+                                    {item.isHidden ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                                  </button>
+                                )}
 
                                 {/* Delete Audio */}
-                                <button
-                                  onClick={() => onDeleteAudio(item.id)}
-                                  title="Eliminar este audio"
-                                  className="p-1.5 text-slate-400 hover:text-rose-600 rounded hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer"
-                                >
-                                  <Trash2 className="w-3.5 h-3.5" />
-                                </button>
+                                {canDeleteContent && (
+                                  <button
+                                    onClick={() => onDeleteAudio(item.id)}
+                                    title="Eliminar este audio"
+                                    className="p-1.5 text-slate-400 hover:text-rose-600 rounded hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer"
+                                  >
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                  </button>
+                                )}
 
                                 <button
                                   onClick={() => handleDownloadTranscript(item, 'srt')}
@@ -690,29 +736,35 @@ export const AudioSelectorLibrary: React.FC<AudioSelectorLibraryProps> = ({
                   <span>Reproducir</span>
                 </button>
 
-                <button
-                  onClick={() => onEditAudio(item)}
-                  title="Editar audio"
-                  className="p-1.5 text-slate-400 hover:text-indigo-600 rounded hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
-                >
-                  <Pencil className="w-3.5 h-3.5" />
-                </button>
+                {canEditContent && (
+                  <button
+                    onClick={() => onEditAudio(item)}
+                    title="Editar audio"
+                    className="p-1.5 text-slate-400 hover:text-indigo-600 rounded hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                  >
+                    <Pencil className="w-3.5 h-3.5" />
+                  </button>
+                )}
 
-                <button
-                  onClick={() => onToggleHideAudio(item.id)}
-                  title={item.isHidden ? 'Mostrar audio' : 'Ocultar audio'}
-                  className="p-1.5 text-slate-400 hover:text-amber-600 rounded hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
-                >
-                  {item.isHidden ? <EyeOff className="w-3.5 h-3.5 text-amber-500" /> : <Eye className="w-3.5 h-3.5" />}
-                </button>
+                {canEditContent && (
+                  <button
+                    onClick={() => onToggleHideAudio(item.id)}
+                    title={item.isHidden ? 'Mostrar audio' : 'Ocultar audio'}
+                    className="p-1.5 text-slate-400 hover:text-amber-600 rounded hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                  >
+                    {item.isHidden ? <EyeOff className="w-3.5 h-3.5 text-amber-500" /> : <Eye className="w-3.5 h-3.5" />}
+                  </button>
+                )}
 
-                <button
-                  onClick={() => onDeleteAudio(item.id)}
-                  title="Eliminar audio"
-                  className="p-1.5 text-slate-400 hover:text-rose-600 rounded hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                </button>
+                {canDeleteContent && (
+                  <button
+                    onClick={() => onDeleteAudio(item.id)}
+                    title="Eliminar audio"
+                    className="p-1.5 text-slate-400 hover:text-rose-600 rounded hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                )}
               </div>
             </div>
           ))}

@@ -38,6 +38,8 @@ interface CourseHierarchyBarProps {
   onEditAudio: (item: AudioTranscriptItem) => void;
   onToggleHideAudio: (itemId: string) => void;
   onDeleteAudio: (itemId: string) => void;
+  canEditContent?: boolean;
+  canDeleteContent?: boolean;
 }
 
 export const CourseHierarchyBar: React.FC<CourseHierarchyBarProps> = ({
@@ -62,6 +64,8 @@ export const CourseHierarchyBar: React.FC<CourseHierarchyBarProps> = ({
   onEditAudio,
   onToggleHideAudio,
   onDeleteAudio,
+  canEditContent = true,
+  canDeleteContent = true,
 }) => {
   const [levelDropdownOpen, setLevelDropdownOpen] = useState(false);
   const [lessonDropdownOpen, setLessonDropdownOpen] = useState(false);
@@ -161,43 +165,45 @@ export const CourseHierarchyBar: React.FC<CourseHierarchyBarProps> = ({
                   ))}
                 </div>
 
-                <div className="pt-1.5 border-t border-slate-100 dark:border-slate-800">
-                  {isAddingLevel ? (
-                    <form onSubmit={handleCreateLevelSubmit} className="p-1 space-y-1.5">
-                      <input
-                        type="text"
-                        value={newLevelName}
-                        onChange={(e) => setNewLevelName(e.target.value)}
-                        placeholder="Nombre (ej: Inglés B2)"
-                        className="w-full px-2 py-1 text-xs border border-slate-200 dark:border-slate-700 rounded-md bg-slate-50 dark:bg-slate-800"
-                        autoFocus
-                      />
-                      <div className="flex gap-1 justify-end">
-                        <button
-                          type="button"
-                          onClick={() => setIsAddingLevel(false)}
-                          className="px-2 py-0.5 text-[11px] text-slate-400 hover:text-slate-600"
-                        >
-                          Cancelar
-                        </button>
-                        <button
-                          type="submit"
-                          className="px-2 py-0.5 text-[11px] bg-indigo-600 text-white rounded font-medium"
-                        >
-                          Añadir Nivel
-                        </button>
-                      </div>
-                    </form>
-                  ) : (
-                    <button
-                      onClick={() => setIsAddingLevel(true)}
-                      className="w-full flex items-center gap-1.5 px-2.5 py-1.5 text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 rounded-lg cursor-pointer"
-                    >
-                      <Plus className="w-3 h-3" />
-                      <span>+ Añadir Nuevo Nivel (ej: Inglés B2)</span>
-                    </button>
-                  )}
-                </div>
+                {canEditContent && (
+                  <div className="pt-1.5 border-t border-slate-100 dark:border-slate-800">
+                    {isAddingLevel ? (
+                      <form onSubmit={handleCreateLevelSubmit} className="p-1 space-y-1.5">
+                        <input
+                          type="text"
+                          value={newLevelName}
+                          onChange={(e) => setNewLevelName(e.target.value)}
+                          placeholder="Nombre (ej: Inglés B2)"
+                          className="w-full px-2 py-1 text-xs border border-slate-200 dark:border-slate-700 rounded-md bg-slate-50 dark:bg-slate-800"
+                          autoFocus
+                        />
+                        <div className="flex gap-1 justify-end">
+                          <button
+                            type="button"
+                            onClick={() => setIsAddingLevel(false)}
+                            className="px-2 py-0.5 text-[11px] text-slate-400 hover:text-slate-600"
+                          >
+                            Cancelar
+                          </button>
+                          <button
+                            type="submit"
+                            className="px-2 py-0.5 text-[11px] bg-indigo-600 text-white rounded font-medium"
+                          >
+                            Añadir Nivel
+                          </button>
+                        </div>
+                      </form>
+                    ) : (
+                      <button
+                        onClick={() => setIsAddingLevel(true)}
+                        className="w-full flex items-center gap-1.5 px-2.5 py-1.5 text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 rounded-lg cursor-pointer"
+                      >
+                        <Plus className="w-3 h-3" />
+                        <span>+ Añadir Nuevo Nivel (ej: Inglés B2)</span>
+                      </button>
+                    )}
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -283,89 +289,99 @@ export const CourseHierarchyBar: React.FC<CourseHierarchyBarProps> = ({
                           </button>
 
                           {/* Action icons: Edit, Hide, Delete */}
-                          <div className="flex items-center gap-0.5 shrink-0">
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                onEditLesson(les);
-                                setLessonDropdownOpen(false);
-                              }}
-                              title="Editar lección"
-                              className="p-1 text-slate-400 hover:text-indigo-600 rounded hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer"
-                            >
-                              <Pencil className="w-3 h-3" />
-                            </button>
+                          {(canEditContent || canDeleteContent) && (
+                            <div className="flex items-center gap-0.5 shrink-0">
+                              {canEditContent && (
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    onEditLesson(les);
+                                    setLessonDropdownOpen(false);
+                                  }}
+                                  title="Editar lección"
+                                  className="p-1 text-slate-400 hover:text-indigo-600 rounded hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer"
+                                >
+                                  <Pencil className="w-3 h-3" />
+                                </button>
+                              )}
 
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                onToggleHideLesson(les.id);
-                              }}
-                              title={les.isHidden ? 'Mostrar lección' : 'Ocultar lección'}
-                              className={`p-1 rounded cursor-pointer ${
-                                les.isHidden 
-                                  ? 'text-amber-600 hover:bg-amber-100 dark:hover:bg-amber-950' 
-                                  : 'text-slate-400 hover:text-amber-600 hover:bg-slate-200 dark:hover:bg-slate-700'
-                              }`}
-                            >
-                              {les.isHidden ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
-                            </button>
+                              {canEditContent && (
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    onToggleHideLesson(les.id);
+                                  }}
+                                  title={les.isHidden ? 'Mostrar lección' : 'Ocultar lección'}
+                                  className={`p-1 rounded cursor-pointer ${
+                                    les.isHidden 
+                                      ? 'text-amber-600 hover:bg-amber-100 dark:hover:bg-amber-950' 
+                                      : 'text-slate-400 hover:text-amber-600 hover:bg-slate-200 dark:hover:bg-slate-700'
+                                  }`}
+                                >
+                                  {les.isHidden ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
+                                </button>
+                              )}
 
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                onDeleteLesson(les.id);
-                                setLessonDropdownOpen(false);
-                              }}
-                              title="Eliminar lección"
-                              className="p-1 text-slate-400 hover:text-rose-600 rounded hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer"
-                            >
-                              <Trash2 className="w-3 h-3" />
-                            </button>
-                          </div>
+                              {canDeleteContent && (
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    onDeleteLesson(les.id);
+                                    setLessonDropdownOpen(false);
+                                  }}
+                                  title="Eliminar lección"
+                                  className="p-1 text-slate-400 hover:text-rose-600 rounded hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer"
+                                >
+                                  <Trash2 className="w-3 h-3" />
+                                </button>
+                              )}
+                            </div>
+                          )}
                         </div>
                       );
                     })
                   )}
                 </div>
 
-                <div className="pt-1.5 border-t border-slate-100 dark:border-slate-800">
-                  {isAddingLesson ? (
-                    <form onSubmit={handleCreateLessonSubmit} className="p-1 space-y-1.5">
-                      <input
-                        type="text"
-                        value={newLessonTitle}
-                        onChange={(e) => setNewLessonTitle(e.target.value)}
-                        placeholder="Título (ej: Lección 2)"
-                        className="w-full px-2 py-1 text-xs border border-slate-200 dark:border-slate-700 rounded-md bg-slate-50 dark:bg-slate-800"
-                        autoFocus
-                      />
-                      <div className="flex gap-1 justify-end">
-                        <button
-                          type="button"
-                          onClick={() => setIsAddingLesson(false)}
-                          className="px-2 py-0.5 text-[11px] text-slate-400 hover:text-slate-600"
-                        >
-                          Cancelar
-                        </button>
-                        <button
-                          type="submit"
-                          className="px-2 py-0.5 text-[11px] bg-indigo-600 text-white rounded font-medium"
-                        >
-                          Crear Lección
-                        </button>
-                      </div>
-                    </form>
-                  ) : (
-                    <button
-                      onClick={() => setIsAddingLesson(true)}
-                      className="w-full flex items-center gap-1.5 px-2.5 py-1.5 text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 rounded-lg cursor-pointer"
-                    >
-                      <Plus className="w-3 h-3" />
-                      <span>+ Añadir Lección a {currentLevel?.name || 'este nivel'}</span>
-                    </button>
-                  )}
-                </div>
+                {canEditContent && (
+                  <div className="pt-1.5 border-t border-slate-100 dark:border-slate-800">
+                    {isAddingLesson ? (
+                      <form onSubmit={handleCreateLessonSubmit} className="p-1 space-y-1.5">
+                        <input
+                          type="text"
+                          value={newLessonTitle}
+                          onChange={(e) => setNewLessonTitle(e.target.value)}
+                          placeholder="Título (ej: Lección 2)"
+                          className="w-full px-2 py-1 text-xs border border-slate-200 dark:border-slate-700 rounded-md bg-slate-50 dark:bg-slate-800"
+                          autoFocus
+                        />
+                        <div className="flex gap-1 justify-end">
+                          <button
+                            type="button"
+                            onClick={() => setIsAddingLesson(false)}
+                            className="px-2 py-0.5 text-[11px] text-slate-400 hover:text-slate-600"
+                          >
+                            Cancelar
+                          </button>
+                          <button
+                            type="submit"
+                            className="px-2 py-0.5 text-[11px] bg-indigo-600 text-white rounded font-medium"
+                          >
+                            Crear Lección
+                          </button>
+                        </div>
+                      </form>
+                    ) : (
+                      <button
+                        onClick={() => setIsAddingLesson(true)}
+                        className="w-full flex items-center gap-1.5 px-2.5 py-1.5 text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 rounded-lg cursor-pointer"
+                      >
+                        <Plus className="w-3 h-3" />
+                        <span>+ Añadir Lección a {currentLevel?.name || 'este nivel'}</span>
+                      </button>
+                    )}
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -449,46 +465,54 @@ export const CourseHierarchyBar: React.FC<CourseHierarchyBarProps> = ({
                           </button>
 
                           {/* Audio Actions: Edit, Hide, Delete */}
-                          <div className="flex items-center gap-0.5 shrink-0">
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                onEditAudio(item);
-                                setAudioDropdownOpen(false);
-                              }}
-                              title="Editar audio"
-                              className="p-1 text-slate-400 hover:text-indigo-600 rounded hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer"
-                            >
-                              <Pencil className="w-3 h-3" />
-                            </button>
+                          {(canEditContent || canDeleteContent) && (
+                            <div className="flex items-center gap-0.5 shrink-0">
+                              {canEditContent && (
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    onEditAudio(item);
+                                    setAudioDropdownOpen(false);
+                                  }}
+                                  title="Editar audio"
+                                  className="p-1 text-slate-400 hover:text-indigo-600 rounded hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer"
+                                >
+                                  <Pencil className="w-3 h-3" />
+                                </button>
+                              )}
 
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                onToggleHideAudio(item.id);
-                              }}
-                              title={item.isHidden ? 'Mostrar audio' : 'Ocultar audio'}
-                              className={`p-1 rounded cursor-pointer ${
-                                item.isHidden 
-                                  ? 'text-amber-600 hover:bg-amber-100 dark:hover:bg-amber-950' 
-                                  : 'text-slate-400 hover:text-amber-600 hover:bg-slate-200 dark:hover:bg-slate-700'
-                              }`}
-                            >
-                              {item.isHidden ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
-                            </button>
+                              {canEditContent && (
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    onToggleHideAudio(item.id);
+                                  }}
+                                  title={item.isHidden ? 'Mostrar audio' : 'Ocultar audio'}
+                                  className={`p-1 rounded cursor-pointer ${
+                                    item.isHidden 
+                                      ? 'text-amber-600 hover:bg-amber-100 dark:hover:bg-amber-950' 
+                                      : 'text-slate-400 hover:text-amber-600 hover:bg-slate-200 dark:hover:bg-slate-700'
+                                  }`}
+                                >
+                                  {item.isHidden ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
+                                </button>
+                              )}
 
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                onDeleteAudio(item.id);
-                                setAudioDropdownOpen(false);
-                              }}
-                              title="Eliminar audio"
-                              className="p-1 text-slate-400 hover:text-rose-600 rounded hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer"
-                            >
-                              <Trash2 className="w-3 h-3" />
-                            </button>
-                          </div>
+                              {canDeleteContent && (
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    onDeleteAudio(item.id);
+                                    setAudioDropdownOpen(false);
+                                  }}
+                                  title="Eliminar audio"
+                                  className="p-1 text-slate-400 hover:text-rose-600 rounded hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer"
+                                >
+                                  <Trash2 className="w-3 h-3" />
+                                </button>
+                              )}
+                            </div>
+                          )}
                         </div>
                       );
                     })
@@ -515,23 +539,27 @@ export const CourseHierarchyBar: React.FC<CourseHierarchyBarProps> = ({
             <span className="hidden sm:inline">{showHidden ? 'Viendo Ocultos' : 'Ver Ocultos'}</span>
           </button>
 
-          <button
-            onClick={onOpenDriveLinksModal}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold transition-colors cursor-pointer text-xs shadow-xs"
-            title="Pegar enlace directo de audio y transcripción de Google Drive"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            <span>+ Enlace Drive / .VTT</span>
-          </button>
+          {canEditContent && (
+            <>
+              <button
+                onClick={onOpenDriveLinksModal}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold transition-colors cursor-pointer text-xs shadow-xs"
+                title="Pegar enlace directo de audio y transcripción de Google Drive"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>+ Enlace Drive / .VTT</span>
+              </button>
 
-          <button
-            onClick={onOpenDriveModal}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-semibold transition-colors cursor-pointer text-xs border border-slate-200 dark:border-slate-700"
-            title="Ver carpeta compartida y sincronizar archivos de Google Drive"
-          >
-            <FolderSync className="w-3.5 h-3.5 text-indigo-500" />
-            <span className="hidden sm:inline">Carpeta Drive</span>
-          </button>
+              <button
+                onClick={onOpenDriveModal}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-semibold transition-colors cursor-pointer text-xs border border-slate-200 dark:border-slate-700"
+                title="Ver carpeta compartida y sincronizar archivos de Google Drive"
+              >
+                <FolderSync className="w-3.5 h-3.5 text-indigo-500" />
+                <span className="hidden sm:inline">Carpeta Drive</span>
+              </button>
+            </>
+          )}
         </div>
 
       </div>

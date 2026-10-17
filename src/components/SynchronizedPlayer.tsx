@@ -43,6 +43,8 @@ interface SynchronizedPlayerProps {
   onEditItem?: (item: AudioTranscriptItem) => void;
   onToggleHideItem?: (itemId: string) => void;
   onDeleteItem?: (itemId: string) => void;
+  canEditContent?: boolean;
+  canDeleteContent?: boolean;
 }
 
 export const SynchronizedPlayer: React.FC<SynchronizedPlayerProps> = ({
@@ -56,6 +58,8 @@ export const SynchronizedPlayer: React.FC<SynchronizedPlayerProps> = ({
   onEditItem,
   onToggleHideItem,
   onDeleteItem,
+  canEditContent = true,
+  canDeleteContent = true,
 }) => {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [currentTime, setCurrentTime] = useState<number>(0);
@@ -340,53 +344,57 @@ export const SynchronizedPlayer: React.FC<SynchronizedPlayerProps> = ({
           </h1>
 
           {/* Quick Audio Actions: Edit, VTT, Hide, Delete */}
-          <div className="flex flex-wrap items-center gap-2 mt-2">
-            <button
-              onClick={() => setIsVttModalOpen(true)}
-              className="px-2.5 py-1 text-xs rounded-lg border border-indigo-200 dark:border-indigo-800 bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 flex items-center gap-1 cursor-pointer font-semibold transition-colors shadow-2xs"
-              title="Cargar o actualizar el archivo .VTT para este audio"
-            >
-              <FileText className="w-3.5 h-3.5" />
-              <span>{hasRealSegments ? 'Actualizar .VTT' : '+ Cargar / Pegar .VTT'}</span>
-            </button>
+          {(canEditContent || canDeleteContent) && (
+            <div className="flex flex-wrap items-center gap-2 mt-2">
+              {canEditContent && (
+                <button
+                  onClick={() => setIsVttModalOpen(true)}
+                  className="px-2.5 py-1 text-xs rounded-lg border border-indigo-200 dark:border-indigo-800 bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 flex items-center gap-1 cursor-pointer font-semibold transition-colors shadow-2xs"
+                  title="Cargar o actualizar el archivo .VTT para este audio"
+                >
+                  <FileText className="w-3.5 h-3.5" />
+                  <span>{hasRealSegments ? 'Actualizar .VTT' : '+ Cargar / Pegar .VTT'}</span>
+                </button>
+              )}
 
-            {onEditItem && (
-              <button
-                onClick={() => onEditItem(item)}
-                className="px-2.5 py-1 text-xs rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center gap-1 cursor-pointer font-medium transition-colors"
-                title="Editar este audio"
-              >
-                <Pencil className="w-3 h-3" />
-                <span>Editar Audio</span>
-              </button>
-            )}
+              {canEditContent && onEditItem && (
+                <button
+                  onClick={() => onEditItem(item)}
+                  className="px-2.5 py-1 text-xs rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center gap-1 cursor-pointer font-medium transition-colors"
+                  title="Editar este audio"
+                >
+                  <Pencil className="w-3 h-3" />
+                  <span>Editar Audio</span>
+                </button>
+              )}
 
-            {onToggleHideItem && (
-              <button
-                onClick={() => onToggleHideItem(item.id)}
-                className={`px-2.5 py-1 text-xs rounded-lg border flex items-center gap-1 cursor-pointer font-medium transition-colors ${
-                  item.isHidden 
-                    ? 'bg-amber-100 border-amber-300 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300' 
-                    : 'border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300'
-                }`}
-                title={item.isHidden ? 'Mostrar audio en los menús' : 'Ocultar audio'}
-              >
-                {item.isHidden ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
-                <span>{item.isHidden ? 'Desocultar' : 'Ocultar Audio'}</span>
-              </button>
-            )}
+              {canEditContent && onToggleHideItem && (
+                <button
+                  onClick={() => onToggleHideItem(item.id)}
+                  className={`px-2.5 py-1 text-xs rounded-lg border flex items-center gap-1 cursor-pointer font-medium transition-colors ${
+                    item.isHidden 
+                      ? 'bg-amber-100 border-amber-300 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300' 
+                      : 'border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300'
+                  }`}
+                  title={item.isHidden ? 'Mostrar audio en los menús' : 'Ocultar audio'}
+                >
+                  {item.isHidden ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
+                  <span>{item.isHidden ? 'Desocultar' : 'Ocultar Audio'}</span>
+                </button>
+              )}
 
-            {onDeleteItem && (
-              <button
-                onClick={() => onDeleteItem(item.id)}
-                className="px-2.5 py-1 text-xs rounded-lg border border-rose-200 dark:border-rose-800/60 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-rose-600 flex items-center gap-1 cursor-pointer font-medium transition-colors"
-                title="Eliminar este audio"
-              >
-                <Trash2 className="w-3 h-3" />
-                <span>Eliminar</span>
-              </button>
-            )}
-          </div>
+              {canDeleteContent && onDeleteItem && (
+                <button
+                  onClick={() => onDeleteItem(item.id)}
+                  className="px-2.5 py-1 text-xs rounded-lg border border-rose-200 dark:border-rose-800/60 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-rose-600 flex items-center gap-1 cursor-pointer font-medium transition-colors"
+                  title="Eliminar este audio"
+                >
+                  <Trash2 className="w-3 h-3" />
+                  <span>Eliminar</span>
+                </button>
+              )}
+            </div>
+          )}
         </div>
 
         {/* View Mode Tabs (Single-line interactive buttons) */}

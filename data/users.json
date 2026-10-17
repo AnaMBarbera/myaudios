@@ -1,0 +1,51 @@
+[
+  {
+    "id": "user_admin_1",
+    "username": "admin",
+    "name": "Ana Barberá (Admin)",
+    "email": "anabarbera90@gmail.com",
+    "role": "admin",
+    "password": "admin",
+    "createdAt": 1718000000000,
+    "isActive": true,
+    "notes": "Super Administrador del sistema con acceso completo",
+    "lastLoginAt": 1792262207264
+  },
+  {
+    "id": "user_teacher_1",
+    "username": "profesor",
+    "name": "Carlos Méndez (Profesor)",
+    "email": "carlos.mendez@lingosync.com",
+    "role": "teacher",
+    "password": "profe",
+    "createdAt": 1718000000000,
+    "isActive": true,
+    "notes": "Profesor y editor: gestión de lecciones, audios y alumnos",
+    "lastLoginAt": 1792262128816
+  },
+  {
+    "id": "user_student_1",
+    "username": "alumno",
+    "name": "Sofía Navarro (Alumna)",
+    "email": "sofia.navarro@student.com",
+    "role": "student",
+    "password": "alumno",
+    "createdAt": 1718000000000,
+    "isActive": true,
+    "notes": "Alumna lectora matriculada en Inglés B1",
+    "enrolledCourseIds": ["ingles_b1"],
+    "lastLoginAt": 1792262028899
+  },
+  {
+    "id": "user_1792261216822_nuevo_alumno",
+    "username": "nuevo_alumno",
+    "name": "Laura García",
+    "email": "laura@ejemplo.com",
+    "role": "student",
+    "password": "pass",
+    "createdAt": 1792261216822,
+    "isActive": true,
+    "notes": "Estudiante matriculada en Inglés B1 e Inglés B2",
+    "enrolledCourseIds": ["ingles_b1", "ingles_b2"]
+  }
+]

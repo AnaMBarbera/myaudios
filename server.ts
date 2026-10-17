@@ -19,6 +19,7 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 const DATA_DIR = path.resolve(__dirname, 'data');
 const LIBRARY_FILE = path.resolve(DATA_DIR, 'library.json');
 const AUDIOS_DIR = path.resolve(DATA_DIR, 'audios');
+const USERS_FILE = path.resolve(DATA_DIR, 'users.json');
 
 // Ensure data directories exist
 if (!fs.existsSync(DATA_DIR)) {
@@ -26,6 +27,61 @@ if (!fs.existsSync(DATA_DIR)) {
 }
 if (!fs.existsSync(AUDIOS_DIR)) {
   fs.mkdirSync(AUDIOS_DIR, { recursive: true });
+}
+
+// Default initial users representing the 3 system roles
+const DEFAULT_USERS = [
+  {
+    id: 'user_admin_1',
+    username: 'admin',
+    name: 'Ana Barberá (Admin)',
+    email: 'anabarbera90@gmail.com',
+    role: 'admin',
+    password: 'admin',
+    createdAt: 1718000000000,
+    isActive: true,
+    notes: 'Super Administrador del sistema con acceso completo',
+  },
+  {
+    id: 'user_teacher_1',
+    username: 'profesor',
+    name: 'Carlos Méndez (Profesor)',
+    email: 'carlos.mendez@lingosync.com',
+    role: 'teacher',
+    password: 'profe',
+    createdAt: 1718000000000,
+    isActive: true,
+    notes: 'Profesor y editor: gestión de lecciones, audios y alumnos',
+  },
+  {
+    id: 'user_student_1',
+    username: 'alumno',
+    name: 'Sofía Navarro (Alumna)',
+    email: 'sofia.navarro@student.com',
+    role: 'student',
+    password: 'alumno',
+    createdAt: 1718000000000,
+    isActive: true,
+    notes: 'Alumna lectora nivel B1',
+    enrolledCourseIds: ['ingles_b1'],
+  },
+];
+
+async function readUsers() {
+  if (fs.existsSync(USERS_FILE)) {
+    try {
+      const data = await fs.promises.readFile(USERS_FILE, 'utf-8');
+      return JSON.parse(data);
+    } catch (e) {
+      console.error('Error reading users file:', e);
+    }
+  }
+  await fs.promises.writeFile(USERS_FILE, JSON.stringify(DEFAULT_USERS, null, 2), 'utf-8');
+  return DEFAULT_USERS;
+}
+
+async function writeUsers(users: any[]) {
+  await fs.promises.writeFile(USERS_FILE, JSON.stringify(users, null, 2), 'utf-8');
 }
 
 /**
@@ -58,6 +114,164 @@ app.post('/api/library', async (req: Request, res: Response) => {
   } catch (err: any) {
     console.error('Error saving server library:', err);
     return res.status(500).json({ error: 'Failed to save server library', details: err?.message });
+  }
+});
+
+/**
+ * Auth API: Login
+ */
+app.post('/api/auth/login', async (req: Request, res: Response) => {
+  try {
+    const { username, password } = req.body;
+    if (!username || !password) {
+      return res.status(400).json({ error: 'Usuario y contraseña requeridos' });
+    }
+
+    const users = await readUsers();
+    const user = users.find((u: any) => 
+      u.username.toLowerCase() === username.trim().toLowerCase() && 
+      (u.password === password || u.password === password.trim())
+    );
+
+    if (!user) {
+      return res.status(401).json({ error: 'Usuario o contraseña incorrectos' });
+    }
+
+    if (!user.isActive) {
+      return res.status(403).json({ error: 'Esta cuenta de usuario está desactivada por el administrador' });
+    }
+
+    user.lastLoginAt = Date.now();
+    await writeUsers(users);
+
+    const { password: _, ...safeUser } = user;
+    return res.json({ success: true, user: safeUser });
+  } catch (err: any) {
+    console.error('Login error:', err);
+    return res.status(500).json({ error: 'Error en el inicio de sesión', details: err?.message });
+  }
+});
+
+/**
+ * Users API: Get all users
+ */
+app.get('/api/users', async (_req: Request, res: Response) => {
+  try {
+    const users = await readUsers();
+    // Return users without exposing raw password in standard listing
+    const safeUsers = users.map(({ password: _, ...rest }: any) => rest);
+    return res.json(safeUsers);
+  } catch (err: any) {
+    console.error('Error fetching users:', err);
+    return res.status(500).json({ error: 'Error al obtener usuarios', details: err?.message });
+  }
+});
+
+/**
+ * Users API: Create a new user (admin / teacher managed)
+ */
+app.post('/api/users', async (req: Request, res: Response) => {
+  try {
+    const { username, name, email, role, password, notes, enrolledCourseIds } = req.body;
+    if (!username || !name || !role) {
+      return res.status(400).json({ error: 'Faltan campos obligatorios (usuario, nombre o rol)' });
+    }
+
+    const cleanUsername = username.trim().toLowerCase();
+    const users = await readUsers();
+
+    if (users.some((u: any) => u.username.toLowerCase() === cleanUsername)) {
+      return res.status(409).json({ error: `El nombre de usuario "${username}" ya existe` });
+    }
+
+    const newUser = {
+      id: `user_${Date.now()}_${cleanUsername}`,
+      username: cleanUsername,
+      name: name.trim(),
+      email: email ? email.trim() : '',
+      role: ['admin', 'teacher', 'student'].includes(role) ? role : 'student',
+      password: password ? password.trim() : '123456',
+      createdAt: Date.now(),
+      isActive: true,
+      notes: notes ? notes.trim() : '',
+      enrolledCourseIds: Array.isArray(enrolledCourseIds) ? enrolledCourseIds : [],
+    };
+
+    users.push(newUser);
+    await writeUsers(users);
+
+    const { password: _, ...safeUser } = newUser;
+    return res.status(201).json({ success: true, user: safeUser });
+  } catch (err: any) {
+    console.error('Error creating user:', err);
+    return res.status(500).json({ error: 'Error al registrar el usuario', details: err?.message });
+  }
+});
+
+/**
+ * Users API: Update user
+ */
+app.put('/api/users/:id', async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { name, email, role, password, isActive, notes, enrolledCourseIds } = req.body;
+
+    const users = await readUsers();
+    const index = users.findIndex((u: any) => u.id === id);
+
+    if (index < 0) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+
+    const current = users[index];
+    if (name) current.name = name.trim();
+    if (email !== undefined) current.email = email.trim();
+    if (role && ['admin', 'teacher', 'student'].includes(role)) current.role = role;
+    if (password) current.password = password.trim();
+    if (isActive !== undefined) current.isActive = Boolean(isActive);
+    if (notes !== undefined) current.notes = notes.trim();
+    if (enrolledCourseIds !== undefined && Array.isArray(enrolledCourseIds)) {
+      current.enrolledCourseIds = enrolledCourseIds;
+    }
+
+    await writeUsers(users);
+
+    const { password: _, ...safeUser } = current;
+    return res.json({ success: true, user: safeUser });
+  } catch (err: any) {
+    console.error('Error updating user:', err);
+    return res.status(500).json({ error: 'Error al actualizar usuario', details: err?.message });
+  }
+});
+
+/**
+ * Users API: Delete user (admin only)
+ */
+app.delete('/api/users/:id', async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const users = await readUsers();
+    const userToDelete = users.find((u: any) => u.id === id);
+
+    if (!userToDelete) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+
+    // Protect last admin from accidental deletion
+    if (userToDelete.role === 'admin') {
+      const adminCount = users.filter((u: any) => u.role === 'admin').length;
+      if (adminCount <= 1) {
+        return res.status(400).json({ error: 'No se puede eliminar el único administrador del sistema' });
+      }
+    }
+
+    const filtered = users.filter((u: any) => u.id !== id);
+    await writeUsers(filtered);
+
+    return res.json({ success: true, message: 'Usuario eliminado correctamente' });
+  } catch (err: any) {
+    console.error('Error deleting user:', err);
+    return res.status(500).json({ error: 'Error al eliminar usuario', details: err?.message });
   }
 });
 
