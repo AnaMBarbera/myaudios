@@ -67,16 +67,16 @@ export const AuthGate: React.FC<AuthGateProps> = ({ onLoginSuccess }) => {
           <Headphones className="w-8 h-8" />
         </div>
         <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-          Aula Virtual <span className="text-indigo-600 dark:text-indigo-400">LingoSync</span>
+          Zona <span className="text-indigo-600 dark:text-indigo-400">Sonora</span>
         </h1>
         <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 max-w-xl mx-auto leading-relaxed">
           Plataforma de práctica auditiva y transcripción interactiva sincronizada. Inicia sesión para acceder únicamente a los cursos asignados por tu profesor.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
-        {/* Left Column: Login Form */}
-        <div className="md:col-span-6 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl p-6 sm:p-8 space-y-6">
+      <div className="flex justify-center">
+        {/* Login Form */}
+        <div className="w-full max-w-lg bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl p-6 sm:p-8 space-y-6">
           <div className="flex items-center gap-3 pb-4 border-b border-slate-100 dark:border-slate-800">
             <div className="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
               <Lock className="w-4 h-4" />
@@ -157,7 +157,7 @@ export const AuthGate: React.FC<AuthGateProps> = ({ onLoginSuccess }) => {
         </div>
 
         {/* Right Column: Fast Demo Access (Roles & Courses demonstration) */}
-        <div className="md:col-span-6 space-y-4">
+        {/*<div className="md:col-span-6 space-y-4">
           <div className="p-4 rounded-2xl bg-indigo-50/60 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/60">
             <h3 className="text-xs font-bold uppercase tracking-wider text-indigo-900 dark:text-indigo-200 flex items-center gap-1.5 mb-1">
               <Check className="w-4 h-4 text-indigo-600" />
@@ -168,9 +168,9 @@ export const AuthGate: React.FC<AuthGateProps> = ({ onLoginSuccess }) => {
             </p>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-3">*/}
             {/* Admin Demo */}
-            <div
+          {/*  <div
               onClick={() => handleQuickLogin('admin', 'admin')}
               className="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-indigo-400 hover:shadow-md transition-all cursor-pointer group"
             >
@@ -194,9 +194,9 @@ export const AuthGate: React.FC<AuthGateProps> = ({ onLoginSuccess }) => {
                 Acceso completo a todos los cursos, usuarios, subida de audios y gestión de profesores.
               </p>
             </div>
-
+          */}
             {/* Teacher Demo */}
-            <div
+          {/*  <div
               onClick={() => handleQuickLogin('profesor', 'profe')}
               className="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-sky-400 hover:shadow-md transition-all cursor-pointer group"
             >
@@ -220,9 +220,9 @@ export const AuthGate: React.FC<AuthGateProps> = ({ onLoginSuccess }) => {
                 Acceso exclusivo a sus cursos asignados (<strong className="text-sky-600 dark:text-sky-400">Inglés B1 e Inglés B2</strong>) y a sus alumnos matriculados para mayor claridad de trabajo.
               </p>
             </div>
-
+          */}
             {/* Student 1 Demo - Enrolled only in B1 */}
-            <div
+          {/*  <div
               onClick={() => handleQuickLogin('alumno', 'alumno')}
               className="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-emerald-400 hover:shadow-md transition-all cursor-pointer group"
             >
@@ -246,9 +246,9 @@ export const AuthGate: React.FC<AuthGateProps> = ({ onLoginSuccess }) => {
                 Solo ve y reproduce el contenido de <strong className="text-emerald-600 dark:text-emerald-400">Inglés B1</strong>. Los demás cursos permanecen ocultos.
               </p>
             </div>
-
+          */}
             {/* Student 2 Demo - Multi-course enrollment (B1 + B2) */}
-            <div
+          {/*  <div
               onClick={() => handleQuickLogin('nuevo_alumno', 'pass')}
               className="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-emerald-400 hover:shadow-md transition-all cursor-pointer group"
             >
@@ -274,6 +274,7 @@ export const AuthGate: React.FC<AuthGateProps> = ({ onLoginSuccess }) => {
             </div>
           </div>
         </div>
+       */} 
       </div>
     </div>
   );

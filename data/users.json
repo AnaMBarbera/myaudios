@@ -9,7 +9,7 @@
     "createdAt": 1718000000000,
     "isActive": true,
     "notes": "Super Administrador del sistema con acceso completo",
-    "lastLoginAt": 1792262207264
+    "lastLoginAt": 1792351036658
   },
   {
     "id": "user_teacher_1",
@@ -33,8 +33,10 @@
     "createdAt": 1718000000000,
     "isActive": true,
     "notes": "Alumna lectora matriculada en Inglés B1",
-    "enrolledCourseIds": ["ingles_b1"],
-    "lastLoginAt": 1792262028899
+    "enrolledCourseIds": [
+      "ingles_b1"
+    ],
+    "lastLoginAt": 1792351289182
   },
   {
     "id": "user_1792261216822_nuevo_alumno",
@@ -46,6 +48,9 @@
     "createdAt": 1792261216822,
     "isActive": true,
     "notes": "Estudiante matriculada en Inglés B1 e Inglés B2",
-    "enrolledCourseIds": ["ingles_b1", "ingles_b2"]
+    "enrolledCourseIds": [
+      "ingles_b1",
+      "ingles_b2"
+    ]
   }
 ]
