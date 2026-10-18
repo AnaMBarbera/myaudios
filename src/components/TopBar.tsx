@@ -105,7 +105,7 @@ export const TopBar: React.FC<TopBarProps> = ({
             </div>
             <div>
               <span className="text-lg font-bold tracking-tight text-slate-900 dark:text-white whitespace-nowrap block leading-tight">
-                LingoSync
+                Zona Sonora
               </span>
               <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 block leading-none">
                 Audio & Transcript Studio
