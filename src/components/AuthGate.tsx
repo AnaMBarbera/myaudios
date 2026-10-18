@@ -60,23 +60,23 @@ export const AuthGate: React.FC<AuthGateProps> = ({ onLoginSuccess }) => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto py-8 sm:py-14 px-4">
+    <div className="max-w-xl mx-auto py-8 sm:py-14 px-4">
       {/* Hero Welcome Header */}
-      <div className="text-center space-y-4 mb-10">
+      <div className="text-center space-y-4 mb-8">
         <div className="inline-flex items-center justify-center w-16 h-16 rounded-3xl bg-indigo-600 text-white shadow-xl shadow-indigo-600/30 mb-2">
           <Headphones className="w-8 h-8" />
         </div>
         <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-          Zona <span className="text-indigo-600 dark:text-indigo-400">Sonora</span>
+          Aula Virtual <span className="text-indigo-600 dark:text-indigo-400">Zona Sonora</span>
         </h1>
-        <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 max-w-xl mx-auto leading-relaxed">
-          Plataforma de práctica auditiva y transcripción interactiva sincronizada. Inicia sesión para acceder únicamente a los cursos asignados por tu profesor.
+        <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 max-w-lg mx-auto leading-relaxed">
+          Plataforma de práctica auditiva y transcripción interactiva sincronizada. Inicia sesión para acceder a los cursos asignados por tu profesor.
         </p>
       </div>
 
-      <div className="flex justify-center">
+      <div className="max-w-md mx-auto">
         {/* Login Form */}
-        <div className="w-full max-w-lg bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl p-6 sm:p-8 space-y-6">
+        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl p-6 sm:p-8 space-y-6">
           <div className="flex items-center gap-3 pb-4 border-b border-slate-100 dark:border-slate-800">
             <div className="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
               <Lock className="w-4 h-4" />
@@ -156,125 +156,7 @@ export const AuthGate: React.FC<AuthGateProps> = ({ onLoginSuccess }) => {
           </div>
         </div>
 
-        {/* Right Column: Fast Demo Access (Roles & Courses demonstration) */}
-        {/*<div className="md:col-span-6 space-y-4">
-          <div className="p-4 rounded-2xl bg-indigo-50/60 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/60">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-indigo-900 dark:text-indigo-200 flex items-center gap-1.5 mb-1">
-              <Check className="w-4 h-4 text-indigo-600" />
-              <span>Accesos Rápidos de Prueba (Demostración de Roles)</span>
-            </h3>
-            <p className="text-xs text-slate-600 dark:text-slate-400">
-              Pulsa en cualquiera de los perfiles para comprobar al instante la gestión de cursos y la restricción de contenidos por rol:
-            </p>
-          </div>
-
-          <div className="space-y-3">*/}
-            {/* Admin Demo */}
-          {/*  <div
-              onClick={() => handleQuickLogin('admin', 'admin')}
-              className="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-indigo-400 hover:shadow-md transition-all cursor-pointer group"
-            >
-              <div className="flex items-center justify-between mb-1.5">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-xs">
-                    <ShieldCheck className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
-                      Ana Barberá (Administradora)
-                    </h4>
-                    <span className="text-[10px] text-slate-400 font-mono">user: admin · pass: admin</span>
-                  </div>
-                </div>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
-                  Super Admin
-                </span>
-              </div>
-              <p className="text-[11px] text-slate-500 pl-10">
-                Acceso completo a todos los cursos, usuarios, subida de audios y gestión de profesores.
-              </p>
-            </div>
-          */}
-            {/* Teacher Demo */}
-          {/*  <div
-              onClick={() => handleQuickLogin('profesor', 'profe')}
-              className="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-sky-400 hover:shadow-md transition-all cursor-pointer group"
-            >
-              <div className="flex items-center justify-between mb-1.5">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-xl bg-sky-100 dark:bg-sky-950 text-sky-600 dark:text-sky-400 flex items-center justify-center font-bold text-xs">
-                    <GraduationCap className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">
-                      Carlos Méndez (Profesor)
-                    </h4>
-                    <span className="text-[10px] text-slate-400 font-mono">user: profesor · pass: profe</span>
-                  </div>
-                </div>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-sky-50 dark:bg-sky-950 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800">
-                  Profesor (B1 y B2)
-                </span>
-              </div>
-              <p className="text-[11px] text-slate-500 pl-10">
-                Acceso exclusivo a sus cursos asignados (<strong className="text-sky-600 dark:text-sky-400">Inglés B1 e Inglés B2</strong>) y a sus alumnos matriculados para mayor claridad de trabajo.
-              </p>
-            </div>
-          */}
-            {/* Student 1 Demo - Enrolled only in B1 */}
-          {/*  <div
-              onClick={() => handleQuickLogin('alumno', 'alumno')}
-              className="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-emerald-400 hover:shadow-md transition-all cursor-pointer group"
-            >
-              <div className="flex items-center justify-between mb-1.5">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-xs">
-                    <BookOpen className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
-                      Sofía Navarro (Alumna)
-                    </h4>
-                    <span className="text-[10px] text-slate-400 font-mono">user: alumno · pass: alumno</span>
-                  </div>
-                </div>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
-                  Solo Inglés B1
-                </span>
-              </div>
-              <p className="text-[11px] text-slate-500 pl-10">
-                Solo ve y reproduce el contenido de <strong className="text-emerald-600 dark:text-emerald-400">Inglés B1</strong>. Los demás cursos permanecen ocultos.
-              </p>
-            </div>
-          */}
-            {/* Student 2 Demo - Multi-course enrollment (B1 + B2) */}
-          {/*  <div
-              onClick={() => handleQuickLogin('nuevo_alumno', 'pass')}
-              className="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-emerald-400 hover:shadow-md transition-all cursor-pointer group"
-            >
-              <div className="flex items-center justify-between mb-1.5">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-xs">
-                    <BookCheck className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
-                      Laura García (Alumna Multicurso)
-                    </h4>
-                    <span className="text-[10px] text-slate-400 font-mono">user: nuevo_alumno · pass: pass</span>
-                  </div>
-                </div>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
-                  Inglés B1 + B2
-                </span>
-              </div>
-              <p className="text-[11px] text-slate-500 pl-10">
-                Demuestra el soporte multicurso: matriculada simultáneamente en <strong className="text-indigo-600 dark:text-indigo-400">Inglés B1 e Inglés B2</strong>.
-              </p>
-            </div>
-          </div>
-        </div>
-       */} 
+        {/* Accesos rápidos de prueba temporalmente ocultos como solicitado */}
       </div>
     </div>
   );

@@ -25,3 +25,9 @@
 .transcript-scroll::-webkit-scrollbar-thumb:hover {
   background-color: rgba(148, 163, 184, 0.5);
 }
+
+/* Regla CSS para ocultar elementos aislados a los alumnos */
+body.role-student .hidden-student,
+.role-student .hidden-student {
+  display: none !important;
+}

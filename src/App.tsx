@@ -65,6 +65,18 @@ export default function App() {
     setCurrentUserState(null);
   };
 
+  // Sync student role class on body for CSS targeting (.hidden-student)
+  useEffect(() => {
+    if (currentUser?.role === 'student') {
+      document.body.classList.add('role-student');
+    } else {
+      document.body.classList.remove('role-student');
+    }
+    return () => {
+      document.body.classList.remove('role-student');
+    };
+  }, [currentUser]);
+
   // Deleted tracking for persistent deletions across sample & custom items
   const [deletedItemIds, setDeletedItemIds] = useState<string[]>(() => {
     try {
@@ -665,7 +677,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
+    <div className={`min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 ${currentUser?.role === 'student' ? 'role-student' : ''}`}>
       {/* 3-Zone Top Navigation Bar */}
       <TopBar
         activeView={activeView}
@@ -911,7 +923,7 @@ export default function App() {
       <footer className="mt-auto border-t border-slate-200 dark:border-slate-800 py-6 text-center text-xs text-slate-500 dark:text-slate-400">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <span className="font-semibold text-slate-700 dark:text-slate-300">LingoSync</span>
+            <span className="font-semibold text-slate-700 dark:text-slate-300">Zona Sonora</span>
             <span aria-hidden="true">·</span>
             <span>Estructura de Cursos & Reproductor de Audios Sincronizados de Inglés</span>
           </div>

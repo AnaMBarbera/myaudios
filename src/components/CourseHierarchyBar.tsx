@@ -242,7 +242,7 @@ export const CourseHierarchyBar: React.FC<CourseHierarchyBarProps> = ({
                   </span>
                   <button
                     onClick={onToggleShowHidden}
-                    className="text-[10px] text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1 cursor-pointer"
+                    className="text-[10px] text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1 cursor-pointer hidden-student"
                   >
                     {showHidden ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
                     <span>{showHidden ? 'Ocultar archivadas' : 'Ver ocultas'}</span>
@@ -420,7 +420,7 @@ export const CourseHierarchyBar: React.FC<CourseHierarchyBarProps> = ({
                   </span>
                   <button
                     onClick={onToggleShowHidden}
-                    className="text-[10px] text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1 cursor-pointer"
+                    className="text-[10px] text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1 cursor-pointer hidden-student"
                   >
                     {showHidden ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
                     <span>{showHidden ? 'Ocultar archivados' : 'Ver ocultos'}</span>
@@ -528,7 +528,7 @@ export const CourseHierarchyBar: React.FC<CourseHierarchyBarProps> = ({
           {/* Toggle Hidden Items Button */}
           <button
             onClick={onToggleShowHidden}
-            className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-colors border ${
+            className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-colors border hidden-student ${
               showHidden
                 ? 'bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-700 shadow-xs'
                 : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:bg-slate-200'

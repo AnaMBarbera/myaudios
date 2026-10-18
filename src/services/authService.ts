@@ -90,6 +90,37 @@ export async function login(username: string, password: string): Promise<{ succe
   }
 }
 
+export async function loginWithGoogle(): Promise<{ success: boolean; user?: AppUser; error?: string }> {
+  try {
+    const { signInWithGoogle } = await import('./firebase');
+    const firebaseUser = await signInWithGoogle();
+    if (!firebaseUser || !firebaseUser.email) {
+      return { success: false, error: 'No se pudo obtener el email de la cuenta de Google' };
+    }
+
+    const res = await fetch('/api/auth/google-login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: firebaseUser.email,
+        name: firebaseUser.displayName || 'Usuario',
+        uid: firebaseUser.uid,
+      }),
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+      return { success: false, error: data.error || 'Error al autenticar con Google' };
+    }
+
+    setCurrentUser(data.user);
+    return { success: true, user: data.user };
+  } catch (err: any) {
+    console.error('Google login error:', err);
+    return { success: false, error: err?.message || 'Error al conectar con Google' };
+  }
+}
+
 export function logout(): void {
   setCurrentUser(null);
 }

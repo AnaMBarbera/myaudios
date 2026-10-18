@@ -1,0 +1,83 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'anabarbera90@gmail.com' ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    // Global Safety Net (Pillar 1)
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Admins directory
+    match /admins/{adminId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // Course Levels (Pillar 2, 3)
+    match /courses/{courseId} {
+      allow read: if isValidId(courseId);
+      allow create, update: if isValidId(courseId) &&
+        incoming().name is string && incoming().name.size() > 0 && incoming().name.size() <= 150 &&
+        incoming().order is number;
+      allow delete: if isValidId(courseId);
+    }
+
+    // Lessons (Pillar 2, 3)
+    match /lessons/{lessonId} {
+      allow read: if isValidId(lessonId);
+      allow create, update: if isValidId(lessonId) &&
+        incoming().levelId is string && incoming().levelId.size() > 0 && incoming().levelId.size() <= 128 &&
+        incoming().title is string && incoming().title.size() > 0 && incoming().title.size() <= 150 &&
+        incoming().order is number;
+      allow delete: if isValidId(lessonId);
+    }
+
+    // Audios and transcripts (Pillar 2, 3, 5)
+    match /audios/{audioId} {
+      allow read: if isValidId(audioId);
+      allow create, update: if isValidId(audioId) &&
+        incoming().title is string && incoming().title.size() > 0 && incoming().title.size() <= 200 &&
+        incoming().category is string && incoming().category.size() <= 50 &&
+        incoming().level is string && incoming().level.size() <= 10;
+      allow delete: if isValidId(audioId);
+    }
+
+    // Users and students (Pillar 2, 3, 6)
+    match /users/{userId} {
+      allow read: if isValidId(userId);
+      allow create, update: if isValidId(userId) &&
+        incoming().username is string && incoming().username.size() > 0 && incoming().username.size() <= 100 &&
+        incoming().name is string && incoming().name.size() > 0 && incoming().name.size() <= 150 &&
+        incoming().role in ['admin', 'teacher', 'student'];
+      allow delete: if isValidId(userId);
+    }
+
+    // Library meta sync tracking
+    match /library_meta/{metaId} {
+      allow read, write: if isValidId(metaId);
+    }
+  }
+}

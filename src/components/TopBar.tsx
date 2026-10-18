@@ -144,7 +144,7 @@ export const TopBar: React.FC<TopBarProps> = ({
             {canEditContent && (
               <button
                 onClick={() => onNavigate('pairing')}
-                className={`cursor-pointer whitespace-nowrap transition-colors hover:text-indigo-600 dark:hover:text-indigo-400 flex items-center gap-1.5 ${
+                className={`cursor-pointer whitespace-nowrap transition-colors hover:text-indigo-600 dark:hover:text-indigo-400 flex items-center gap-1.5 hidden-student ${
                   activeView === 'pairing' ? 'text-indigo-600 dark:text-indigo-400 font-semibold' : ''
                 }`}
               >
@@ -180,7 +180,7 @@ export const TopBar: React.FC<TopBarProps> = ({
           {canEditContent && (
             <button
               onClick={onOpenUpload}
-              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 shadow-sm transition-colors whitespace-nowrap cursor-pointer"
+              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 shadow-sm transition-colors whitespace-nowrap cursor-pointer hidden-student"
               title="Importar audios o sincronizaciones"
             >
               <Plus className="w-3.5 h-3.5" />

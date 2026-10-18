@@ -9,7 +9,7 @@
     "createdAt": 1718000000000,
     "isActive": true,
     "notes": "Super Administrador del sistema con acceso completo",
-    "lastLoginAt": 1792351036658
+    "lastLoginAt": 1792354881547
   },
   {
     "id": "user_teacher_1",
@@ -36,7 +36,7 @@
     "enrolledCourseIds": [
       "ingles_b1"
     ],
-    "lastLoginAt": 1792351289182
+    "lastLoginAt": 1792355415321
   },
   {
     "id": "user_1792261216822_nuevo_alumno",

@@ -345,7 +345,7 @@ export const SynchronizedPlayer: React.FC<SynchronizedPlayerProps> = ({
 
           {/* Quick Audio Actions: Edit, VTT, Hide, Delete */}
           {(canEditContent || canDeleteContent) && (
-            <div className="flex flex-wrap items-center gap-2 mt-2">
+            <div className="flex flex-wrap items-center gap-2 mt-2 hidden-student">
               {canEditContent && (
                 <button
                   onClick={() => setIsVttModalOpen(true)}

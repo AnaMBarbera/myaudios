@@ -1,0 +1,231 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Registered academy student, teacher, or administrator profile",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique user ID"
+        },
+        "username": {
+          "type": "string",
+          "description": "Unique username used for login"
+        },
+        "name": {
+          "type": "string",
+          "description": "Full name of the student or staff member"
+        },
+        "email": {
+          "type": "string",
+          "description": "Contact or authentication email"
+        },
+        "role": {
+          "type": "string",
+          "description": "Role determining system privileges: admin, teacher, or student",
+          "enum": ["admin", "teacher", "student"]
+        },
+        "password": {
+          "type": "string",
+          "description": "Account password"
+        },
+        "isActive": {
+          "type": "boolean",
+          "description": "Whether the user account is active"
+        },
+        "enrolledCourseIds": {
+          "type": "array",
+          "description": "List of course level IDs the student is enrolled in"
+        },
+        "notes": {
+          "type": "string",
+          "description": "Administrative notes"
+        },
+        "createdAt": {
+          "type": "number",
+          "description": "Timestamp when the user account was created"
+        },
+        "lastLoginAt": {
+          "type": "number",
+          "description": "Timestamp of the last successful login"
+        }
+      },
+      "required": ["id", "username", "name", "role", "isActive"]
+    },
+    "Audio": {
+      "title": "Audio",
+      "description": "English listening audio track with synchronized transcript segments",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique audio track identifier"
+        },
+        "title": {
+          "type": "string",
+          "description": "Title of the audio track"
+        },
+        "description": {
+          "type": "string",
+          "description": "Brief description of the audio content"
+        },
+        "category": {
+          "type": "string",
+          "description": "Category: conversation, business, news, academic, travel, pronunciation, custom, all"
+        },
+        "level": {
+          "type": "string",
+          "description": "CEFR Level: A1, A2, B1, B2, C1, C2"
+        },
+        "accent": {
+          "type": "string",
+          "description": "Voice accent: US, UK, AU, International"
+        },
+        "levelId": {
+          "type": "string",
+          "description": "ID of the associated CourseLevel"
+        },
+        "lessonId": {
+          "type": "string",
+          "description": "ID of the associated CourseLesson"
+        },
+        "audioUrl": {
+          "type": "string",
+          "description": "Direct audio URL, blob endpoint, or data URI"
+        },
+        "audioFileName": {
+          "type": "string",
+          "description": "Original audio file name"
+        },
+        "audioFileSize": {
+          "type": "number",
+          "description": "Size of the audio file in bytes"
+        },
+        "audioDuration": {
+          "type": "number",
+          "description": "Total duration in seconds"
+        },
+        "audioBlobId": {
+          "type": "string",
+          "description": "Local or server blob identifier"
+        },
+        "segments": {
+          "type": "array",
+          "description": "List of synchronized transcript segments with timestamps and translations"
+        },
+        "isBuiltIn": {
+          "type": "boolean",
+          "description": "Whether the audio is a default preloaded track"
+        },
+        "createdAt": {
+          "type": "number",
+          "description": "Timestamp when the audio was registered"
+        },
+        "tags": {
+          "type": "array",
+          "description": "Vocabulary or topic tags"
+        },
+        "notes": {
+          "type": "string",
+          "description": "Pedagogical notes"
+        },
+        "driveFolderUrl": {
+          "type": "string",
+          "description": "Optional Google Drive link"
+        },
+        "isHidden": {
+          "type": "boolean",
+          "description": "Whether the audio is hidden from students"
+        }
+      },
+      "required": ["id", "title", "level", "category", "accent"]
+    },
+    "CourseLevel": {
+      "title": "CourseLevel",
+      "description": "Course level definition representing a study grade or course",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique course level ID (e.g., ingles_b1)"
+        },
+        "name": {
+          "type": "string",
+          "description": "Display name of the course level"
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of objectives and content"
+        },
+        "order": {
+          "type": "number",
+          "description": "Display order in the UI"
+        },
+        "teacherIds": {
+          "type": "array",
+          "description": "List of teacher IDs assigned to this course"
+        },
+        "createdById": {
+          "type": "string",
+          "description": "ID of user who created this course"
+        },
+        "createdAt": {
+          "type": "number",
+          "description": "Timestamp of creation"
+        }
+      },
+      "required": ["id", "name", "order"]
+    },
+    "CourseLesson": {
+      "title": "CourseLesson",
+      "description": "Lesson unit inside a course level",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique lesson ID (e.g., b1_leccion_1)"
+        },
+        "levelId": {
+          "type": "string",
+          "description": "Associated course level ID"
+        },
+        "title": {
+          "type": "string",
+          "description": "Lesson title"
+        },
+        "subtitle": {
+          "type": "string",
+          "description": "Optional thematic subtitle"
+        },
+        "order": {
+          "type": "number",
+          "description": "Display order within the level"
+        },
+        "isHidden": {
+          "type": "boolean",
+          "description": "Whether the lesson is hidden from students"
+        }
+      },
+      "required": ["id", "levelId", "title", "order"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Collection of all enrolled students, teachers, and system administrators"
+    },
+    "/audios/{audioId}": {
+      "schema": "Audio",
+      "description": "Collection of English listening audio files, transcript segments, and metadata"
+    },
+    "/courses/{courseId}": {
+      "schema": "CourseLevel",
+      "description": "Collection of course levels offered in Zona Sonora"
+    },
+    "/lessons/{lessonId}": {
+      "schema": "CourseLesson",
+      "description": "Collection of individual lessons belonging to courses"
+    }
+  }
+}

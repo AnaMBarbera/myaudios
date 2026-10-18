@@ -4,6 +4,16 @@ import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
+import { initializeApp as initFirebaseApp } from 'firebase/app';
+import {
+  getFirestore as getFirestoreServer,
+  doc as docServer,
+  getDoc as getDocServer,
+  setDoc as setDocServer,
+  deleteDoc as deleteDocServer,
+  collection as collectionServer,
+  getDocs as getDocsServer,
+} from 'firebase/firestore';
 
 dotenv.config();
 
@@ -20,6 +30,20 @@ const DATA_DIR = path.resolve(__dirname, 'data');
 const LIBRARY_FILE = path.resolve(DATA_DIR, 'library.json');
 const AUDIOS_DIR = path.resolve(DATA_DIR, 'audios');
 const USERS_FILE = path.resolve(DATA_DIR, 'users.json');
+const CONFIG_FILE = path.resolve(__dirname, 'firebase-applet-config.json');
+
+// Initialize Firebase Firestore on Server for persistent cloud storage
+let firestoreDb: any = null;
+if (fs.existsSync(CONFIG_FILE)) {
+  try {
+    const config = JSON.parse(fs.readFileSync(CONFIG_FILE, 'utf-8'));
+    const serverApp = initFirebaseApp(config, 'zona-sonora-server');
+    firestoreDb = getFirestoreServer(serverApp, config.firestoreDatabaseId);
+    console.log('[Firestore] Connected to Firebase Firestore database:', config.firestoreDatabaseId);
+  } catch (e) {
+    console.warn('[Firestore] Error initializing Firebase on server:', e);
+  }
+}
 
 // Ensure data directories exist
 if (!fs.existsSync(DATA_DIR)) {
@@ -68,20 +92,61 @@ const DEFAULT_USERS = [
 ];
 
 async function readUsers() {
+  if (firestoreDb) {
+    try {
+      const snap = await getDocsServer(collectionServer(firestoreDb, 'users'));
+      if (!snap.empty) {
+        const users: any[] = [];
+        snap.forEach((d) => users.push(d.data()));
+        // Keep local cache file updated
+        await fs.promises.writeFile(USERS_FILE, JSON.stringify(users, null, 2), 'utf-8');
+        return users;
+      }
+    } catch (err) {
+      console.warn('[Firestore] Error reading users from Firestore:', err);
+    }
+  }
+
   if (fs.existsSync(USERS_FILE)) {
     try {
       const data = await fs.promises.readFile(USERS_FILE, 'utf-8');
-      return JSON.parse(data);
+      const parsed = JSON.parse(data);
+      if (firestoreDb && Array.isArray(parsed) && parsed.length > 0) {
+        // Seed to Firestore
+        for (const u of parsed) {
+          if (u && u.id) {
+            setDocServer(docServer(firestoreDb, 'users', u.id), u).catch(() => {});
+          }
+        }
+      }
+      return parsed;
     } catch (e) {
       console.error('Error reading users file:', e);
     }
   }
+
   await fs.promises.writeFile(USERS_FILE, JSON.stringify(DEFAULT_USERS, null, 2), 'utf-8');
+  if (firestoreDb) {
+    for (const u of DEFAULT_USERS) {
+      setDocServer(docServer(firestoreDb, 'users', u.id), u).catch(() => {});
+    }
+  }
   return DEFAULT_USERS;
 }
 
 async function writeUsers(users: any[]) {
   await fs.promises.writeFile(USERS_FILE, JSON.stringify(users, null, 2), 'utf-8');
+  if (firestoreDb && Array.isArray(users)) {
+    try {
+      for (const u of users) {
+        if (u && u.id) {
+          await setDocServer(docServer(firestoreDb, 'users', u.id), u);
+        }
+      }
+    } catch (err) {
+      console.warn('[Firestore] Error syncing users to Firestore:', err);
+    }
+  }
 }
 
 /**
@@ -89,9 +154,26 @@ async function writeUsers(users: any[]) {
  */
 app.get('/api/library', async (_req: Request, res: Response) => {
   try {
+    if (firestoreDb) {
+      try {
+        const metaDoc = await getDocServer(docServer(firestoreDb, 'library_meta', 'current'));
+        if (metaDoc.exists()) {
+          const libraryData = metaDoc.data();
+          await fs.promises.writeFile(LIBRARY_FILE, JSON.stringify(libraryData, null, 2), 'utf-8');
+          return res.json(libraryData);
+        }
+      } catch (err) {
+        console.warn('[Firestore] Error reading library from Firestore:', err);
+      }
+    }
+
     if (fs.existsSync(LIBRARY_FILE)) {
       const content = await fs.promises.readFile(LIBRARY_FILE, 'utf-8');
-      return res.json(JSON.parse(content));
+      const parsed = JSON.parse(content);
+      if (firestoreDb && parsed && (parsed.items?.length > 0 || parsed.lessons?.length > 0)) {
+        setDocServer(docServer(firestoreDb, 'library_meta', 'current'), parsed).catch(() => {});
+      }
+      return res.json(parsed);
     }
     return res.json({ initialized: false, items: [], levels: [], lessons: [], deletedItemIds: [], deletedLessonIds: [] });
   } catch (err: any) {
@@ -110,6 +192,36 @@ app.post('/api/library', async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Invalid payload' });
     }
     await fs.promises.writeFile(LIBRARY_FILE, JSON.stringify(payload, null, 2), 'utf-8');
+
+    if (firestoreDb) {
+      try {
+        await setDocServer(docServer(firestoreDb, 'library_meta', 'current'), payload);
+        if (Array.isArray(payload.items)) {
+          for (const item of payload.items) {
+            if (item && item.id) {
+              await setDocServer(docServer(firestoreDb, 'audios', item.id), item);
+            }
+          }
+        }
+        if (Array.isArray(payload.lessons)) {
+          for (const lesson of payload.lessons) {
+            if (lesson && lesson.id) {
+              await setDocServer(docServer(firestoreDb, 'lessons', lesson.id), lesson);
+            }
+          }
+        }
+        if (Array.isArray(payload.levels)) {
+          for (const level of payload.levels) {
+            if (level && level.id) {
+              await setDocServer(docServer(firestoreDb, 'courses', level.id), level);
+            }
+          }
+        }
+      } catch (err) {
+        console.warn('[Firestore] Error persisting library to Firestore:', err);
+      }
+    }
+
     return res.json({ success: true, savedAt: Date.now() });
   } catch (err: any) {
     console.error('Error saving server library:', err);
@@ -149,6 +261,48 @@ app.post('/api/auth/login', async (req: Request, res: Response) => {
   } catch (err: any) {
     console.error('Login error:', err);
     return res.status(500).json({ error: 'Error en el inicio de sesión', details: err?.message });
+  }
+});
+
+/**
+ * Auth API: Google Login (Firebase Auth integration)
+ */
+app.post('/api/auth/google-login', async (req: Request, res: Response) => {
+  try {
+    const { email, name, uid } = req.body;
+    if (!email) {
+      return res.status(400).json({ error: 'Email de Google requerido' });
+    }
+
+    const cleanEmail = email.trim().toLowerCase();
+    const users = await readUsers();
+    let user = users.find((u: any) => u.email && u.email.trim().toLowerCase() === cleanEmail);
+
+    if (!user) {
+      const isAdminEmail = cleanEmail === 'anabarbera90@gmail.com';
+      user = {
+        id: `user_${uid || Date.now()}`,
+        username: cleanEmail.split('@')[0],
+        name: name || (isAdminEmail ? 'Ana Barberá (Admin)' : 'Usuario'),
+        email: cleanEmail,
+        role: isAdminEmail ? 'admin' : 'student',
+        createdAt: Date.now(),
+        isActive: true,
+        notes: isAdminEmail ? 'Administrador verificado vía Google' : 'Estudiante registrado vía Google',
+        enrolledCourseIds: ['ingles_b1'],
+      };
+      users.push(user);
+      await writeUsers(users);
+    } else {
+      user.lastLoginAt = Date.now();
+      await writeUsers(users);
+    }
+
+    const { password: _, ...safeUser } = user;
+    return res.json({ success: true, user: safeUser });
+  } catch (err: any) {
+    console.error('Google login API error:', err);
+    return res.status(500).json({ error: 'Error al procesar login de Google', details: err?.message });
   }
 });
 
@@ -267,6 +421,13 @@ app.delete('/api/users/:id', async (req: Request, res: Response) => {
 
     const filtered = users.filter((u: any) => u.id !== id);
     await writeUsers(filtered);
+    if (firestoreDb) {
+      try {
+        await deleteDocServer(docServer(firestoreDb, 'users', id));
+      } catch (err) {
+        console.warn('[Firestore] Error deleting user in Firestore:', err);
+      }
+    }
 
     return res.json({ success: true, message: 'Usuario eliminado correctamente' });
   } catch (err: any) {
@@ -468,6 +629,9 @@ async function pipeUpstreamResponse(upstreamResponse: globalThis.Response, res: 
 }
 
 async function startServer() {
+  // Serve public static assets (favicon.svg, apple-touch-icon.png, manifest.json, etc.)
+  app.use(express.static(path.resolve(__dirname, 'public')));
+
   if (process.env.NODE_ENV !== 'production') {
     const { createServer: createViteServer } = await import('vite');
     const vite = await createViteServer({

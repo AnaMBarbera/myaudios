@@ -200,7 +200,7 @@ export const AudioSelectorLibrary: React.FC<AudioSelectorLibraryProps> = ({
             <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white leading-tight">
               Organizador de Audios y Transcripciones de Inglés
             </h1>
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed hidden-student">
               Gestiona, reproduce y sincroniza tus lecciones de inglés. Puedes editar, ocultar o eliminar cualquier lección o audio en cualquier momento.
             </p>
           </div>
@@ -209,7 +209,7 @@ export const AudioSelectorLibrary: React.FC<AudioSelectorLibraryProps> = ({
             <div className="flex flex-wrap items-center gap-2.5">
               <button
                 onClick={onOpenDriveLinksModal}
-                className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl shadow-md shadow-indigo-600/30 transition-all cursor-pointer flex items-center gap-2"
+                className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl shadow-md shadow-indigo-600/30 transition-all cursor-pointer flex items-center gap-2 hidden-student"
               >
                 <Link2 className="w-4 h-4" />
                 <span>+ Enlace Drive / .VTT</span>
@@ -217,7 +217,7 @@ export const AudioSelectorLibrary: React.FC<AudioSelectorLibraryProps> = ({
 
               <button
                 onClick={() => onOpenPairing()}
-                className="px-4 py-2.5 bg-slate-800/90 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700/80 transition-all cursor-pointer flex items-center gap-2"
+                className="px-4 py-2.5 bg-slate-800/90 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700/80 transition-all cursor-pointer flex items-center gap-2 hidden-student"
               >
                 <Upload className="w-4 h-4 text-indigo-400" />
                 <span>Subir Archivo Local</span>
@@ -261,7 +261,7 @@ export const AudioSelectorLibrary: React.FC<AudioSelectorLibraryProps> = ({
             {/* Toggle show/hide hidden items */}
             <button
               onClick={onToggleShowHidden}
-              className={`px-3 py-2 text-xs font-semibold rounded-lg transition-colors cursor-pointer flex items-center gap-1.5 border shrink-0 ${
+              className={`px-3 py-2 text-xs font-semibold rounded-lg transition-colors cursor-pointer flex items-center gap-1.5 border shrink-0 hidden-student ${
                 showHidden
                   ? 'bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-700 shadow-xs'
                   : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:bg-slate-200'
