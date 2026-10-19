@@ -255,22 +255,79 @@ export async function lookupWord(rawWord: string, contextSentence?: string): Pro
   };
 }
 
-export function playWordSpeech(word: string, accent: 'US' | 'UK' = 'US') {
-  if (!('speechSynthesis' in window)) return;
-  window.speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(word);
-  utterance.lang = accent === 'UK' ? 'en-GB' : 'en-US';
-  utterance.rate = 0.9;
-  
-  const voices = window.speechSynthesis.getVoices();
-  const targetVoice = voices.find(v => 
-    accent === 'UK' 
-      ? v.lang.startsWith('en-GB') 
-      : (v.lang.startsWith('en-US') || v.lang.startsWith('en'))
-  );
-  if (targetVoice) {
-    utterance.voice = targetVoice;
+let activeUtterance: SpeechSynthesisUtterance | null = null;
+let activeAudio: HTMLAudioElement | null = null;
+
+export function playWordSpeech(word: string, accent: 'US' | 'UK' = 'US', audioUrl?: string) {
+  // If native audio file exists from dictionary, play it with highest fidelity
+  if (audioUrl) {
+    try {
+      if (activeAudio) {
+        activeAudio.pause();
+        activeAudio = null;
+      }
+      activeAudio = new Audio(audioUrl);
+      activeAudio.play().catch(() => {
+        speakWithSynthesis(word, accent);
+      });
+      return;
+    } catch (e) {
+      // fallback to synthesis
+    }
   }
-  
-  window.speechSynthesis.speak(utterance);
+
+  speakWithSynthesis(word, accent);
+}
+
+function speakWithSynthesis(word: string, accent: 'US' | 'UK' = 'US') {
+  if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+
+  try {
+    window.speechSynthesis.cancel();
+
+    const cleanWord = word
+      .replace(/^[.,\/#!$%\^&\*;:{}=\-_`~()?"'«»“”]+|[.,\/#!$%\^&\*;:{}=\-_`~()?"'«»“”]+$/g, '')
+      .trim();
+
+    if (!cleanWord) return;
+
+    const utterance = new SpeechSynthesisUtterance(cleanWord);
+    // Keep reference in module-level variable to prevent Chrome V8 garbage collection mid-speech
+    activeUtterance = utterance;
+
+    utterance.lang = accent === 'UK' ? 'en-GB' : 'en-US';
+    // Clear, natural and calm cadence for learners (0.8 rate instead of rushed)
+    utterance.rate = 0.8;
+    utterance.pitch = 1.0;
+    utterance.volume = 1.0;
+
+    const voices = window.speechSynthesis.getVoices();
+    if (voices && voices.length > 0) {
+      const targetLang = accent === 'UK' ? 'en-GB' : 'en-US';
+      const exactVoice = voices.find(v => 
+        (v.lang === targetLang || v.lang.replace('_', '-') === targetLang) &&
+        (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Enhanced') || !v.localService)
+      ) || voices.find(v => 
+        v.lang.startsWith(accent === 'UK' ? 'en-GB' : 'en-US') || v.lang.startsWith('en')
+      );
+
+      if (exactVoice) {
+        utterance.voice = exactVoice;
+      }
+    }
+
+    utterance.onend = () => {
+      activeUtterance = null;
+    };
+    utterance.onerror = () => {
+      activeUtterance = null;
+    };
+
+    // Timeout after cancel() prevents clipped/stuttering audio start in Chrome/Linux
+    setTimeout(() => {
+      window.speechSynthesis.speak(utterance);
+    }, 60);
+  } catch (err) {
+    console.warn('Speech synthesis error:', err);
+  }
 }

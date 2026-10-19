@@ -123,9 +123,9 @@ export const AudioSelectorLibrary: React.FC<AudioSelectorLibraryProps> = ({
         if (!showHidden && it.isHidden) return false;
         return true;
       });
-      // Sort audios inside the lesson by title
+      // Sort audios inside the lesson by title (normalizing spaces)
       const sortedAudios = [...lessonAudios].sort((a, b) => 
-        a.title.localeCompare(b.title, undefined, { numeric: true, sensitivity: 'base' })
+        a.title.replace(/\s+/g, ' ').trim().localeCompare(b.title.replace(/\s+/g, ' ').trim(), undefined, { numeric: true, sensitivity: 'base' })
       );
       return {
         lesson,
@@ -153,6 +153,8 @@ export const AudioSelectorLibrary: React.FC<AudioSelectorLibraryProps> = ({
     const levelMap = new Map(levels.map((lvl, idx) => [lvl.id, { order: lvl.order ?? idx, name: lvl.name }]));
     const lessonMap = new Map(lessons.map((lsn, idx) => [lsn.id, { order: lsn.order ?? idx, title: lsn.title }]));
 
+    const norm = (s?: string) => (s || '').replace(/\s+/g, ' ').trim();
+
     return [...pool].sort((a, b) => {
       // 1. Sort by Nivel (order number or CEFR rank, then level name)
       const lvlA = a.levelId ? levelMap.get(a.levelId) : null;
@@ -165,8 +167,8 @@ export const AudioSelectorLibrary: React.FC<AudioSelectorLibraryProps> = ({
         return orderA - orderB;
       }
 
-      const nameA = lvlA?.name || a.level || '';
-      const nameB = lvlB?.name || b.level || '';
+      const nameA = norm(lvlA?.name || a.level);
+      const nameB = norm(lvlB?.name || b.level);
       const levelCmp = nameA.localeCompare(nameB, undefined, { numeric: true, sensitivity: 'base' });
       if (levelCmp !== 0) {
         return levelCmp;
@@ -180,14 +182,14 @@ export const AudioSelectorLibrary: React.FC<AudioSelectorLibraryProps> = ({
       if (!lsnA && lsnB) return 1;
 
       if (lsnA && lsnB) {
-        const lessonTitleCmp = lsnA.title.localeCompare(lsnB.title, undefined, { numeric: true, sensitivity: 'base' });
+        const lessonTitleCmp = norm(lsnA.title).localeCompare(norm(lsnB.title), undefined, { numeric: true, sensitivity: 'base' });
         if (lessonTitleCmp !== 0) {
           return lessonTitleCmp;
         }
       }
 
       // 3. Sort by Título audio
-      return a.title.localeCompare(b.title, undefined, { numeric: true, sensitivity: 'base' });
+      return norm(a.title).localeCompare(norm(b.title), undefined, { numeric: true, sensitivity: 'base' });
     });
   }, [items, searchQuery, showHidden, levels, lessons]);
 
@@ -794,11 +796,15 @@ export const AudioSelectorLibrary: React.FC<AudioSelectorLibraryProps> = ({
                 <h4 className="text-sm font-bold text-slate-900 dark:text-white">
                   {item.title}
                 </h4>
-                {item.description && (
+                {item.segments.length > 0 ? (
+                  <p className="text-xs text-slate-600 dark:text-slate-300 italic line-clamp-2 mt-1">
+                    "{item.segments[0].text}"
+                  </p>
+                ) : item.description ? (
                   <p className="text-xs text-slate-500 mt-1 line-clamp-2">
                     {item.description}
                   </p>
-                )}
+                ) : null}
               </div>
 
               <div className="pt-2 flex items-center gap-1.5">

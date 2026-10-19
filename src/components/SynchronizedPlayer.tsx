@@ -872,7 +872,7 @@ export const SynchronizedPlayer: React.FC<SynchronizedPlayerProps> = ({
                         )}
                       </div>
                       <button
-                        onClick={() => playWordSpeech(inspectedWord.word, item.accent === 'UK' ? 'UK' : 'US')}
+                        onClick={() => playWordSpeech(inspectedWord.word, item.accent === 'UK' ? 'UK' : 'US', inspectedWord.audioUrl)}
                         title="Escuchar pronunciación nativa"
                         className="p-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 cursor-pointer shrink-0 transition-colors"
                       >
