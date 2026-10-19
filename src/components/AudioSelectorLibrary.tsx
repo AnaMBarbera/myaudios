@@ -51,6 +51,20 @@ interface AudioSelectorLibraryProps {
   canDeleteContent?: boolean;
 }
 
+const CEFR_ORDER: Record<string, number> = {
+  A1: 1,
+  A2: 2,
+  B1: 3,
+  B2: 4,
+  C1: 5,
+  C2: 6,
+};
+
+function getCefrRank(level?: string): number {
+  if (!level) return 999;
+  return CEFR_ORDER[level.toUpperCase()] ?? 999;
+}
+
 export const AudioSelectorLibrary: React.FC<AudioSelectorLibraryProps> = ({
   items,
   levels,
@@ -90,13 +104,18 @@ export const AudioSelectorLibrary: React.FC<AudioSelectorLibraryProps> = ({
 
   const currentLevel = levels.find(l => l.id === selectedLevelId) || levels[0];
   const allCurrentLessons = lessons.filter(l => l.levelId === (currentLevel?.id || 'ingles_b1'));
-  const currentLessons = showHidden ? allCurrentLessons : allCurrentLessons.filter(l => !l.isHidden);
+  const currentLessons = (showHidden ? allCurrentLessons : allCurrentLessons.filter(l => !l.isHidden))
+    .slice()
+    .sort((a, b) => {
+      if (a.order !== b.order) return a.order - b.order;
+      return a.title.localeCompare(b.title, undefined, { numeric: true, sensitivity: 'base' });
+    });
 
   // Hidden counts
   const hiddenLessonsCount = allCurrentLessons.filter(l => l.isHidden).length;
   const hiddenAudiosCount = items.filter(it => it.isHidden).length;
 
-  // Audios grouped for hierarchical view
+  // Audios grouped for hierarchical view (audios sorted by audio title)
   const lessonsWithAudios = useMemo(() => {
     return currentLessons.map(lesson => {
       const lessonAudios = items.filter(it => {
@@ -104,28 +123,73 @@ export const AudioSelectorLibrary: React.FC<AudioSelectorLibraryProps> = ({
         if (!showHidden && it.isHidden) return false;
         return true;
       });
+      // Sort audios inside the lesson by title
+      const sortedAudios = [...lessonAudios].sort((a, b) => 
+        a.title.localeCompare(b.title, undefined, { numeric: true, sensitivity: 'base' })
+      );
       return {
         lesson,
-        audios: lessonAudios,
+        audios: sortedAudios,
       };
     });
   }, [currentLessons, items, showHidden]);
 
-  // Filtered items for "All" view
+  // Filtered and sorted items for "Todas las Pistas": Nivel > Título lección > Título audio
   const filteredAllItems = useMemo(() => {
     let pool = showHidden ? items : items.filter(it => !it.isHidden);
-    if (!searchQuery.trim()) return pool;
-    const query = searchQuery.toLowerCase();
-    return pool.filter(item => {
-      const matchesTitle = item.title.toLowerCase().includes(query);
-      const matchesDesc = (item.description || '').toLowerCase().includes(query);
-      const matchesTags = item.tags.some(t => t.toLowerCase().includes(query));
-      const matchesTranscript = item.segments.some(s => 
-        s.text.toLowerCase().includes(query) || (s.translation || '').toLowerCase().includes(query)
-      );
-      return matchesTitle || matchesDesc || matchesTags || matchesTranscript;
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      pool = pool.filter(item => {
+        const matchesTitle = item.title.toLowerCase().includes(query);
+        const matchesDesc = (item.description || '').toLowerCase().includes(query);
+        const matchesTags = item.tags.some(t => t.toLowerCase().includes(query));
+        const matchesTranscript = item.segments.some(s => 
+          s.text.toLowerCase().includes(query) || (s.translation || '').toLowerCase().includes(query)
+        );
+        return matchesTitle || matchesDesc || matchesTags || matchesTranscript;
+      });
+    }
+
+    const levelMap = new Map(levels.map((lvl, idx) => [lvl.id, { order: lvl.order ?? idx, name: lvl.name }]));
+    const lessonMap = new Map(lessons.map((lsn, idx) => [lsn.id, { order: lsn.order ?? idx, title: lsn.title }]));
+
+    return [...pool].sort((a, b) => {
+      // 1. Sort by Nivel (order number or CEFR rank, then level name)
+      const lvlA = a.levelId ? levelMap.get(a.levelId) : null;
+      const lvlB = b.levelId ? levelMap.get(b.levelId) : null;
+
+      const orderA = lvlA ? lvlA.order : getCefrRank(a.level);
+      const orderB = lvlB ? lvlB.order : getCefrRank(b.level);
+
+      if (orderA !== orderB) {
+        return orderA - orderB;
+      }
+
+      const nameA = lvlA?.name || a.level || '';
+      const nameB = lvlB?.name || b.level || '';
+      const levelCmp = nameA.localeCompare(nameB, undefined, { numeric: true, sensitivity: 'base' });
+      if (levelCmp !== 0) {
+        return levelCmp;
+      }
+
+      // 2. Sort by Título lección
+      const lsnA = a.lessonId ? lessonMap.get(a.lessonId) : null;
+      const lsnB = b.lessonId ? lessonMap.get(b.lessonId) : null;
+
+      if (lsnA && !lsnB) return -1;
+      if (!lsnA && lsnB) return 1;
+
+      if (lsnA && lsnB) {
+        const lessonTitleCmp = lsnA.title.localeCompare(lsnB.title, undefined, { numeric: true, sensitivity: 'base' });
+        if (lessonTitleCmp !== 0) {
+          return lessonTitleCmp;
+        }
+      }
+
+      // 3. Sort by Título audio
+      return a.title.localeCompare(b.title, undefined, { numeric: true, sensitivity: 'base' });
     });
-  }, [items, searchQuery, showHidden]);
+  }, [items, searchQuery, showHidden, levels, lessons]);
 
   const handleCreateLevel = (e: React.FormEvent) => {
     e.preventDefault();
@@ -704,10 +768,20 @@ export const AudioSelectorLibrary: React.FC<AudioSelectorLibraryProps> = ({
               }`}
             >
               <div>
-                <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
-                  <div className="flex items-center gap-2">
-                    <span className="font-semibold text-indigo-600">Nivel {item.level}</span>
-                    <span aria-hidden="true">·</span>
+                <div className="flex items-center justify-between text-xs text-slate-400 mb-1.5">
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="font-semibold text-indigo-600 dark:text-indigo-400">
+                      {levels.find(l => l.id === item.levelId)?.name || `Nivel ${item.level}`}
+                    </span>
+                    {lessons.find(l => l.id === item.lessonId) && (
+                      <>
+                        <span aria-hidden="true" className="text-slate-300 dark:text-slate-600">·</span>
+                        <span className="text-slate-600 dark:text-slate-300 font-medium">
+                          {lessons.find(l => l.id === item.lessonId)?.title}
+                        </span>
+                      </>
+                    )}
+                    <span aria-hidden="true" className="text-slate-300 dark:text-slate-600">·</span>
                     <span className="font-mono">{formatTime(item.audioDuration || 0)}</span>
                   </div>
 
