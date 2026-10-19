@@ -17,7 +17,7 @@ import {
   ListFilter
 } from 'lucide-react';
 import { AudioTranscriptItem, CourseLevel, CourseLesson, CefrLevel, TranscriptSegment } from '../types';
-import { parseDriveLink, fetchTranscriptFromUrl } from '../utils/driveLinks';
+import { parseDriveLink } from '../utils/driveLinks';
 import { autoDetectAndParseTranscript, formatTime } from '../utils/transcriptParser';
 
 interface DriveLinksInputModalProps {
@@ -48,8 +48,7 @@ export const DriveLinksInputModal: React.FC<DriveLinksInputModalProps> = ({
   const [isFolderError, setIsFolderError] = useState(false);
 
   // 2. Transcript & VTT detection state
-  const [transcriptTab, setTranscriptTab] = useState<'upload-vtt' | 'drive-vtt-link' | 'paste-vtt'>('upload-vtt');
-  const [vttDriveUrlInput, setVttDriveUrlInput] = useState('');
+  const [transcriptTab, setTranscriptTab] = useState<'upload-vtt' | 'paste-vtt'>('upload-vtt');
   const [manualText, setManualText] = useState('');
   const [uploadedVttFileName, setUploadedVttFileName] = useState<string | null>(null);
 
@@ -78,7 +77,6 @@ export const DriveLinksInputModal: React.FC<DriveLinksInputModalProps> = ({
 
   // Audio testing and verification
   const [isVerifyingAudio, setIsVerifyingAudio] = useState(false);
-  const [isFetchingTranscript, setIsFetchingTranscript] = useState(false);
   const [audioDuration, setAudioDuration] = useState<number>(0);
   const [testAudioPlaying, setTestAudioPlaying] = useState(false);
   const [testAudioElement, setTestAudioElement] = useState<HTMLAudioElement | null>(null);
@@ -153,32 +151,6 @@ export const DriveLinksInputModal: React.FC<DriveLinksInputModalProps> = ({
     const detection = autoDetectAndParseTranscript(text, audioDuration || 30);
     setPreparedSegments(detection.segments);
     setDetectedFormat(detection.format);
-  };
-
-  // Fetch transcript from Google Drive link
-  const handleFetchDriveVTT = async () => {
-    if (!vttDriveUrlInput.trim()) {
-      setErrorMessage('Por favor introduce el enlace de la transcripción en Google Drive.');
-      return;
-    }
-
-    setIsFetchingTranscript(true);
-    setErrorMessage(null);
-
-    try {
-      const rawText = await fetchTranscriptFromUrl(vttDriveUrlInput);
-      const detection = autoDetectAndParseTranscript(rawText, audioDuration || 30);
-      setDetectedFormat(detection.format);
-      setPreparedSegments(detection.segments);
-      setManualText(rawText);
-    } catch (err: any) {
-      console.warn('Transcript fetch error:', err);
-      setErrorMessage(
-        'No se pudo descargar automáticamente la transcripción del enlace de Drive. Asegúrate de que el archivo tenga permiso "Cualquiera con el enlace puede ver", o copia y pega el contenido en la pestaña "Pegar Texto .VTT".'
-      );
-    } finally {
-      setIsFetchingTranscript(false);
-    }
   };
 
   // Test audio connection
@@ -539,12 +511,12 @@ export const DriveLinksInputModal: React.FC<DriveLinksInputModalProps> = ({
               2. Transcripción con Detección de .VTT (Marcas de Tiempo):
             </label>
             
-            {/* 3 Input Mode Tabs */}
+            {/* 2 Input Mode Tabs: Upload or Paste */}
             <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-lg">
               <button
                 type="button"
                 onClick={() => setTranscriptTab('upload-vtt')}
-                className={`px-2.5 py-1 rounded-md cursor-pointer transition-colors ${
+                className={`px-3 py-1 text-xs rounded-md cursor-pointer transition-colors ${
                   transcriptTab === 'upload-vtt'
                     ? 'bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 font-bold shadow-xs'
                     : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
@@ -554,19 +526,8 @@ export const DriveLinksInputModal: React.FC<DriveLinksInputModalProps> = ({
               </button>
               <button
                 type="button"
-                onClick={() => setTranscriptTab('drive-vtt-link')}
-                className={`px-2.5 py-1 rounded-md cursor-pointer transition-colors ${
-                  transcriptTab === 'drive-vtt-link'
-                    ? 'bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 font-bold shadow-xs'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
-                }`}
-              >
-                Enlace Drive .VTT
-              </button>
-              <button
-                type="button"
                 onClick={() => setTranscriptTab('paste-vtt')}
-                className={`px-2.5 py-1 rounded-md cursor-pointer transition-colors ${
+                className={`px-3 py-1 text-xs rounded-md cursor-pointer transition-colors ${
                   transcriptTab === 'paste-vtt'
                     ? 'bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 font-bold shadow-xs'
                     : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
@@ -611,33 +572,7 @@ export const DriveLinksInputModal: React.FC<DriveLinksInputModalProps> = ({
             </div>
           )}
 
-          {/* Mode B: Google Drive Link to .VTT */}
-          {transcriptTab === 'drive-vtt-link' && (
-            <div className="space-y-2">
-              <div className="flex gap-2">
-                <div className="relative flex-1">
-                  <FileText className="w-4 h-4 text-emerald-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="text"
-                    value={vttDriveUrlInput}
-                    onChange={(e) => setVttDriveUrlInput(e.target.value)}
-                    placeholder="https://drive.google.com/file/d/.../view (enlace al archivo .vtt en Drive)"
-                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-mono"
-                  />
-                </div>
-                <button
-                  type="button"
-                  onClick={handleFetchDriveVTT}
-                  disabled={isFetchingTranscript || !vttDriveUrlInput.trim()}
-                  className="px-4 py-2 bg-indigo-600 text-white rounded-xl font-semibold cursor-pointer disabled:opacity-50"
-                >
-                  {isFetchingTranscript ? 'Cargando...' : 'Cargar .VTT'}
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* Mode C: Paste raw .VTT text */}
+          {/* Mode B: Paste raw .VTT text */}
           {transcriptTab === 'paste-vtt' && (
             <div className="space-y-1.5">
               <textarea
