@@ -117,8 +117,12 @@ const BUILTIN_VOCAB: Record<string, { phonetic: string; partOfSpeech: string; de
   },
 };
 
-export async function lookupWord(rawWord: string): Promise<WordDefinitionResult> {
-  const clean = rawWord.toLowerCase().replace(/[^a-z'-]/g, '').trim();
+export async function lookupWord(rawWord: string, contextSentence?: string): Promise<WordDefinitionResult> {
+  const clean = rawWord
+    .trim()
+    .replace(/^[.,\/#!$%\^&\*;:{}=\-_`~()?"'«»“”]+|[.,\/#!$%\^&\*;:{}=\-_`~()?"'«»“”]+$/g, '')
+    .trim();
+
   if (!clean) {
     return {
       word: rawWord,
@@ -127,11 +131,13 @@ export async function lookupWord(rawWord: string): Promise<WordDefinitionResult>
     };
   }
 
-  // Check built-in lookup first
-  if (BUILTIN_VOCAB[clean]) {
-    const entry = BUILTIN_VOCAB[clean];
+  const lower = clean.toLowerCase();
+
+  // If no context sentence was passed and word is in built-in vocab, respond instantly
+  if (!contextSentence && BUILTIN_VOCAB[lower]) {
+    const entry = BUILTIN_VOCAB[lower];
     return {
-      word: clean,
+      word: lower,
       phonetic: entry.phonetic,
       partOfSpeech: entry.partOfSpeech,
       definition: entry.definition,
@@ -140,12 +146,62 @@ export async function lookupWord(rawWord: string): Promise<WordDefinitionResult>
     };
   }
 
-  // Try public dictionary API with fast timeout
+  // Primary: Call server-side vocabulary inspection service (Gemini AI + Lexicography Cache)
+  try {
+    const res = await fetch('/api/lookup-word', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        word: clean,
+        contextSentence: contextSentence || '',
+      }),
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.definition && data.spanish) {
+        return {
+          word: data.word || clean,
+          phonetic: data.phonetic || `/${clean}/`,
+          partOfSpeech: data.partOfSpeech || 'term',
+          definition: data.definition,
+          spanish: data.spanish,
+          example: data.example || '',
+          audioUrl: data.audioUrl || '',
+        };
+      }
+    }
+  } catch (err) {
+    console.warn('Server vocabulary lookup unavailable, falling back:', err);
+  }
+
+  // Secondary Fallback: Built-in vocabulary
+  if (BUILTIN_VOCAB[lower]) {
+    const entry = BUILTIN_VOCAB[lower];
+    return {
+      word: lower,
+      phonetic: entry.phonetic,
+      partOfSpeech: entry.partOfSpeech,
+      definition: entry.definition,
+      spanish: entry.spanish,
+      example: entry.example,
+    };
+  }
+
+  // Tertiary Fallback: Public Dictionary API + MyMemory bilingual translation
+  let phonetic = `/${lower}/`;
+  let partOfSpeech = 'word';
+  let definition = '';
+  let example = '';
+  let audioUrl = '';
+
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 2500);
+    const timeoutId = setTimeout(() => controller.abort(), 3000);
 
-    const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${clean}`, {
+    const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(lower)}`, {
       signal: controller.signal,
     });
     clearTimeout(timeoutId);
@@ -154,47 +210,49 @@ export async function lookupWord(rawWord: string): Promise<WordDefinitionResult>
       const data = await res.json();
       if (Array.isArray(data) && data.length > 0) {
         const item = data[0];
-        const phonetic = item.phonetic || item.phonetics?.find((p: any) => p.text)?.text || '';
-        const audioUrl = item.phonetics?.find((p: any) => p.audio && p.audio.length > 0)?.audio || '';
+        phonetic = item.phonetic || item.phonetics?.find((p: any) => p.text)?.text || phonetic;
+        audioUrl = item.phonetics?.find((p: any) => p.audio && p.audio.length > 0)?.audio || '';
         const meaning = item.meanings?.[0];
-        const definition = meaning?.definitions?.[0]?.definition || 'Definition found in dictionary.';
-        const example = meaning?.definitions?.[0]?.example || '';
-        const partOfSpeech = meaning?.partOfSpeech || '';
-
-        return {
-          word: clean,
-          phonetic,
-          partOfSpeech,
-          definition,
-          spanish: generateApproxSpanishHint(clean),
-          example,
-          audioUrl,
-        };
+        partOfSpeech = meaning?.partOfSpeech || partOfSpeech;
+        definition = meaning?.definitions?.[0]?.definition || '';
+        example = meaning?.definitions?.[0]?.example || '';
       }
     }
   } catch (err) {
-    // network or abort, use fallback
+    // Network or timeout
   }
 
-  // Graceful fallback
+  // Translation lookup via MyMemory
+  let spanish = '';
+  try {
+    const transRes = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(lower)}&langpair=en|es`);
+    if (transRes.ok) {
+      const transData = await transRes.json();
+      if (transData.responseData?.translatedText) {
+        spanish = transData.responseData.translatedText;
+      }
+    }
+  } catch (e) {}
+
+  if (!spanish) {
+    spanish = lower;
+  }
+  if (!definition) {
+    definition = `English word "${clean}". Translation: ${spanish}.`;
+  }
+  if (!example && contextSentence) {
+    example = contextSentence;
+  }
+
   return {
     word: clean,
-    phonetic: `/${clean}/`,
-    partOfSpeech: 'word',
-    definition: `English term: "${clean}". Use browser speech button to listen to exact pronunciation.`,
-    spanish: generateApproxSpanishHint(clean),
-    example: `Pay attention to how "${clean}" is spoken in this audio track.`,
+    phonetic,
+    partOfSpeech,
+    definition,
+    spanish,
+    example,
+    audioUrl,
   };
-}
-
-function generateApproxSpanishHint(word: string): string {
-  // Common cognate pattern hints
-  if (word.endsWith('tion')) return word.replace(/tion$/, 'ción');
-  if (word.endsWith('ty')) return word.replace(/ty$/, 'dad');
-  if (word.endsWith('ly')) return word.replace(/ly$/, 'mente');
-  if (word.endsWith('al')) return word;
-  if (word.endsWith('ble')) return word;
-  return word;
 }
 
 export function playWordSpeech(word: string, accent: 'US' | 'UK' = 'US') {

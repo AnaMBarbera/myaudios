@@ -24,7 +24,9 @@ import {
   Pencil,
   Trash2,
   FileText,
-  Upload
+  Upload,
+  Search,
+  X
 } from 'lucide-react';
 import { AudioTranscriptItem, TranscriptSegment, SavedWord } from '../types';
 import { UnifiedAudioPlayer } from '../utils/audioEngine';
@@ -87,6 +89,7 @@ export const SynchronizedPlayer: React.FC<SynchronizedPlayerProps> = ({
   const [inspectedWord, setInspectedWord] = useState<WordDefinitionResult | null>(null);
   const [isLookingUp, setIsLookingUp] = useState<boolean>(false);
   const [savedSuccessWord, setSavedSuccessWord] = useState<string | null>(null);
+  const [searchWordInput, setSearchWordInput] = useState<string>('');
 
   // Dictation mode state
   const [dictationAnswers, setDictationAnswers] = useState<Record<string, string>>({});
@@ -238,14 +241,18 @@ export const SynchronizedPlayer: React.FC<SynchronizedPlayerProps> = ({
   };
 
   // Word click inspector
-  const handleWordClick = async (wordStr: string) => {
-    const clean = wordStr.replace(/^[.,\/#!$%\^&\*;:{}=\-_`~()?"'«»“”]+|[.,\/#!$%\^&\*;:{}=\-_`~()?"'«»“”]+$/g, '');
+  const handleWordClick = async (wordStr: string, contextSentence?: string) => {
+    const clean = wordStr.replace(/^[.,\/#!$%\^&\*;:{}=\-_`~()?"'«»“”]+|[.,\/#!$%\^&\*;:{}=\-_`~()?"'«»“”]+$/g, '').trim();
     if (!clean) return;
     
     setIsLookingUp(true);
+    setSearchWordInput(clean);
     try {
-      const result = await lookupWord(clean);
+      const sentenceContext = contextSentence || activeSegment?.text || '';
+      const result = await lookupWord(clean, sentenceContext);
       setInspectedWord(result);
+    } catch (err) {
+      console.error('Inspector lookup error:', err);
     } finally {
       setIsLookingUp(false);
     }
@@ -771,7 +778,7 @@ export const SynchronizedPlayer: React.FC<SynchronizedPlayerProps> = ({
                             key={wIdx}
                             onClick={(e) => {
                               e.stopPropagation();
-                              handleWordClick(w);
+                              handleWordClick(w, seg.text);
                             }}
                             role="button"
                             tabIndex={0}
@@ -802,28 +809,72 @@ export const SynchronizedPlayer: React.FC<SynchronizedPlayerProps> = ({
           {/* Word Inspector Sidebar (1 Column) */}
           <div className="space-y-4">
             <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5 shadow-xs sticky top-20">
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800 mb-4">
-                <span className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
-                  Inspector de Vocabulario
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800 mb-3">
+                <span className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                  <Languages className="w-3.5 h-3.5 text-indigo-500" />
+                  <span>Inspector de Vocabulario</span>
                 </span>
-                <Sparkles className="w-4 h-4 text-indigo-500" />
+                <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
               </div>
 
+              {/* Direct word lookup input */}
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  if (searchWordInput.trim()) {
+                    handleWordClick(searchWordInput.trim(), activeSegment?.text);
+                  }
+                }}
+                className="relative mb-3.5"
+              >
+                <input
+                  type="text"
+                  value={searchWordInput}
+                  onChange={(e) => setSearchWordInput(e.target.value)}
+                  placeholder="Escribe o haz clic en una palabra..."
+                  className="w-full text-xs py-2 pl-8 pr-7 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-200 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-colors"
+                />
+                <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+                {searchWordInput && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSearchWordInput('');
+                      setInspectedWord(null);
+                    }}
+                    title="Limpiar"
+                    className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 absolute right-2 top-1/2 -translate-y-1/2 p-0.5 cursor-pointer"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                )}
+              </form>
+
               {isLookingUp ? (
-                <div className="py-8 text-center text-xs text-slate-400">
-                  Consultando diccionario y fonética...
+                <div className="py-8 text-center space-y-2">
+                  <div className="w-5 h-5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto" />
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    Analizando fonética, significado y traducción...
+                  </p>
                 </div>
               ) : inspectedWord ? (
-                <div className="space-y-4">
+                <div className="space-y-3.5">
                   <div>
-                    <div className="flex items-baseline justify-between">
-                      <h3 className="text-xl font-bold text-slate-900 dark:text-white capitalize">
-                        {inspectedWord.word}
-                      </h3>
+                    <div className="flex items-baseline justify-between gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h3 className="text-xl font-bold text-slate-900 dark:text-white capitalize">
+                          {inspectedWord.word}
+                        </h3>
+                        {inspectedWord.partOfSpeech && (
+                          <span className="text-[10px] px-1.5 py-0.5 rounded font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
+                            {inspectedWord.partOfSpeech}
+                          </span>
+                        )}
+                      </div>
                       <button
                         onClick={() => playWordSpeech(inspectedWord.word, item.accent === 'UK' ? 'UK' : 'US')}
-                        title="Escuchar pronunciación"
-                        className="p-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 cursor-pointer"
+                        title="Escuchar pronunciación nativa"
+                        className="p-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 cursor-pointer shrink-0 transition-colors"
                       >
                         <Volume1 className="w-4 h-4" />
                       </button>
@@ -836,25 +887,31 @@ export const SynchronizedPlayer: React.FC<SynchronizedPlayerProps> = ({
                     )}
                   </div>
 
-                  <div className="space-y-2 text-xs">
+                  <div className="space-y-2.5 text-xs">
                     <div>
-                      <span className="text-slate-400 block mb-0.5 font-medium">Traducción al español:</span>
-                      <p className="font-semibold text-slate-800 dark:text-slate-200 bg-slate-50 dark:bg-slate-800 p-2 rounded-md">
+                      <span className="text-[11px] text-slate-400 dark:text-slate-500 block mb-1 font-semibold uppercase tracking-wider">
+                        Traducción al español
+                      </span>
+                      <p className="font-semibold text-sm text-indigo-950 dark:text-indigo-100 bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/50 p-2.5 rounded-lg capitalize leading-snug">
                         {inspectedWord.spanish}
                       </p>
                     </div>
 
                     <div>
-                      <span className="text-slate-400 block mb-0.5 font-medium">Definición en inglés:</span>
-                      <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
+                      <span className="text-[11px] text-slate-400 dark:text-slate-500 block mb-1 font-semibold uppercase tracking-wider">
+                        Definición en inglés
+                      </span>
+                      <p className="text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/60 p-2.5 rounded-lg leading-relaxed border border-slate-100 dark:border-slate-800">
                         {inspectedWord.definition}
                       </p>
                     </div>
 
                     {inspectedWord.example && (
                       <div>
-                        <span className="text-slate-400 block mb-0.5 font-medium">Ejemplo de uso:</span>
-                        <p className="text-slate-600 dark:text-slate-400 italic bg-slate-50 dark:bg-slate-800/60 p-2 rounded-md">
+                        <span className="text-[11px] text-slate-400 dark:text-slate-500 block mb-1 font-semibold uppercase tracking-wider">
+                          Ejemplo de uso
+                        </span>
+                        <p className="text-slate-600 dark:text-slate-300 italic bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200/50 dark:border-amber-900/30 p-2.5 rounded-lg leading-relaxed">
                           "{inspectedWord.example}"
                         </p>
                       </div>
@@ -863,11 +920,11 @@ export const SynchronizedPlayer: React.FC<SynchronizedPlayerProps> = ({
 
                   <button
                     onClick={handleSaveInspectedWord}
-                    className="w-full py-2.5 px-3 rounded-lg text-xs font-semibold bg-indigo-600 text-white hover:bg-indigo-700 transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+                    className="w-full py-2 px-3 rounded-lg text-xs font-semibold bg-indigo-600 text-white hover:bg-indigo-700 transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-xs mt-2"
                   >
                     {savedSuccessWord === inspectedWord.word ? (
                       <>
-                        <Check className="w-4 h-4" />
+                        <Check className="w-4 h-4 text-emerald-300" />
                         <span>¡Guardada en Mi Vocabulario!</span>
                       </>
                     ) : (
@@ -879,10 +936,10 @@ export const SynchronizedPlayer: React.FC<SynchronizedPlayerProps> = ({
                   </button>
                 </div>
               ) : (
-                <div className="py-8 text-center space-y-2">
-                  <Languages className="w-8 h-8 text-slate-300 dark:text-slate-700 mx-auto" />
-                  <p className="text-xs text-slate-500 dark:text-slate-400">
-                    Haz clic en cualquier palabra de la transcripción para ver su pronunciación en alfabeto fonético (IPA), significado y traducción al español.
+                <div className="py-7 text-center space-y-2">
+                  <Languages className="w-7 h-7 text-slate-300 dark:text-slate-600 mx-auto" />
+                  <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed px-1">
+                    Haz clic en cualquier palabra de la transcripción (o escríbela en el buscador) para ver su traducción exacta al español, definición y fonética IPA.
                   </p>
                 </div>
               )}

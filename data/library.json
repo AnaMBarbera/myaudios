@@ -2,344 +2,328 @@
   "initialized": true,
   "items": [
     {
-      "audioUrl": "/api/drive-proxy?id=1rXLjIUOzxYMkIKpLRYCXB6-yufinY-pD&type=audio",
-      "tags": [
-        "Google Drive",
-        "Inglés B1",
-        "VTT",
-        "VTT Sincronizado"
-      ],
-      "level": "B1",
-      "category": "conversation",
-      "driveFolderUrl": "https://drive.google.com/file/d/1rXLjIUOzxYMkIKpLRYCXB6-yufinY-pD/view?usp=drive_link",
       "levelId": "ingles_b1",
-      "audioFileName": "Google Drive (1rXLjIUOzxYMkIKpLRYCXB6-yufinY-pD)",
-      "createdAt": 1792239933075,
-      "lessonId": "b1_leccion_1",
-      "isHidden": false,
-      "id": "item_drive_1792239933075",
-      "accent": "UK",
       "segments": [
         {
           "endTime": 2.357,
           "text": "Track 01.01",
-          "startTime": 0.444,
-          "id": "vtt_cue_1_ddem"
+          "id": "vtt_cue_1_ddem",
+          "startTime": 0.444
         },
         {
-          "speaker": "Narrator",
           "id": "vtt_cue_2_bfzj",
+          "speaker": "Narrator",
           "endTime": 5.373,
           "text": "1",
           "startTime": 4.365
         },
         {
-          "text": "A: It’s a nice day today.",
-          "endTime": 8.653,
           "startTime": 6.994,
-          "id": "vtt_cue_3_maaj"
+          "endTime": 8.653,
+          "id": "vtt_cue_3_maaj",
+          "text": "A: It’s a nice day today."
         },
         {
           "id": "vtt_cue_4_e6og",
-          "endTime": 10.692,
+          "startTime": 8.851,
           "text": "B: Yes, it’s a perfect day",
-          "startTime": 8.851
+          "endTime": 10.692
         },
         {
           "text": "for a birthday party.",
-          "startTime": 10.717,
           "endTime": 11.748,
+          "startTime": 10.717,
           "id": "vtt_cue_5_n8e6"
         },
         {
-          "startTime": 12.098,
-          "endTime": 14.185,
           "id": "vtt_cue_6_fs9r",
-          "text": "It’s great that so many people are here."
+          "text": "It’s great that so many people are here.",
+          "endTime": 14.185,
+          "startTime": 12.098
         },
         {
-          "text": "A: So, how do you know Ana?",
-          "endTime": 16.408,
           "id": "vtt_cue_7_yh5l",
+          "endTime": 16.408,
+          "text": "A: So, how do you know Ana?",
           "startTime": 14.424
         },
         {
-          "startTime": 16.625,
+          "text": "B: We were at university together.",
           "endTime": 18.323,
           "id": "vtt_cue_8_kny1",
-          "text": "B: We were at university together."
+          "startTime": 16.625
         },
         {
-          "text": "We did the same course.",
-          "id": "vtt_cue_9_i593",
           "endTime": 19.754,
-          "startTime": 18.58
+          "text": "We did the same course.",
+          "startTime": 18.58,
+          "id": "vtt_cue_9_i593"
         },
         {
+          "id": "vtt_cue_10_ubed",
           "text": "A: Oh right. What did you study?",
-          "endTime": 22.294,
           "startTime": 19.779,
-          "id": "vtt_cue_10_ubed"
+          "endTime": 22.294
         },
         {
+          "text": "B: English Literature.",
           "startTime": 22.621,
           "endTime": 24.065,
-          "text": "B: English Literature.",
           "id": "vtt_cue_11_hzu1"
         },
         {
+          "text": "And you? How do you know Ana?",
           "endTime": 26.489,
-          "startTime": 24.33,
           "id": "vtt_cue_12_b6wz",
-          "text": "And you? How do you know Ana?"
+          "startTime": 24.33
         },
         {
-          "text": "A: I’m her neighbour.",
           "id": "vtt_cue_13_4bkh",
-          "startTime": 26.544,
-          "endTime": 27.743
+          "endTime": 27.743,
+          "text": "A: I’m her neighbour.",
+          "startTime": 26.544
         },
         {
-          "text": "I live in the house next door.",
-          "endTime": 29.714,
+          "startTime": 28.008,
           "id": "vtt_cue_14_m70h",
-          "startTime": 28.008
+          "endTime": 29.714,
+          "text": "I live in the house next door."
         },
         {
-          "id": "vtt_cue_15_cztr",
           "text": "B: Really?",
+          "id": "vtt_cue_15_cztr",
           "startTime": 29.968,
           "endTime": 31.08
         },
         {
-          "startTime": 31.344,
-          "endTime": 32.534,
           "id": "vtt_cue_16_c1ef",
-          "text": "It’s a lovely street."
+          "text": "It’s a lovely street.",
+          "startTime": 31.344,
+          "endTime": 32.534
         },
         {
-          "endTime": 35.48,
-          "id": "vtt_cue_17_norm",
+          "text": "A: I think so. So did you come…",
           "startTime": 32.6,
-          "text": "A: I think so. So did you come…"
+          "id": "vtt_cue_17_norm",
+          "endTime": 35.48
         },
         {
-          "endTime": 38.533,
           "text": "2",
-          "id": "vtt_cue_18_27sb",
+          "endTime": 38.533,
+          "speaker": "Narrator",
           "startTime": 37.501,
-          "speaker": "Narrator"
+          "id": "vtt_cue_18_27sb"
         },
         {
+          "startTime": 39.391,
           "id": "vtt_cue_19_tiax",
-          "text": "C: How’s the food?",
           "endTime": 40.779,
-          "startTime": 39.391
+          "text": "C: How’s the food?"
         },
         {
-          "startTime": 40.892,
-          "id": "vtt_cue_20_nxii",
           "endTime": 43.599,
-          "text": "D: It’s great. The pizza is delicious."
+          "text": "D: It’s great. The pizza is delicious.",
+          "startTime": 40.892,
+          "id": "vtt_cue_20_nxii"
         },
         {
-          "endTime": 46.658,
           "id": "vtt_cue_21_xbz3",
-          "text": "It’s always nice to get good food at a party…",
-          "startTime": 43.912
+          "startTime": 43.912,
+          "endTime": 46.658,
+          "text": "It’s always nice to get good food at a party…"
         },
         {
-          "startTime": 47.464,
           "text": "Err … So, do you live near here?",
-          "id": "vtt_cue_22_u2mi",
-          "endTime": 49.884
+          "startTime": 47.464,
+          "endTime": 49.884,
+          "id": "vtt_cue_22_u2mi"
         },
         {
-          "endTime": 52.393,
-          "id": "vtt_cue_23_v3eu",
           "startTime": 50.076,
-          "text": "C: Yeah, I live down by the river."
+          "id": "vtt_cue_23_v3eu",
+          "text": "C: Yeah, I live down by the river.",
+          "endTime": 52.393
         },
         {
-          "endTime": 54.15,
           "startTime": 52.84,
-          "text": "You know those flats …",
-          "id": "vtt_cue_24_g0hr"
+          "id": "vtt_cue_24_g0hr",
+          "endTime": 54.15,
+          "text": "You know those flats …"
         },
         {
+          "id": "vtt_cue_25_ii8s",
           "text": "D: Oh yeah! The new ones.",
           "endTime": 55.628,
-          "startTime": 54.183,
-          "id": "vtt_cue_25_ii8s"
+          "startTime": 54.183
         },
         {
           "id": "vtt_cue_26_jbyt",
-          "text": "They’re expensive!",
+          "startTime": 55.898,
           "endTime": 57.231,
-          "startTime": 55.898
+          "text": "They’re expensive!"
         },
         {
-          "id": "vtt_cue_27_uidj",
           "text": "How much rent do you pay?",
+          "startTime": 57.485,
           "endTime": 59.049,
-          "startTime": 57.485
+          "id": "vtt_cue_27_uidj"
         },
         {
-          "endTime": 60.85,
+          "text": "C: Err … not much.",
           "id": "vtt_cue_28_i0pi",
           "startTime": 59.112,
-          "text": "C: Err … not much."
+          "endTime": 60.85
         },
         {
           "startTime": 61.334,
-          "text": "It’s not so … expensive … err …",
           "endTime": 64.881,
-          "id": "vtt_cue_29_o3aq"
+          "id": "vtt_cue_29_o3aq",
+          "text": "It’s not so … expensive … err …"
         },
         {
-          "text": "D: So what do you do?",
           "id": "vtt_cue_30_9bft",
+          "text": "D: So what do you do?",
           "endTime": 66.408,
           "startTime": 65.035
         },
         {
-          "startTime": 66.791,
-          "text": "C: I work for a bank.",
           "id": "vtt_cue_31_9c11",
-          "endTime": 67.989
+          "endTime": 67.989,
+          "startTime": 66.791,
+          "text": "C: I work for a bank."
         },
         {
           "endTime": 69.984,
+          "id": "vtt_cue_32_t0rd",
           "startTime": 68.245,
-          "text": "D: So, how much do you earn?",
-          "id": "vtt_cue_32_t0rd"
+          "text": "D: So, how much do you earn?"
         },
         {
-          "text": "C: Erm, is that … er …",
+          "id": "vtt_cue_33_jiul",
           "startTime": 70.484,
-          "endTime": 72.23,
-          "id": "vtt_cue_33_jiul"
+          "text": "C: Erm, is that … er …",
+          "endTime": 72.23
         },
         {
-          "text": "over there … sorry,",
+          "endTime": 74.126,
           "id": "vtt_cue_34_ow5q",
           "startTime": 72.595,
-          "endTime": 74.126
+          "text": "over there … sorry,"
         },
         {
-          "endTime": 75.975,
-          "id": "vtt_cue_35_m4lx",
           "text": "I just have to speak to my friend,",
-          "startTime": 74.444
+          "id": "vtt_cue_35_m4lx",
+          "startTime": 74.444,
+          "endTime": 75.975
         },
         {
-          "startTime": 76,
           "endTime": 76.936,
           "text": "because …",
+          "startTime": 76,
           "id": "vtt_cue_36_b8ac"
         },
         {
           "speaker": "Narrator",
-          "startTime": 78.89099999999999,
           "text": "3",
           "endTime": 79.899,
+          "startTime": 78.89099999999999,
           "id": "vtt_cue_37_9xm0"
         },
         {
-          "startTime": 80.593,
           "endTime": 82.243,
+          "id": "vtt_cue_38_az1v",
           "text": "E: What do you think of the party?",
-          "id": "vtt_cue_38_az1v"
+          "startTime": 80.593
         },
         {
           "endTime": 83.777,
-          "text": "F: Yeah, it’s great.",
+          "startTime": 82.277,
           "id": "vtt_cue_39_qau1",
-          "startTime": 82.277
+          "text": "F: Yeah, it’s great."
         },
         {
-          "endTime": 86.748,
           "id": "vtt_cue_40_sclv",
+          "startTime": 84.089,
           "text": "It’s really nice to meet all of Ana’s friends.",
-          "startTime": 84.089
+          "endTime": 86.748
         },
         {
           "id": "vtt_cue_41_6w07",
           "text": "You?",
-          "startTime": 86.916,
-          "endTime": 87.495
+          "endTime": 87.495,
+          "startTime": 86.916
         },
         {
-          "startTime": 87.606,
           "text": "E: It’s all right,",
           "id": "vtt_cue_42_5x1r",
+          "startTime": 87.606,
           "endTime": 88.9
         },
         {
+          "endTime": 90.662,
           "startTime": 88.932,
           "id": "vtt_cue_43_yobr",
-          "endTime": 90.662,
           "text": "but the music is a bit boring."
         },
         {
-          "startTime": 90.709,
-          "text": "F: Mmm.",
           "endTime": 91.527,
-          "id": "vtt_cue_44_b4hf"
+          "startTime": 90.709,
+          "id": "vtt_cue_44_b4hf",
+          "text": "F: Mmm."
         },
         {
+          "endTime": 92.703,
           "text": "E: I like your T-shirt.",
-          "startTime": 91.584,
           "id": "vtt_cue_45_yxwv",
-          "endTime": 92.703
+          "startTime": 91.584
         },
         {
-          "startTime": 92.798,
-          "id": "vtt_cue_46_1l9k",
           "text": "Is it for a football team?",
-          "endTime": 94.068
+          "endTime": 94.068,
+          "id": "vtt_cue_46_1l9k",
+          "startTime": 92.798
         },
         {
           "endTime": 97.187,
-          "id": "vtt_cue_47_odgq",
+          "text": "F: No! At least I don’t think so!",
           "startTime": 94.108,
-          "text": "F: No! At least I don’t think so!"
+          "id": "vtt_cue_47_odgq"
         },
         {
+          "startTime": 97.24600000000001,
           "id": "vtt_cue_48_of07",
-          "endTime": 99.30199999999999,
           "text": "E: So, do you play any sports?",
-          "startTime": 97.24600000000001
+          "endTime": 99.30199999999999
         },
         {
-          "endTime": 101.027,
-          "text": "F: No, not really.",
           "startTime": 99.44,
+          "text": "F: No, not really.",
+          "endTime": 101.027,
           "id": "vtt_cue_49_iy8z"
         },
         {
-          "id": "vtt_cue_50_zpz6",
           "startTime": 101.241,
+          "endTime": 102.78,
           "text": "I don’t really like sport.",
-          "endTime": 102.78
+          "id": "vtt_cue_50_zpz6"
         },
         {
-          "endTime": 104.792,
+          "startTime": 103.07,
           "id": "vtt_cue_51_3604",
           "text": "E: Well, what do you like then?",
-          "startTime": 103.07
+          "endTime": 104.792
         },
         {
-          "endTime": 108.628,
           "startTime": 105.128,
-          "text": "F: I prefer reading, or watching films.",
-          "id": "vtt_cue_52_fyze"
+          "id": "vtt_cue_52_fyze",
+          "endTime": 108.628,
+          "text": "F: I prefer reading, or watching films."
         },
         {
           "startTime": 108.73400000000001,
+          "text": "E: Oh.",
           "endTime": 109.274,
-          "id": "vtt_cue_53_lyd5",
-          "text": "E: Oh."
+          "id": "vtt_cue_53_lyd5"
         },
         {
           "text": "F: Yeah, so I might go to the cinema after the party.",
@@ -348,52 +332,52 @@
           "id": "vtt_cue_54_upb5"
         },
         {
-          "startTime": 113.578,
-          "text": "There’s a new film about a man who",
           "id": "vtt_cue_55_wew3",
+          "text": "There’s a new film about a man who",
+          "startTime": 113.578,
           "endTime": 115.864
         },
         {
           "id": "vtt_cue_56_w7w1",
+          "endTime": 118.976,
           "startTime": 115.88900000000001,
-          "text": "goes to Peru to visit his brother and …",
-          "endTime": 118.976
+          "text": "goes to Peru to visit his brother and …"
         },
         {
-          "startTime": 119.001,
-          "id": "vtt_cue_57_azei",
           "endTime": 120.667,
+          "id": "vtt_cue_57_azei",
+          "startTime": 119.001,
           "text": "E: Yeah, I saw that last week."
         },
         {
           "startTime": 120.692,
-          "id": "vtt_cue_58_mjho",
           "endTime": 122.191,
-          "text": "F: Oh. What was it like?"
+          "text": "F: Oh. What was it like?",
+          "id": "vtt_cue_58_mjho"
         },
         {
-          "text": "E: Oh, it’s an awful film. Really boring.",
           "id": "vtt_cue_59_6jkx",
+          "endTime": 124.789,
           "startTime": 122.289,
-          "endTime": 124.789
+          "text": "E: Oh, it’s an awful film. Really boring."
         },
         {
-          "id": "vtt_cue_60_1m83",
-          "text": "F: OK, well, I’d like to see it anyway.",
           "startTime": 125.189,
-          "endTime": 128.744
+          "text": "F: OK, well, I’d like to see it anyway.",
+          "endTime": 128.744,
+          "id": "vtt_cue_60_1m83"
         },
         {
           "text": "Perhaps I’ll like it.",
-          "id": "vtt_cue_61_jxin",
           "endTime": 130.453,
+          "id": "vtt_cue_61_jxin",
           "startTime": 128.961
         },
         {
-          "endTime": 132.05,
-          "text": "E: No, I don’t think so.",
           "id": "vtt_cue_62_t80n",
-          "startTime": 130.598
+          "text": "E: No, I don’t think so.",
+          "startTime": 130.598,
+          "endTime": 132.05
         },
         {
           "text": "It’s a really strange story.",
@@ -402,217 +386,226 @@
           "endTime": 134.082
         },
         {
-          "endTime": 136.393,
+          "id": "vtt_cue_64_974g",
           "startTime": 134.258,
-          "text": "And in the end, the man can’t find his",
-          "id": "vtt_cue_64_974g"
+          "endTime": 136.393,
+          "text": "And in the end, the man can’t find his"
         },
         {
-          "text": "brother and he just goes home again.",
-          "endTime": 138.171,
+          "id": "vtt_cue_65_r774",
           "startTime": 136.418,
-          "id": "vtt_cue_65_r774"
+          "endTime": 138.171,
+          "text": "brother and he just goes home again."
         },
         {
-          "endTime": 140.23,
-          "startTime": 138.276,
           "id": "vtt_cue_66_p5wr",
-          "text": "F: Oh, thanks a lot!"
+          "endTime": 140.23,
+          "text": "F: Oh, thanks a lot!",
+          "startTime": 138.276
         }
       ],
-      "description": "Do you play any sports?",
-      "audioDuration": 30,
-      "title": "Lesson A,  01-01"
-    },
-    {
-      "id": "item_drive_1792240710575",
-      "audioUrl": "/api/drive-proxy?id=1HcnhGD1XMOSu0UcRxTJgqznmkUjpSl6E&type=audio",
-      "driveFolderUrl": "https://drive.google.com/file/d/1HcnhGD1XMOSu0UcRxTJgqznmkUjpSl6E/view?usp=drive_link",
-      "audioFileName": "Google Drive (1HcnhGD1XMOSu0UcRxTJgqznmkUjpSl6E)",
+      "audioFileName": "Google Drive (1rXLjIUOzxYMkIKpLRYCXB6-yufinY-pD)",
+      "tags": [
+        "Google Drive",
+        "Inglés B1",
+        "VTT",
+        "VTT Sincronizado"
+      ],
+      "title": "Lesson A,  01-01",
       "description": "Do you play any sports?",
       "accent": "UK",
-      "category": "conversation",
-      "audioDuration": 30,
-      "level": "B1",
-      "createdAt": 1792240710575,
-      "lessonId": "b1_leccion_1",
       "isHidden": false,
+      "audioDuration": 30,
+      "lessonId": "b1_leccion_1",
+      "audioUrl": "/api/drive-proxy?id=1rXLjIUOzxYMkIKpLRYCXB6-yufinY-pD&type=audio",
+      "level": "B1",
+      "category": "conversation",
+      "createdAt": 1792239933075,
+      "driveFolderUrl": "https://drive.google.com/file/d/1rXLjIUOzxYMkIKpLRYCXB6-yufinY-pD/view?usp=drive_link",
+      "id": "item_drive_1792239933075"
+    },
+    {
+      "category": "conversation",
+      "id": "item_drive_1792240710575",
+      "audioFileName": "Google Drive (1HcnhGD1XMOSu0UcRxTJgqznmkUjpSl6E)",
+      "tags": [
+        "Google Drive",
+        "Inglés B1",
+        "Formato VTT"
+      ],
+      "lessonId": "b1_leccion_1",
+      "audioUrl": "/api/drive-proxy?id=1HcnhGD1XMOSu0UcRxTJgqznmkUjpSl6E&type=audio",
+      "createdAt": 1792240710575,
+      "driveFolderUrl": "https://drive.google.com/file/d/1HcnhGD1XMOSu0UcRxTJgqznmkUjpSl6E/view?usp=drive_link",
+      "levelId": "ingles_b1",
+      "level": "B1",
+      "title": "Lesson A, 01-08",
       "segments": [
         {
-          "text": "Track 01.08",
-          "endTime": 2.421,
           "startTime": 0.484,
-          "id": "vtt_cue_1_a5vj"
+          "id": "vtt_cue_1_a5vj",
+          "endTime": 2.421,
+          "text": "Track 01.08"
         },
         {
           "speaker": "Narrator",
-          "startTime": 4.63,
-          "text": "1",
+          "id": "vtt_cue_2_6wkh",
           "endTime": 5.503,
-          "id": "vtt_cue_2_6wkh"
+          "startTime": 4.63,
+          "text": "1"
         },
         {
           "startTime": 6.178,
-          "endTime": 8.265,
           "id": "vtt_cue_3_honn",
+          "endTime": 8.265,
           "text": "What kind of music do you like?"
         },
         {
+          "startTime": 10.017,
+          "text": "2",
           "id": "vtt_cue_4_hb0k",
           "speaker": "Narrator",
-          "startTime": 10.017,
-          "endTime": 10.811,
-          "text": "2"
+          "endTime": 10.811
         },
         {
           "startTime": 11.517,
-          "text": "What do your parents do?",
           "endTime": 13.215,
+          "text": "What do your parents do?",
           "id": "vtt_cue_5_ihvy"
         },
         {
-          "speaker": "Narrator",
-          "id": "vtt_cue_6_4ib7",
-          "startTime": 15.02,
+          "text": "3",
           "endTime": 15.806,
-          "text": "3"
-        },
-        {
-          "startTime": 16.626,
-          "text": "Did you grow up in this area?",
-          "id": "vtt_cue_7_pga9",
-          "endTime": 18.452
-        },
-        {
           "speaker": "Narrator",
-          "text": "4",
-          "startTime": 20.296,
-          "id": "vtt_cue_8_ux1s",
-          "endTime": 21.018
+          "startTime": 15.02,
+          "id": "vtt_cue_6_4ib7"
         },
         {
+          "text": "Did you grow up in this area?",
+          "startTime": 16.626,
+          "endTime": 18.452,
+          "id": "vtt_cue_7_pga9"
+        },
+        {
+          "endTime": 21.018,
+          "startTime": 20.296,
+          "speaker": "Narrator",
+          "id": "vtt_cue_8_ux1s",
+          "text": "4"
+        },
+        {
+          "text": "How old are you?",
           "endTime": 23.133,
           "startTime": 21.76,
-          "id": "vtt_cue_9_90fi",
-          "text": "How old are you?"
+          "id": "vtt_cue_9_90fi"
         },
         {
-          "id": "vtt_cue_10_mrf3",
-          "text": "5",
+          "startTime": 24.855,
           "speaker": "Narrator",
-          "endTime": 25.728,
-          "startTime": 24.855
+          "text": "5",
+          "id": "vtt_cue_10_mrf3",
+          "endTime": 25.728
         },
         {
+          "text": "Do you have any hobbies?",
           "startTime": 26.351,
           "id": "vtt_cue_11_5yd1",
-          "text": "Do you have any hobbies?",
           "endTime": 28.121
         },
         {
+          "text": "6",
           "endTime": 30.792,
           "startTime": 29.815,
           "speaker": "Narrator",
-          "id": "vtt_cue_12_rdw8",
-          "text": "6"
+          "id": "vtt_cue_12_rdw8"
         },
         {
-          "startTime": 31.444,
-          "id": "vtt_cue_13_i5kd",
           "endTime": 33.746,
-          "text": "Do you speak any other languages?"
+          "startTime": 31.444,
+          "text": "Do you speak any other languages?",
+          "id": "vtt_cue_13_i5kd"
         }
       ],
-      "title": "Lesson A, 01-08",
-      "levelId": "ingles_b1",
-      "tags": [
-        "Google Drive",
-        "Inglés B1",
-        "Formato VTT"
-      ]
+      "description": "Do you play any sports?",
+      "audioDuration": 30,
+      "isHidden": false,
+      "accent": "UK"
     },
     {
+      "lessonId": "b1_leccion_1",
       "audioUrl": "/api/drive-proxy?id=1JPP7W1r1Fb_UauJ5jpfFiMYQ8HVppVq7&type=audio",
-      "level": "B1",
-      "id": "item_drive_1792241496807",
-      "description": "Audio desde enlace de Google Drive",
-      "category": "conversation",
-      "tags": [
-        "Google Drive",
-        "Inglés B1",
-        "Formato VTT"
-      ],
-      "createdAt": 1792241496807,
-      "driveFolderUrl": "https://drive.google.com/file/d/1JPP7W1r1Fb_UauJ5jpfFiMYQ8HVppVq7/view?usp=drive_link",
       "title": "Lesson B,  01-09",
-      "levelId": "ingles_b1",
+      "category": "conversation",
+      "description": "Audio desde enlace de Google Drive",
+      "audioFileName": "Google Drive (1JPP7W1r1Fb_UauJ5jpfFiMYQ8HVppVq7)",
+      "accent": "UK",
       "segments": [
         {
-          "startTime": 0.46,
           "endTime": 2.508,
           "id": "vtt_cue_1_1py1",
-          "text": "Track 01.09"
+          "text": "Track 01.09",
+          "startTime": 0.46
         },
         {
-          "startTime": 4.495,
-          "endTime": 5.701,
-          "id": "vtt_cue_2_apfg",
           "speaker": "Narrator",
+          "id": "vtt_cue_2_apfg",
+          "endTime": 5.701,
+          "startTime": 4.495,
           "text": "Tara"
         },
         {
-          "startTime": 6.655,
+          "endTime": 10.847,
           "id": "vtt_cue_3_3h7o",
           "text": "Last year, my ex-boyfriend told me he didn’t want to see me any more …",
-          "endTime": 10.847
+          "startTime": 6.655
         },
         {
-          "id": "vtt_cue_4_hj19",
           "text": "by text message!",
+          "id": "vtt_cue_4_hj19",
           "startTime": 11.078,
           "endTime": 12.237
         },
         {
-          "text": "What kind of person does that?",
           "id": "vtt_cue_5_saev",
+          "text": "What kind of person does that?",
           "startTime": 12.779,
           "endTime": 14.414
         },
         {
-          "startTime": 14.995,
-          "id": "vtt_cue_6_p0m3",
           "endTime": 16.043,
+          "id": "vtt_cue_6_p0m3",
+          "startTime": 14.995,
           "text": "It was horrible."
         },
         {
-          "endTime": 17.973,
-          "startTime": 16.672,
           "id": "vtt_cue_7_wi3f",
+          "startTime": 16.672,
+          "endTime": 17.973,
           "text": "I called him for days,"
         },
         {
           "id": "vtt_cue_8_2tak",
-          "text": "but he didn’t answer.",
+          "endTime": 19.021,
           "startTime": 17.998,
-          "endTime": 19.021
+          "text": "but he didn’t answer."
         },
         {
           "startTime": 19.739,
-          "text": "It made me feel like",
           "id": "vtt_cue_9_derf",
-          "endTime": 20.54
+          "endTime": 20.54,
+          "text": "It made me feel like"
         },
         {
-          "text": "I wasn’t important to him at all.",
-          "endTime": 22.143,
+          "startTime": 20.565,
           "id": "vtt_cue_10_apk6",
-          "startTime": 20.565
+          "text": "I wasn’t important to him at all.",
+          "endTime": 22.143
         },
         {
           "text": "I think he just wanted me to go away.",
+          "endTime": 25.049,
           "startTime": 22.93,
-          "id": "vtt_cue_11_z72d",
-          "endTime": 25.049
+          "id": "vtt_cue_11_z72d"
         },
         {
           "endTime": 26.644,
@@ -621,65 +614,65 @@
           "id": "vtt_cue_12_ivl8"
         },
         {
-          "endTime": 29.299,
           "startTime": 28.195,
+          "endTime": 29.299,
           "id": "vtt_cue_13_odgo",
           "speaker": "Narrator",
           "text": "Magda"
         },
         {
-          "text": "When I want to plan something, I generally just send a text.",
           "startTime": 30,
           "endTime": 33.142,
+          "text": "When I want to plan something, I generally just send a text.",
           "id": "vtt_cue_14_f810"
         },
         {
+          "startTime": 33.859,
           "id": "vtt_cue_15_dmdw",
-          "text": "It’s the same when I cancel plans –",
           "endTime": 35.676,
-          "startTime": 33.859
+          "text": "It’s the same when I cancel plans –"
         },
         {
-          "id": "vtt_cue_16_bn1i",
-          "startTime": 36.295,
+          "text": "a text message is easier.",
           "endTime": 37.676,
-          "text": "a text message is easier."
+          "id": "vtt_cue_16_bn1i",
+          "startTime": 36.295
         },
         {
-          "id": "vtt_cue_17_6by3",
           "endTime": 41.846,
+          "text": "You don’t need to give a long explanation, you know, a lot of reasons.",
           "startTime": 38.449,
-          "text": "You don’t need to give a long explanation, you know, a lot of reasons."
+          "id": "vtt_cue_17_6by3"
         },
         {
-          "endTime": 44.222,
           "text": "Or have a difficult conversation.",
+          "startTime": 42.492,
           "id": "vtt_cue_18_mnqr",
-          "startTime": 42.492
+          "endTime": 44.222
         },
         {
-          "text": "It’s better for everyone.",
-          "endTime": 46.095,
+          "id": "vtt_cue_19_ah7k",
           "startTime": 44.825,
-          "id": "vtt_cue_19_ah7k"
+          "endTime": 46.095,
+          "text": "It’s better for everyone."
         },
         {
-          "startTime": 47.366,
-          "text": "Chris",
           "endTime": 48.382,
           "id": "vtt_cue_20_i8tg",
-          "speaker": "Narrator"
+          "speaker": "Narrator",
+          "startTime": 47.366,
+          "text": "Chris"
         },
         {
           "id": "vtt_cue_21_1ria",
+          "startTime": 49.112,
           "text": "Birthdays are different now.",
-          "endTime": 50.787,
-          "startTime": 49.112
+          "endTime": 50.787
         },
         {
           "startTime": 51.129,
-          "endTime": 57.027,
           "id": "vtt_cue_22_v0aw",
+          "endTime": 57.027,
           "text": "I hardly ever get cards or presents from friends, or even my brother, and no one calls."
         },
         {
@@ -689,556 +682,570 @@
           "endTime": 60.824
         },
         {
+          "endTime": 63.443,
           "startTime": 61.3,
-          "text": "It’s not very friendly, in my opinion.",
           "id": "vtt_cue_24_plo3",
-          "endTime": 63.443
+          "text": "It’s not very friendly, in my opinion."
         },
         {
-          "endTime": 66.018,
           "text": "Mike",
           "startTime": 64.963,
+          "endTime": 66.018,
           "speaker": "Narrator",
           "id": "vtt_cue_25_mk5r"
         },
         {
-          "startTime": 66.569,
+          "endTime": 69.982,
           "text": "My daughter is travelling around South America at the moment.",
-          "id": "vtt_cue_26_j3g3",
-          "endTime": 69.982
+          "startTime": 66.569,
+          "id": "vtt_cue_26_j3g3"
         },
         {
+          "startTime": 70.508,
           "text": "She’s writing a blog",
           "id": "vtt_cue_27_rk89",
-          "startTime": 70.508,
           "endTime": 71.635
         },
         {
-          "startTime": 71.66,
-          "text": "so we know what she’s doing.",
+          "endTime": 73.159,
           "id": "vtt_cue_28_cvo7",
-          "endTime": 73.159
+          "startTime": 71.66,
+          "text": "so we know what she’s doing."
         },
         {
           "text": "But she rarely calls.",
-          "startTime": 73.797,
+          "id": "vtt_cue_29_obuf",
           "endTime": 75.249,
-          "id": "vtt_cue_29_obuf"
+          "startTime": 73.797
         },
         {
-          "id": "vtt_cue_30_dio0",
           "endTime": 77.538,
+          "id": "vtt_cue_30_dio0",
           "text": "And I’d love to get a postcard",
           "startTime": 75.561
         },
         {
+          "text": "or a letter sometimes.",
           "startTime": 77.649,
           "endTime": 79.28399999999999,
-          "text": "or a letter sometimes.",
           "id": "vtt_cue_31_sz70"
         },
         {
-          "id": "vtt_cue_32_8amr",
           "endTime": 82.032,
           "startTime": 79.818,
+          "id": "vtt_cue_32_8amr",
           "text": "Just to know she’s thinking about the family."
         }
       ],
-      "lessonId": "b1_leccion_1",
+      "driveFolderUrl": "https://drive.google.com/file/d/1JPP7W1r1Fb_UauJ5jpfFiMYQ8HVppVq7/view?usp=drive_link",
+      "levelId": "ingles_b1",
+      "level": "B1",
+      "createdAt": 1792241496807,
+      "id": "item_drive_1792241496807",
       "audioDuration": 30,
-      "accent": "UK",
-      "audioFileName": "Google Drive (1JPP7W1r1Fb_UauJ5jpfFiMYQ8HVppVq7)"
+      "tags": [
+        "Google Drive",
+        "Inglés B1",
+        "Formato VTT"
+      ]
     },
     {
-      "audioDuration": 30,
       "accent": "UK",
-      "title": "Lesson C, 01-14",
+      "audioDuration": 30,
       "driveFolderUrl": "https://drive.google.com/file/d/1v8wxxPFkryjmluiJPmmzOKWM7P9l8zGw/view?usp=drive_link",
-      "lessonId": "b1_leccion_1",
+      "level": "B1",
+      "description": "Audio desde enlace de Google Drive",
+      "id": "item_drive_1792242108567",
       "createdAt": 1792242108567,
+      "levelId": "ingles_b1",
       "segments": [
         {
-          "id": "vtt_cue_1_9a1l",
           "startTime": 0.507,
-          "text": "Track 01.14",
-          "endTime": 2.642
+          "endTime": 2.642,
+          "id": "vtt_cue_1_9a1l",
+          "text": "Track 01.14"
         },
         {
           "text": "PART 1",
-          "startTime": 4.67,
           "endTime": 5.679,
+          "startTime": 4.67,
           "id": "vtt_cue_2_h1rv",
           "speaker": "Narrator"
         },
         {
-          "startTime": 15.216,
           "endTime": 16.169,
-          "text": "Annie?",
+          "id": "vtt_cue_3_fp1x",
           "speaker": "Rachel",
-          "id": "vtt_cue_3_fp1x"
+          "text": "Annie?",
+          "startTime": 15.216
         },
         {
-          "id": "vtt_cue_4_4j6j",
-          "speaker": "Annie",
           "startTime": 17.561,
           "text": "Rachel!",
-          "endTime": 18.814
+          "endTime": 18.814,
+          "id": "vtt_cue_4_4j6j",
+          "speaker": "Annie"
         },
         {
-          "text": "Long time no see! How are you?",
-          "endTime": 20.712,
-          "startTime": 18.951,
           "speaker": "Rachel",
-          "id": "vtt_cue_5_kdpi"
+          "startTime": 18.951,
+          "id": "vtt_cue_5_kdpi",
+          "endTime": 20.712,
+          "text": "Long time no see! How are you?"
         },
         {
+          "endTime": 21.706,
+          "id": "vtt_cue_6_5xec",
           "speaker": "Annie",
           "startTime": 20.737,
-          "endTime": 21.706,
-          "text": "I’m great.",
-          "id": "vtt_cue_6_5xec"
+          "text": "I’m great."
         },
         {
-          "id": "vtt_cue_7_cnsw",
           "text": "What a lovely surprise!",
           "endTime": 23.698,
+          "id": "vtt_cue_7_cnsw",
           "startTime": 22.142
         },
         {
           "id": "vtt_cue_8_pogs",
-          "endTime": 24.746,
+          "text": "Great to see you!",
           "startTime": 23.826,
-          "text": "Great to see you!"
+          "endTime": 24.746
         },
         {
-          "startTime": 24.771,
-          "speaker": "Rachel",
           "text": "Yeah! You too.",
           "endTime": 25.922,
-          "id": "vtt_cue_9_7txf"
+          "id": "vtt_cue_9_7txf",
+          "speaker": "Rachel",
+          "startTime": 24.771
         },
         {
+          "speaker": "Annie",
+          "startTime": 26.066,
           "endTime": 27.597,
           "id": "vtt_cue_10_64q9",
-          "text": "When did we last see each other?",
-          "startTime": 26.066,
-          "speaker": "Annie"
+          "text": "When did we last see each other?"
         },
         {
-          "speaker": "Rachel",
-          "startTime": 27.98,
-          "id": "vtt_cue_11_u6ed",
           "text": "Oh, I think it was about …",
-          "endTime": 29.599
+          "id": "vtt_cue_11_u6ed",
+          "startTime": 27.98,
+          "endTime": 29.599,
+          "speaker": "Rachel"
         },
         {
-          "id": "vtt_cue_12_ebgh",
           "endTime": 31.242,
           "text": "six years ago!",
+          "id": "vtt_cue_12_ebgh",
           "startTime": 30.068
         },
         {
-          "startTime": 32.276,
-          "id": "vtt_cue_13_h9ij",
           "endTime": 33.839,
-          "text": "So … where are you living these days?"
+          "id": "vtt_cue_13_h9ij",
+          "text": "So … where are you living these days?",
+          "startTime": 32.276
         },
         {
           "speaker": "Annie",
           "text": "Oh, not far from here.",
+          "endTime": 35.093,
           "startTime": 33.864,
-          "id": "vtt_cue_14_8m2g",
-          "endTime": 35.093
+          "id": "vtt_cue_14_8m2g"
         },
         {
-          "id": "vtt_cue_15_22wu",
+          "endTime": 36.808,
           "startTime": 35.332,
-          "text": "I live on Hampton Street.",
-          "endTime": 36.808
+          "id": "vtt_cue_15_22wu",
+          "text": "I live on Hampton Street."
         },
         {
-          "text": "Do you know it?",
           "id": "vtt_cue_16_a1id",
-          "endTime": 37.856,
-          "startTime": 37.007
+          "startTime": 37.007,
+          "text": "Do you know it?",
+          "endTime": 37.856
         },
         {
           "text": "Yes, I do.",
-          "speaker": "Rachel",
           "startTime": 38.144,
+          "speaker": "Rachel",
           "endTime": 39.175,
           "id": "vtt_cue_17_ow8u"
         },
         {
-          "startTime": 39.2,
+          "endTime": 40.461,
           "id": "vtt_cue_18_9k2s",
           "text": "That’s really close to the centre.",
-          "endTime": 40.461
+          "startTime": 39.2
         },
         {
-          "speaker": "Annie",
-          "startTime": 40.495,
           "id": "vtt_cue_19_l2u7",
-          "text": "Mmm. How about you?",
-          "endTime": 41.813
+          "startTime": 40.495,
+          "speaker": "Annie",
+          "endTime": 41.813,
+          "text": "Mmm. How about you?"
         },
         {
-          "speaker": "Rachel",
+          "id": "vtt_cue_20_mfsp",
           "startTime": 42.028,
-          "text": "We live on Compton Road.",
           "endTime": 43.417,
-          "id": "vtt_cue_20_mfsp"
+          "speaker": "Rachel",
+          "text": "We live on Compton Road."
         },
         {
           "id": "vtt_cue_21_icxk",
-          "speaker": "Annie",
-          "text": "Oh – how nice!",
+          "endTime": 45.083,
           "startTime": 43.568,
-          "endTime": 45.083
+          "speaker": "Annie",
+          "text": "Oh – how nice!"
         },
         {
+          "speaker": "Mark",
           "endTime": 46.474,
           "id": "vtt_cue_22_yxte",
-          "speaker": "Mark",
           "startTime": 45.291,
           "text": "My name’s Mark, by the way."
         },
         {
-          "speaker": "Annie",
           "id": "vtt_cue_23_ze0y",
-          "text": "Hi. Nice to meet you.",
           "endTime": 47.743,
-          "startTime": 46.585
+          "speaker": "Annie",
+          "startTime": 46.585,
+          "text": "Hi. Nice to meet you."
         },
         {
           "text": "Nice to meet you, too.",
-          "endTime": 48.848,
-          "speaker": "Mark",
+          "startTime": 47.768,
           "id": "vtt_cue_24_zd7m",
-          "startTime": 47.768
+          "speaker": "Mark",
+          "endTime": 48.848
         },
         {
+          "endTime": 51.466,
           "speaker": "Rachel",
-          "id": "vtt_cue_25_5euq",
-          "text": "Sorry, yes – Mark’s my husband!",
           "startTime": 49.03,
-          "endTime": 51.466
+          "id": "vtt_cue_25_5euq",
+          "text": "Sorry, yes – Mark’s my husband!"
         },
         {
           "id": "vtt_cue_26_5zyt",
-          "speaker": "Annie",
-          "endTime": 53.175,
+          "text": "Husband – wow!",
           "startTime": 51.675,
-          "text": "Husband – wow!"
+          "speaker": "Annie",
+          "endTime": 53.175
         },
         {
+          "id": "vtt_cue_27_t8ah",
           "text": "That’s fantastic news.",
           "endTime": 54.667,
-          "id": "vtt_cue_27_t8ah",
           "startTime": 53.333
         },
         {
-          "endTime": 56.191,
           "startTime": 55.087,
-          "text": "When did you get married?",
-          "id": "vtt_cue_28_3qwi"
+          "id": "vtt_cue_28_3qwi",
+          "endTime": 56.191,
+          "text": "When did you get married?"
         },
         {
-          "text": "Six months ago.",
-          "speaker": "Rachel",
+          "endTime": 56.881,
           "id": "vtt_cue_29_dpv0",
-          "startTime": 56.278,
-          "endTime": 56.881
+          "speaker": "Rachel",
+          "text": "Six months ago.",
+          "startTime": 56.278
         },
         {
+          "speaker": "Mark",
           "text": "Eight months ago.",
           "id": "vtt_cue_30_hzn9",
           "endTime": 57.524,
-          "startTime": 56.906,
-          "speaker": "Mark"
+          "startTime": 56.906
         },
         {
+          "speaker": "Rachel",
           "endTime": 60.828,
-          "text": "It was six, Mark.",
-          "id": "vtt_cue_31_3yxd",
           "startTime": 59.185,
-          "speaker": "Rachel"
+          "id": "vtt_cue_31_3yxd",
+          "text": "It was six, Mark."
         },
         {
           "id": "vtt_cue_32_h8c1",
-          "endTime": 64.527,
-          "text": "Well, congratulations!",
-          "startTime": 62.663,
-          "speaker": "Annie"
-        },
-        {
-          "startTime": 65.103,
-          "text": "I want to know all the details!",
-          "endTime": 66.873,
-          "id": "vtt_cue_33_5bm1"
-        },
-        {
-          "text": "Look – I’m going to the café down the street now to meet Leo, my boyfriend.",
-          "startTime": 67.725,
-          "id": "vtt_cue_34_9whm",
-          "endTime": 72.013
-        },
-        {
-          "endTime": 73.997,
-          "startTime": 72.592,
-          "text": "Would you both like to come?",
-          "id": "vtt_cue_35_1nj0"
-        },
-        {
-          "text": "Yeah, that sounds good.",
-          "endTime": 77.102,
-          "id": "vtt_cue_36_nya1",
-          "startTime": 75.769,
-          "speaker": "Rachel"
-        },
-        {
-          "id": "vtt_cue_37_kfza",
           "speaker": "Annie",
-          "endTime": 79.215,
+          "text": "Well, congratulations!",
+          "endTime": 64.527,
+          "startTime": 62.663
+        },
+        {
+          "endTime": 66.873,
+          "id": "vtt_cue_33_5bm1",
+          "startTime": 65.103,
+          "text": "I want to know all the details!"
+        },
+        {
+          "id": "vtt_cue_34_9whm",
+          "startTime": 67.725,
+          "endTime": 72.013,
+          "text": "Look – I’m going to the café down the street now to meet Leo, my boyfriend."
+        },
+        {
+          "startTime": 72.592,
+          "endTime": 73.997,
+          "id": "vtt_cue_35_1nj0",
+          "text": "Would you both like to come?"
+        },
+        {
+          "startTime": 75.769,
+          "text": "Yeah, that sounds good.",
+          "speaker": "Rachel",
+          "endTime": 77.102,
+          "id": "vtt_cue_36_nya1"
+        },
+        {
           "startTime": 77.15899999999999,
-          "text": "Brilliant! Let’s go."
+          "text": "Brilliant! Let’s go.",
+          "endTime": 79.215,
+          "id": "vtt_cue_37_kfza",
+          "speaker": "Annie"
         }
       ],
       "audioFileName": "Google Drive (1v8wxxPFkryjmluiJPmmzOKWM7P9l8zGw)",
-      "levelId": "ingles_b1",
       "category": "conversation",
-      "description": "Audio desde enlace de Google Drive",
-      "audioUrl": "/api/drive-proxy?id=1v8wxxPFkryjmluiJPmmzOKWM7P9l8zGw&type=audio",
-      "id": "item_drive_1792242108567",
       "tags": [
         "Google Drive",
         "Inglés B1",
         "Formato VTT"
       ],
-      "level": "B1"
+      "audioUrl": "/api/drive-proxy?id=1v8wxxPFkryjmluiJPmmzOKWM7P9l8zGw&type=audio",
+      "title": "Lesson C, 01-14",
+      "lessonId": "b1_leccion_1"
     },
     {
-      "category": "conversation",
-      "id": "item_drive_1792243087897",
-      "description": "Audio desde enlace de Google Drive",
+      "level": "B1",
       "createdAt": 1792243087897,
-      "driveFolderUrl": "https://drive.google.com/file/d/1MJKwuRh26VGDwOO1xRfEpFHfonF24Ptx/view?usp=drive_link",
-      "title": "Lesson C, 01-19",
-      "audioUrl": "/api/drive-proxy?id=1MJKwuRh26VGDwOO1xRfEpFHfonF24Ptx&type=audio",
-      "levelId": "ingles_b1",
-      "accent": "UK",
       "audioFileName": "Google Drive (1MJKwuRh26VGDwOO1xRfEpFHfonF24Ptx)",
+      "category": "conversation",
+      "levelId": "ingles_b1",
+      "audioUrl": "/api/drive-proxy?id=1MJKwuRh26VGDwOO1xRfEpFHfonF24Ptx&type=audio",
       "lessonId": "b1_leccion_1",
+      "tags": [
+        "Google Drive",
+        "Inglés B1",
+        "Formato VTT"
+      ],
+      "accent": "UK",
+      "description": "Audio desde enlace de Google Drive",
+      "driveFolderUrl": "https://drive.google.com/file/d/1MJKwuRh26VGDwOO1xRfEpFHfonF24Ptx/view?usp=drive_link",
+      "audioDuration": 30,
+      "title": "Lesson C, 01-19",
+      "id": "item_drive_1792243087897",
       "segments": [
         {
-          "id": "vtt_cue_1_vgts",
           "startTime": 0.428,
           "text": "Track 01.19",
+          "id": "vtt_cue_1_vgts",
           "endTime": 2.587
         },
         {
-          "endTime": 5.67,
           "speaker": "Narrator",
           "text": "PART 2",
-          "id": "vtt_cue_2_iu5r",
-          "startTime": 4.654
+          "endTime": 5.67,
+          "startTime": 4.654,
+          "id": "vtt_cue_2_iu5r"
         },
         {
-          "startTime": 9.659,
-          "endTime": 11.223,
+          "id": "vtt_cue_3_pmog",
           "text": "Do you play much sport?",
-          "speaker": "Mark",
-          "id": "vtt_cue_3_pmog"
-        },
-        {
-          "endTime": 13.178,
-          "id": "vtt_cue_4_1mos",
-          "startTime": 12.361,
-          "speaker": "Leo",
-          "text": "Not really."
-        },
-        {
-          "id": "vtt_cue_5_acp7",
-          "text": "I occasionally watch the rugby on TV,",
-          "startTime": 13.257,
-          "endTime": 14.891
-        },
-        {
-          "id": "vtt_cue_6_u7s1",
-          "startTime": 14.916,
-          "text": "but I’m not a big sports fan.",
-          "endTime": 16.043
-        },
-        {
-          "endTime": 16.814,
-          "startTime": 16.068,
-          "id": "vtt_cue_7_4kma",
-          "text": "Did you see the match",
+          "endTime": 11.223,
+          "startTime": 9.659,
           "speaker": "Mark"
         },
         {
-          "startTime": 16.839,
-          "endTime": 17.37,
+          "speaker": "Leo",
+          "startTime": 12.361,
+          "endTime": 13.178,
+          "text": "Not really.",
+          "id": "vtt_cue_4_1mos"
+        },
+        {
+          "id": "vtt_cue_5_acp7",
+          "endTime": 14.891,
+          "startTime": 13.257,
+          "text": "I occasionally watch the rugby on TV,"
+        },
+        {
+          "text": "but I’m not a big sports fan.",
+          "startTime": 14.916,
+          "endTime": 16.043,
+          "id": "vtt_cue_6_u7s1"
+        },
+        {
+          "text": "Did you see the match",
+          "id": "vtt_cue_7_4kma",
+          "speaker": "Mark",
+          "startTime": 16.068,
+          "endTime": 16.814
+        },
+        {
+          "id": "vtt_cue_8_69kj",
           "text": "at the weekend?",
-          "id": "vtt_cue_8_69kj"
+          "startTime": 16.839,
+          "endTime": 17.37
         },
         {
           "speaker": "Rachel",
           "startTime": 17.395,
-          "id": "vtt_cue_9_t9ig",
           "endTime": 19.244,
+          "id": "vtt_cue_9_t9ig",
           "text": "Oh, not sport again!"
         },
         {
-          "endTime": 21.722,
-          "startTime": 20.705,
-          "id": "vtt_cue_10_66r2",
           "speaker": "Annie",
-          "text": "So, have you got any"
+          "endTime": 21.722,
+          "text": "So, have you got any",
+          "startTime": 20.705,
+          "id": "vtt_cue_10_66r2"
         },
         {
+          "startTime": 21.723,
           "endTime": 23.397,
-          "text": "exciting plans for next week?",
           "id": "vtt_cue_11_ncqu",
-          "startTime": 21.723
+          "text": "exciting plans for next week?"
         },
         {
-          "endTime": 24.803,
-          "startTime": 23.946,
-          "text": "Well, er …",
           "id": "vtt_cue_12_b4f2",
-          "speaker": "Mark"
+          "endTime": 24.803,
+          "text": "Well, er …",
+          "speaker": "Mark",
+          "startTime": 23.946
         },
         {
-          "speaker": "Rachel",
-          "id": "vtt_cue_13_lp5x",
           "endTime": 27.423,
           "startTime": 24.828,
-          "text": "No, not really. Just work."
+          "text": "No, not really. Just work.",
+          "speaker": "Rachel",
+          "id": "vtt_cue_13_lp5x"
         },
         {
           "startTime": 27.727,
-          "endTime": 29.759,
           "text": "I’ve got a lot to do in the shop this week,",
+          "endTime": 29.759,
           "id": "vtt_cue_14_ymu8"
         },
         {
+          "endTime": 31.783,
           "text": "because we’re going to a wedding next weekend.",
           "startTime": 29.799,
-          "id": "vtt_cue_15_4etw",
-          "endTime": 31.783
+          "id": "vtt_cue_15_4etw"
         },
         {
+          "id": "vtt_cue_16_c65u",
+          "startTime": 32.063,
           "speaker": "Annie",
           "text": "Oh, the shop? What do you do?",
-          "id": "vtt_cue_16_c65u",
-          "endTime": 34.53,
-          "startTime": 32.063
+          "endTime": 34.53
         },
         {
           "startTime": 34.715,
-          "text": "I’m a florist.",
           "speaker": "Rachel",
-          "id": "vtt_cue_17_4zq4",
-          "endTime": 35.628
+          "text": "I’m a florist.",
+          "endTime": 35.628,
+          "id": "vtt_cue_17_4zq4"
         },
         {
-          "speaker": "Annie",
           "id": "vtt_cue_18_83j4",
-          "endTime": 37.511,
+          "speaker": "Annie",
           "startTime": 36.321,
+          "endTime": 37.511,
           "text": "What a great job!"
         },
         {
-          "startTime": 37.765,
           "text": "Where’s the shop?",
+          "startTime": 37.765,
           "id": "vtt_cue_19_7ezb",
           "endTime": 38.67
         },
         {
-          "endTime": 40.155,
-          "id": "vtt_cue_20_b24d",
-          "text": "Not far from here.",
           "speaker": "Rachel",
-          "startTime": 38.965
+          "text": "Not far from here.",
+          "endTime": 40.155,
+          "startTime": 38.965,
+          "id": "vtt_cue_20_b24d"
         },
         {
+          "text": "I’ll show you some time.",
           "startTime": 40.457,
-          "endTime": 41.481,
           "id": "vtt_cue_21_5ugf",
-          "text": "I’ll show you some time."
+          "endTime": 41.481
         },
         {
-          "speaker": "Annie",
-          "id": "vtt_cue_22_xdx9",
           "text": "That would be great!",
+          "id": "vtt_cue_22_xdx9",
           "endTime": 42.663,
+          "speaker": "Annie",
           "startTime": 41.6
         },
         {
-          "endTime": 45.179,
           "id": "vtt_cue_23_b291",
+          "text": "And are you the manager, or …",
           "startTime": 42.886,
-          "text": "And are you the manager, or …"
+          "endTime": 45.179
         },
         {
-          "endTime": 49.547,
           "id": "vtt_cue_24_mxnf",
           "speaker": "Rachel",
-          "text": "Well, not really – it’s my shop.",
-          "startTime": 45.507
+          "startTime": 45.507,
+          "endTime": 49.547,
+          "text": "Well, not really – it’s my shop."
         },
         {
-          "speaker": "Annie",
-          "startTime": 50.206,
           "endTime": 52.738,
+          "speaker": "Annie",
+          "id": "vtt_cue_25_0e7f",
           "text": "Wow. That’s amazing!",
-          "id": "vtt_cue_25_0e7f"
+          "startTime": 50.206
         },
         {
+          "startTime": 53.32,
           "endTime": 55.335,
           "text": "So you’re a businesswoman!",
-          "id": "vtt_cue_26_30hy",
-          "startTime": 53.32
+          "id": "vtt_cue_26_30hy"
         },
         {
-          "startTime": 56.687,
-          "text": "Do you work on your own?",
           "id": "vtt_cue_27_ekrx",
-          "endTime": 57.917
+          "text": "Do you work on your own?",
+          "endTime": 57.917,
+          "startTime": 56.687
         },
         {
-          "speaker": "Rachel",
-          "id": "vtt_cue_28_k1a5",
           "startTime": 58.107,
+          "speaker": "Rachel",
+          "text": "No, I have someone to help.",
           "endTime": 60.059,
-          "text": "No, I have someone to help."
+          "id": "vtt_cue_28_k1a5"
         },
         {
-          "id": "vtt_cue_29_79jc",
-          "text": "Tina.",
           "endTime": 60.871,
-          "startTime": 60.308
+          "text": "Tina.",
+          "startTime": 60.308,
+          "id": "vtt_cue_29_79jc"
         },
         {
-          "text": "She comes in for a few hours every day.",
           "endTime": 62.768,
-          "id": "vtt_cue_30_e9i7",
-          "startTime": 61.093
+          "startTime": 61.093,
+          "text": "She comes in for a few hours every day.",
+          "id": "vtt_cue_30_e9i7"
         },
         {
           "speaker": "Annie",
+          "endTime": 64,
           "text": "Oh, that’s good.",
           "id": "vtt_cue_31_z4fd",
-          "endTime": 64,
           "startTime": 62.992
         },
         {
-          "id": "vtt_cue_32_lodi",
-          "endTime": 65.293,
-          "startTime": 64.182,
+          "text": "How about you?",
           "speaker": "Rachel",
-          "text": "How about you?"
+          "startTime": 64.182,
+          "endTime": 65.293,
+          "id": "vtt_cue_32_lodi"
         },
         {
           "startTime": 65.523,
@@ -1248,310 +1255,309 @@
         },
         {
           "speaker": "Annie",
-          "endTime": 69.55799999999999,
           "text": "Oh, marketing. Boring!",
-          "id": "vtt_cue_34_yc8v",
-          "startTime": 66.867
+          "startTime": 66.867,
+          "endTime": 69.55799999999999,
+          "id": "vtt_cue_34_yc8v"
         },
         {
+          "endTime": 73.271,
+          "startTime": 72.009,
           "speaker": "Rachel",
           "id": "vtt_cue_35_kmc7",
-          "endTime": 73.271,
-          "text": "Same as Mark.",
-          "startTime": 72.009
+          "text": "Same as Mark."
         },
         {
-          "text": "He works in marketing.",
           "endTime": 75.215,
+          "startTime": 73.897,
           "id": "vtt_cue_36_1oxj",
-          "startTime": 73.897
+          "text": "He works in marketing."
         },
         {
+          "endTime": 80.971,
           "text": "Oh, I’m sorry. I find it boring.",
           "speaker": "Annie",
-          "startTime": 76.97200000000001,
           "id": "vtt_cue_37_puqc",
-          "endTime": 80.971
+          "startTime": 76.97200000000001
         },
         {
-          "endTime": 85.383,
           "text": "Do you have any plans for the weekend?",
-          "startTime": 83.319,
           "id": "vtt_cue_38_rpm4",
-          "speaker": "Rachel"
+          "endTime": 85.383,
+          "speaker": "Rachel",
+          "startTime": 83.319
         },
         {
-          "startTime": 85.536,
           "endTime": 86.496,
+          "startTime": 85.536,
+          "id": "vtt_cue_39_n3ch",
           "speaker": "Annie",
-          "text": "Actually, yes.",
-          "id": "vtt_cue_39_n3ch"
+          "text": "Actually, yes."
         },
         {
-          "startTime": 86.767,
           "text": "I’m going to visit my brother, Dan.",
-          "id": "vtt_cue_40_s3hd",
-          "endTime": 88.569
+          "startTime": 86.767,
+          "endTime": 88.569,
+          "id": "vtt_cue_40_s3hd"
         },
         {
-          "startTime": 88.78399999999999,
-          "id": "vtt_cue_41_qjkd",
-          "endTime": 90.149,
           "text": "Oh, I remember Dan.",
-          "speaker": "Rachel"
+          "id": "vtt_cue_41_qjkd",
+          "speaker": "Rachel",
+          "startTime": 88.78399999999999,
+          "endTime": 90.149
         },
         {
-          "id": "vtt_cue_42_9gdu",
-          "text": "How is he?",
           "endTime": 90.959,
-          "startTime": 90.252
+          "startTime": 90.252,
+          "text": "How is he?",
+          "id": "vtt_cue_42_9gdu"
         },
         {
           "text": "He’s fine.",
           "speaker": "Annie",
-          "startTime": 90.98400000000001,
           "endTime": 91.69800000000001,
-          "id": "vtt_cue_43_3tjd"
+          "id": "vtt_cue_43_3tjd",
+          "startTime": 90.98400000000001
         },
         {
           "text": "He’s married now. To Martina.",
+          "id": "vtt_cue_44_520o",
           "endTime": 93.833,
-          "startTime": 91.889,
-          "id": "vtt_cue_44_520o"
+          "startTime": 91.889
         },
         {
-          "text": "Anyway, we really must go.",
-          "endTime": 98.084,
+          "speaker": "Rachel",
           "id": "vtt_cue_45_i8p2",
           "startTime": 96.465,
-          "speaker": "Rachel"
+          "text": "Anyway, we really must go.",
+          "endTime": 98.084
         },
         {
-          "endTime": 99.944,
-          "id": "vtt_cue_46_xst1",
           "text": "I need to get back to the shop.",
-          "startTime": 98.674
+          "startTime": 98.674,
+          "id": "vtt_cue_46_xst1",
+          "endTime": 99.944
         },
         {
-          "endTime": 100.98400000000001,
-          "id": "vtt_cue_47_lk61",
-          "startTime": 100.03999999999999,
           "text": "Yeah, of course.",
-          "speaker": "Annie"
+          "endTime": 100.98400000000001,
+          "startTime": 100.03999999999999,
+          "speaker": "Annie",
+          "id": "vtt_cue_47_lk61"
         },
         {
+          "endTime": 102.414,
           "id": "vtt_cue_48_h58h",
           "speaker": "Mark",
-          "text": "It was really nice to meet you.",
           "startTime": 101.136,
-          "endTime": 102.414
+          "text": "It was really nice to meet you."
         },
         {
-          "id": "vtt_cue_49_n37n",
-          "text": "Yeah, you too.",
           "endTime": 103.351,
+          "startTime": 102.439,
           "speaker": "Annie",
-          "startTime": 102.439
+          "text": "Yeah, you too.",
+          "id": "vtt_cue_49_n37n"
         },
         {
-          "speaker": "Leo",
+          "startTime": 103.39099999999999,
           "id": "vtt_cue_50_m63u",
-          "endTime": 104.249,
+          "speaker": "Leo",
           "text": "Nice to meet you, Mark.",
-          "startTime": 103.39099999999999
+          "endTime": 104.249
         },
         {
+          "speaker": "Rachel",
           "endTime": 106.561,
-          "startTime": 104.91,
           "id": "vtt_cue_51_znmc",
-          "speaker": "Rachel",
-          "text": "It was great to see you again, Annie."
+          "text": "It was great to see you again, Annie.",
+          "startTime": 104.91
         },
         {
-          "text": "Yeah! We must meet up soon!",
-          "endTime": 108.253,
-          "speaker": "Annie",
+          "id": "vtt_cue_52_3h1g",
           "startTime": 106.634,
-          "id": "vtt_cue_52_3h1g"
+          "text": "Yeah! We must meet up soon!",
+          "speaker": "Annie",
+          "endTime": 108.253
         },
         {
-          "endTime": 109.023,
-          "id": "vtt_cue_53_jkyw",
-          "speaker": "Rachel",
+          "text": "Definitely!",
           "startTime": 108.27799999999999,
-          "text": "Definitely!"
+          "endTime": 109.023,
+          "speaker": "Rachel",
+          "id": "vtt_cue_53_jkyw"
         },
         {
           "startTime": 109.685,
-          "speaker": "Annie",
           "text": "Actually, it’s Leo’s birthday in a couple of weeks.",
+          "endTime": 113.241,
           "id": "vtt_cue_54_vq7x",
-          "endTime": 113.241
+          "speaker": "Annie"
         },
         {
-          "startTime": 113.78999999999999,
-          "endTime": 115.036,
           "text": "Perhaps we could meet then.",
-          "id": "vtt_cue_55_055q"
+          "startTime": 113.78999999999999,
+          "id": "vtt_cue_55_055q",
+          "endTime": 115.036
         },
         {
-          "id": "vtt_cue_56_sjey",
-          "endTime": 117.125,
-          "text": "OK, great. I’ll give you a call.",
+          "startTime": 115.506,
           "speaker": "Rachel",
-          "startTime": 115.506
+          "text": "OK, great. I’ll give you a call.",
+          "id": "vtt_cue_56_sjey",
+          "endTime": 117.125
         },
         {
+          "text": "And say hello to Dan for me!",
           "startTime": 117.74600000000001,
-          "id": "vtt_cue_57_c4gi",
           "endTime": 119.372,
-          "text": "And say hello to Dan for me!"
+          "id": "vtt_cue_57_c4gi"
         }
-      ],
-      "audioDuration": 30,
-      "level": "B1",
-      "tags": [
-        "Google Drive",
-        "Inglés B1",
-        "Formato VTT"
       ]
     },
     {
+      "accent": "UK",
       "isHidden": false,
-      "lessonId": "b1_leccion_1",
+      "audioFileName": "Google Drive (1td-Ex1r_0_IES_nmXiYn1ykWaXqb0_0m)",
       "segments": [
         {
-          "startTime": 0.437,
-          "id": "vtt_cue_1_685a",
+          "endTime": 2.524,
           "text": "Track 01.20",
-          "endTime": 2.524
+          "startTime": 0.437,
+          "id": "vtt_cue_1_685a"
         },
         {
-          "id": "vtt_cue_2_oqe9",
           "speaker": "Narrator",
-          "text": "1",
           "endTime": 5.399,
-          "startTime": 4.526
+          "startTime": 4.526,
+          "text": "1",
+          "id": "vtt_cue_2_oqe9"
         },
         {
-          "endTime": 7.711,
           "text": "We really must go.",
           "id": "vtt_cue_3_ruy6",
-          "startTime": 6.14,
-          "speaker": "Rachel"
+          "speaker": "Rachel",
+          "endTime": 7.711,
+          "startTime": 6.14
         },
         {
           "id": "vtt_cue_4_yfb2",
-          "speaker": "Narrator",
-          "text": "2",
+          "startTime": 9.532,
           "endTime": 10.27,
-          "startTime": 9.532
+          "speaker": "Narrator",
+          "text": "2"
         },
         {
           "endTime": 12.869,
-          "text": "It was really nice to meet you.",
-          "startTime": 11.107,
+          "id": "vtt_cue_5_3t2o",
           "speaker": "Mark",
-          "id": "vtt_cue_5_3t2o"
+          "text": "It was really nice to meet you.",
+          "startTime": 11.107
         },
         {
-          "id": "vtt_cue_6_8u1p",
-          "startTime": 14.601,
-          "text": "3",
           "endTime": 15.577,
-          "speaker": "Narrator"
-        },
-        {
-          "text": "It was great to see you again, Annie.",
-          "startTime": 16.493,
-          "endTime": 18.557,
-          "id": "vtt_cue_7_hlvg",
-          "speaker": "Rachel"
-        },
-        {
+          "id": "vtt_cue_6_8u1p",
           "speaker": "Narrator",
-          "text": "4",
-          "startTime": 20.314,
-          "id": "vtt_cue_8_uvwp",
-          "endTime": 21.227
-        },
-        {
-          "endTime": 24.912,
-          "id": "vtt_cue_9_4gzm",
-          "speaker": "Annie",
-          "startTime": 22.166,
-          "text": "Yeah! We must meet up soon!"
-        },
-        {
-          "text": "5",
-          "speaker": "Narrator",
-          "id": "vtt_cue_10_aa5h",
-          "startTime": 26.788,
-          "endTime": 27.764
+          "startTime": 14.601,
+          "text": "3"
         },
         {
           "speaker": "Rachel",
-          "text": "Say hello to Dan for me!",
-          "id": "vtt_cue_11_4wwt",
+          "endTime": 18.557,
+          "id": "vtt_cue_7_hlvg",
+          "text": "It was great to see you again, Annie.",
+          "startTime": 16.493
+        },
+        {
+          "text": "4",
+          "speaker": "Narrator",
+          "endTime": 21.227,
+          "id": "vtt_cue_8_uvwp",
+          "startTime": 20.314
+        },
+        {
+          "text": "Yeah! We must meet up soon!",
+          "speaker": "Annie",
+          "startTime": 22.166,
+          "id": "vtt_cue_9_4gzm",
+          "endTime": 24.912
+        },
+        {
+          "startTime": 26.788,
+          "id": "vtt_cue_10_aa5h",
+          "speaker": "Narrator",
+          "endTime": 27.764,
+          "text": "5"
+        },
+        {
           "startTime": 28.444,
-          "endTime": 30.167
+          "speaker": "Rachel",
+          "text": "Say hello to Dan for me!",
+          "endTime": 30.167,
+          "id": "vtt_cue_11_4wwt"
         }
       ],
-      "driveFolderUrl": "https://drive.google.com/file/d/1td-Ex1r_0_IES_nmXiYn1ykWaXqb0_0m/view?usp=drive_link",
-      "description": "Audio desde enlace de Google Drive",
-      "levelId": "ingles_b1",
+      "level": "B1",
+      "id": "item_drive_1792243344795",
       "title": "Lesson C,  01-20",
+      "audioDuration": 30,
+      "createdAt": 1792243344795,
+      "levelId": "ingles_b1",
+      "driveFolderUrl": "https://drive.google.com/file/d/1td-Ex1r_0_IES_nmXiYn1ykWaXqb0_0m/view?usp=drive_link",
+      "tags": [
+        "Google Drive",
+        "Inglés B1",
+        "Formato VTT"
+      ],
       "audioUrl": "/api/drive-proxy?id=1td-Ex1r_0_IES_nmXiYn1ykWaXqb0_0m&type=audio",
+      "lessonId": "b1_leccion_1",
+      "description": "Audio desde enlace de Google Drive",
+      "category": "conversation"
+    },
+    {
+      "accent": "UK",
+      "isHidden": false,
+      "id": "item_drive_1792243543253",
       "tags": [
         "Google Drive",
         "Inglés B1",
         "Formato VTT"
       ],
       "audioDuration": 30,
-      "accent": "UK",
-      "id": "item_drive_1792243344795",
-      "level": "B1",
-      "createdAt": 1792243344795,
-      "category": "conversation",
-      "audioFileName": "Google Drive (1td-Ex1r_0_IES_nmXiYn1ykWaXqb0_0m)"
-    },
-    {
-      "id": "item_drive_1792243543253",
-      "title": "Lesson D, 01-21",
-      "lessonId": "b1_leccion_1",
-      "isHidden": false,
+      "driveFolderUrl": "https://drive.google.com/file/d/1kvXA7yL8BN8Dn5BwE8lGWLzch4mseeUA/view?usp=drive_link",
       "levelId": "ingles_b1",
       "segments": [
         {
+          "startTime": 0.444,
           "id": "vtt_cue_1_wjhz",
           "text": "Track 01.21",
-          "endTime": 2.651,
-          "startTime": 0.444
+          "endTime": 2.651
         },
         {
-          "speaker": "Chris",
           "startTime": 4.701,
           "id": "vtt_cue_2_t7i2",
           "endTime": 6.098,
-          "text": "So, are you good about"
+          "text": "So, are you good about",
+          "speaker": "Chris"
         },
         {
-          "endTime": 7.511,
-          "id": "vtt_cue_3_4bux",
+          "text": "keeping in touch with people?",
           "startTime": 6.123,
-          "text": "keeping in touch with people?"
+          "id": "vtt_cue_3_4bux",
+          "endTime": 7.511
         },
         {
-          "id": "vtt_cue_4_0m4m",
-          "endTime": 9.594,
           "text": "Er, not really.",
+          "endTime": 9.594,
           "startTime": 7.697,
+          "id": "vtt_cue_4_0m4m",
           "speaker": "Nina"
         },
         {
           "id": "vtt_cue_5_40b5",
-          "text": "I always plan to write to people,",
           "endTime": 12.43,
+          "text": "I always plan to write to people,",
           "startTime": 10.16
         },
         {
@@ -1561,234 +1567,2326 @@
           "endTime": 13.644
         },
         {
-          "id": "vtt_cue_7_z57k",
           "text": "I send emails to my parents sometimes,",
           "endTime": 16.773,
-          "startTime": 14.249
+          "startTime": 14.249,
+          "id": "vtt_cue_7_z57k"
         },
         {
           "text": "about once a month,",
           "startTime": 17.037,
-          "id": "vtt_cue_8_m6ub",
-          "endTime": 18.204
+          "endTime": 18.204,
+          "id": "vtt_cue_8_m6ub"
         },
         {
-          "endTime": 22.039,
-          "startTime": 18.547,
           "id": "vtt_cue_9_kpgo",
-          "text": "but more often I get emails from them saying, ‘Are you OK?"
+          "text": "but more often I get emails from them saying, ‘Are you OK?",
+          "startTime": 18.547,
+          "endTime": 22.039
         },
         {
-          "startTime": 22.415,
-          "id": "vtt_cue_10_pyv5",
+          "text": "We haven’t heard from you for a long time.’",
           "endTime": 24.526,
-          "text": "We haven’t heard from you for a long time.’"
+          "startTime": 22.415,
+          "id": "vtt_cue_10_pyv5"
         },
         {
-          "id": "vtt_cue_11_lrrr",
+          "endTime": 26.733,
           "startTime": 25.044,
-          "text": "Then I always send them a quick",
-          "endTime": 26.733
+          "id": "vtt_cue_11_lrrr",
+          "text": "Then I always send them a quick"
         },
         {
+          "startTime": 26.758,
           "id": "vtt_cue_12_ebsb",
           "text": "email and tell them what I’m doing.",
-          "endTime": 28.329,
-          "startTime": 26.758
+          "endTime": 28.329
         },
         {
-          "startTime": 28.774,
           "id": "vtt_cue_13_sftn",
-          "endTime": 29.599,
-          "text": "How about you?"
+          "startTime": 28.774,
+          "text": "How about you?",
+          "endTime": 29.599
         },
         {
-          "text": "Oh, I like keeping in touch.",
+          "startTime": 30.062,
+          "id": "vtt_cue_14_cq6r",
           "endTime": 31.856,
           "speaker": "Chris",
-          "id": "vtt_cue_14_cq6r",
-          "startTime": 30.062
+          "text": "Oh, I like keeping in touch."
         },
         {
-          "id": "vtt_cue_15_581o",
-          "text": "I think it’s important to keep in touch with your family.",
           "endTime": 35.072,
+          "text": "I think it’s important to keep in touch with your family.",
+          "id": "vtt_cue_15_581o",
           "startTime": 32.318
         },
         {
-          "endTime": 38.162,
-          "startTime": 35.638,
           "text": "I write emails to my parents sometimes,",
-          "id": "vtt_cue_16_21n1"
+          "id": "vtt_cue_16_21n1",
+          "endTime": 38.162,
+          "startTime": 35.638
         },
         {
-          "endTime": 40.233,
-          "text": "but I also phone or Skype.",
           "id": "vtt_cue_17_w3lg",
-          "startTime": 38.424
+          "endTime": 40.233,
+          "startTime": 38.424,
+          "text": "but I also phone or Skype."
         },
         {
-          "text": "I phone my mother every weekend.",
-          "startTime": 40.815,
+          "endTime": 42.601,
           "id": "vtt_cue_18_a0ky",
-          "endTime": 42.601
+          "text": "I phone my mother every weekend.",
+          "startTime": 40.815
         },
         {
-          "text": "Every weekend!",
-          "startTime": 42.705,
-          "speaker": "Nina",
           "id": "vtt_cue_19_acwt",
-          "endTime": 43.832
+          "text": "Every weekend!",
+          "endTime": 43.832,
+          "speaker": "Nina",
+          "startTime": 42.705
         },
         {
-          "endTime": 46.516,
           "id": "vtt_cue_20_aago",
-          "speaker": "Chris",
+          "text": "Yes, she gets worried about me",
           "startTime": 44.087,
-          "text": "Yes, she gets worried about me"
-        },
-        {
-          "startTime": 46.723,
-          "text": "and she wants to know what I’m doing.",
-          "id": "vtt_cue_21_quwk",
-          "endTime": 48.342
-        },
-        {
-          "text": "I hardly ever phone my parents.",
-          "speaker": "Nina",
-          "startTime": 48.485,
-          "id": "vtt_cue_22_kl80",
-          "endTime": 50.549
-        },
-        {
-          "endTime": 53.448,
-          "text": "I wait until I go and see them and talk to them then.",
-          "startTime": 50.971,
-          "id": "vtt_cue_23_1e4n"
-        },
-        {
-          "endTime": 55.68,
-          "id": "vtt_cue_24_mdlb",
-          "text": "Don’t you ever phone them to have a chat?",
-          "speaker": "Chris",
-          "startTime": 53.902
-        },
-        {
-          "speaker": "Nina",
-          "startTime": 55.824,
-          "id": "vtt_cue_25_u0ws",
-          "endTime": 58.768,
-          "text": "No, I only phone if it’s something important."
-        },
-        {
-          "startTime": 59.286,
-          "text": "You don’t have to be in touch with",
-          "id": "vtt_cue_26_g27t",
-          "endTime": 60.492
-        },
-        {
-          "startTime": 60.517,
-          "endTime": 61.802,
-          "id": "vtt_cue_27_iaqf",
-          "text": "people all the time."
-        },
-        {
-          "speaker": "Chris",
-          "id": "vtt_cue_28_va4z",
-          "endTime": 63.749,
-          "startTime": 62.241,
-          "text": "What about friends?"
-        },
-        {
-          "id": "vtt_cue_29_35to",
-          "endTime": 65.918,
-          "text": "Surely you keep in touch with friends?",
-          "startTime": 63.942
-        },
-        {
-          "speaker": "Nina",
-          "startTime": 65.943,
-          "endTime": 68.752,
-          "text": "Not very much; maybe I should do.",
-          "id": "vtt_cue_30_8288"
-        },
-        {
-          "id": "vtt_cue_31_kz54",
-          "text": "I send texts or messages sometimes,",
-          "endTime": 71.795,
-          "startTime": 69.47
-        },
-        {
-          "text": "but that’s about all.",
-          "endTime": 73.01,
-          "id": "vtt_cue_32_4070",
-          "startTime": 71.82
-        },
-        {
-          "endTime": 75.64,
-          "id": "vtt_cue_33_xbrs",
-          "text": "I always think if you have good friends,",
-          "startTime": 73.751
-        },
-        {
-          "text": "you can talk about everything when you meet.",
-          "id": "vtt_cue_34_7ajq",
-          "endTime": 77.602,
-          "startTime": 75.66499999999999
-        },
-        {
-          "startTime": 78.08,
-          "text": "It’s more fun to tell people your news",
-          "endTime": 79.849,
-          "id": "vtt_cue_35_jidv"
-        },
-        {
-          "endTime": 81.619,
-          "startTime": 79.874,
-          "text": "when you can have a real conversation.",
-          "id": "vtt_cue_36_njxg"
-        },
-        {
-          "endTime": 86.559,
-          "text": "Oh well, I often send messages to people so they know I’m thinking about them.",
-          "id": "vtt_cue_37_1p1r",
-          "startTime": 82.003,
+          "endTime": 46.516,
           "speaker": "Chris"
         },
         {
-          "endTime": 88.33,
+          "endTime": 48.342,
+          "id": "vtt_cue_21_quwk",
+          "text": "and she wants to know what I’m doing.",
+          "startTime": 46.723
+        },
+        {
+          "startTime": 48.485,
+          "speaker": "Nina",
+          "endTime": 50.549,
+          "text": "I hardly ever phone my parents.",
+          "id": "vtt_cue_22_kl80"
+        },
+        {
+          "id": "vtt_cue_23_1e4n",
+          "startTime": 50.971,
+          "text": "I wait until I go and see them and talk to them then.",
+          "endTime": 53.448
+        },
+        {
+          "speaker": "Chris",
+          "text": "Don’t you ever phone them to have a chat?",
+          "id": "vtt_cue_24_mdlb",
+          "endTime": 55.68,
+          "startTime": 53.902
+        },
+        {
+          "endTime": 58.768,
+          "startTime": 55.824,
+          "id": "vtt_cue_25_u0ws",
+          "text": "No, I only phone if it’s something important.",
+          "speaker": "Nina"
+        },
+        {
+          "id": "vtt_cue_26_g27t",
+          "startTime": 59.286,
+          "endTime": 60.492,
+          "text": "You don’t have to be in touch with"
+        },
+        {
+          "id": "vtt_cue_27_iaqf",
+          "text": "people all the time.",
+          "startTime": 60.517,
+          "endTime": 61.802
+        },
+        {
+          "endTime": 63.749,
+          "text": "What about friends?",
+          "startTime": 62.241,
+          "speaker": "Chris",
+          "id": "vtt_cue_28_va4z"
+        },
+        {
+          "endTime": 65.918,
+          "text": "Surely you keep in touch with friends?",
+          "startTime": 63.942,
+          "id": "vtt_cue_29_35to"
+        },
+        {
+          "startTime": 65.943,
+          "endTime": 68.752,
+          "text": "Not very much; maybe I should do.",
+          "id": "vtt_cue_30_8288",
+          "speaker": "Nina"
+        },
+        {
+          "text": "I send texts or messages sometimes,",
+          "endTime": 71.795,
+          "id": "vtt_cue_31_kz54",
+          "startTime": 69.47
+        },
+        {
+          "startTime": 71.82,
+          "endTime": 73.01,
+          "id": "vtt_cue_32_4070",
+          "text": "but that’s about all."
+        },
+        {
+          "id": "vtt_cue_33_xbrs",
+          "text": "I always think if you have good friends,",
+          "startTime": 73.751,
+          "endTime": 75.64
+        },
+        {
+          "endTime": 77.602,
+          "id": "vtt_cue_34_7ajq",
+          "startTime": 75.66499999999999,
+          "text": "you can talk about everything when you meet."
+        },
+        {
+          "id": "vtt_cue_35_jidv",
+          "text": "It’s more fun to tell people your news",
+          "startTime": 78.08,
+          "endTime": 79.849
+        },
+        {
+          "startTime": 79.874,
+          "text": "when you can have a real conversation.",
+          "id": "vtt_cue_36_njxg",
+          "endTime": 81.619
+        },
+        {
+          "endTime": 86.559,
+          "speaker": "Chris",
+          "startTime": 82.003,
+          "text": "Oh well, I often send messages to people so they know I’m thinking about them.",
+          "id": "vtt_cue_37_1p1r"
+        },
+        {
+          "id": "vtt_cue_38_r80b",
           "startTime": 87.045,
           "text": "And sometimes, when I have a",
-          "id": "vtt_cue_38_r80b"
+          "endTime": 88.33
         },
         {
-          "id": "vtt_cue_39_me9v",
-          "text": "particularly good photo,",
+          "endTime": 89.68,
           "startTime": 88.355,
-          "endTime": 89.68
+          "id": "vtt_cue_39_me9v",
+          "text": "particularly good photo,"
         },
         {
-          "text": "I send it to everyone by email.",
           "endTime": 91.944,
-          "id": "vtt_cue_40_9yln",
-          "startTime": 89.991
+          "startTime": 89.991,
+          "text": "I send it to everyone by email.",
+          "id": "vtt_cue_40_9yln"
         },
         {
           "endTime": 94.063,
-          "id": "vtt_cue_41_17wf",
+          "text": "I think it’s a nice thing to do...",
           "startTime": 92.412,
-          "text": "I think it’s a nice thing to do..."
+          "id": "vtt_cue_41_17wf"
         }
       ],
-      "accent": "UK",
-      "description": "Audio desde enlace de Google Drive",
+      "title": "Lesson D, 01-21",
+      "level": "B1",
       "category": "conversation",
-      "driveFolderUrl": "https://drive.google.com/file/d/1kvXA7yL8BN8Dn5BwE8lGWLzch4mseeUA/view?usp=drive_link",
-      "audioDuration": 30,
+      "description": "Audio desde enlace de Google Drive",
       "audioUrl": "/api/drive-proxy?id=1kvXA7yL8BN8Dn5BwE8lGWLzch4mseeUA&type=audio",
       "createdAt": 1792243543253,
       "audioFileName": "Google Drive (1kvXA7yL8BN8Dn5BwE8lGWLzch4mseeUA)",
+      "lessonId": "b1_leccion_1"
+    },
+    {
+      "audioFileName": "Google Drive (1LSZyKmBWGVCd4_pdrc3djbd7RaIwZk5B)",
+      "title": "Lesson A, 02-01",
+      "driveFolderUrl": "https://drive.google.com/file/d/1LSZyKmBWGVCd4_pdrc3djbd7RaIwZk5B/view?usp=drive_link",
+      "id": "item_drive_1792361401110",
+      "category": "conversation",
+      "lessonId": "b1_leccion_2",
+      "audioUrl": "/api/drive-proxy?id=1LSZyKmBWGVCd4_pdrc3djbd7RaIwZk5B&type=audio",
+      "createdAt": 1792361401110,
+      "isHidden": false,
       "level": "B1",
+      "tags": [
+        "Google Drive",
+        "Inglés B1",
+        "Formato VTT"
+      ],
+      "audioDuration": 30,
+      "levelId": "ingles_b1",
+      "accent": "UK",
+      "segments": [
+        {
+          "endTime": 2.23,
+          "id": "vtt_cue_1_4r6y",
+          "text": "Track 02.01",
+          "startTime": 0.46
+        },
+        {
+          "speaker": "Narrator",
+          "endTime": 5.463,
+          "startTime": 4.399,
+          "id": "vtt_cue_2_evgl",
+          "text": "Day 3"
+        },
+        {
+          "id": "vtt_cue_3_4gyq",
+          "speaker": "Richard",
+          "startTime": 6.322,
+          "text": "So, the next morning, we started with some water skiing practice on the beach.",
+          "endTime": 10.561
+        },
+        {
+          "startTime": 11.055,
+          "id": "vtt_cue_4_55pz",
+          "endTime": 13.73,
+          "text": "First, they showed us how to stand up on the skis …"
+        },
+        {
+          "startTime": 13.963,
+          "id": "vtt_cue_5_abwq",
+          "endTime": 16.003,
+          "text": "and then how to fall off safely."
+        },
+        {
+          "startTime": 16.744,
+          "id": "vtt_cue_6_2rxg",
+          "endTime": 18.244,
+          "text": "The lesson took about an hour,"
+        },
+        {
+          "endTime": 20.355,
+          "text": "and then we were ready to go out to sea.",
+          "id": "vtt_cue_7_ue3v",
+          "startTime": 18.331
+        },
+        {
+          "startTime": 20.912,
+          "text": "There were five other people in my group,",
+          "endTime": 22.833,
+          "id": "vtt_cue_8_vi90"
+        },
+        {
+          "id": "vtt_cue_9_jly3",
+          "text": "who were all very excited.",
+          "startTime": 22.858,
+          "endTime": 24.391
+        },
+        {
+          "endTime": 25.573,
+          "id": "vtt_cue_10_hd4d",
+          "text": "But not me –",
+          "startTime": 24.676
+        },
+        {
+          "endTime": 27.584,
+          "text": "I was really worried.",
+          "id": "vtt_cue_11_2vcz",
+          "startTime": 26.068
+        },
+        {
+          "text": "The instructor looked at me and said",
+          "id": "vtt_cue_12_q9f4",
+          "endTime": 29.761,
+          "startTime": 28.054
+        },
+        {
+          "id": "vtt_cue_13_7yx2",
+          "startTime": 29.881,
+          "endTime": 31.334,
+          "text": "“Do you want to go first?”"
+        },
+        {
+          "endTime": 33.334,
+          "text": "and then everyone looked at me.",
+          "startTime": 31.58,
+          "id": "vtt_cue_14_ug48"
+        },
+        {
+          "startTime": 33.828,
+          "endTime": 36.701,
+          "text": "I felt sick but I said, “Yes”.",
+          "id": "vtt_cue_15_oh6p"
+        },
+        {
+          "endTime": 39.188,
+          "startTime": 37.379,
+          "text": "Ten seconds after I started,",
+          "id": "vtt_cue_16_g9q2"
+        },
+        {
+          "endTime": 40.239,
+          "startTime": 39.303,
+          "text": "I fell over.",
+          "id": "vtt_cue_17_me61"
+        },
+        {
+          "startTime": 40.845,
+          "endTime": 43.757,
+          "id": "vtt_cue_18_amdh",
+          "text": "I tried again. And I fell over again."
+        },
+        {
+          "startTime": 44.277,
+          "text": "Then the third time,",
+          "id": "vtt_cue_19_07fq",
+          "endTime": 45.452
+        },
+        {
+          "id": "vtt_cue_20_38jr",
+          "text": "something amazing suddenly happened.",
+          "endTime": 47.912,
+          "startTime": 45.477
+        },
+        {
+          "text": "I didn’t fall over.",
+          "endTime": 49.964,
+          "id": "vtt_cue_21_orqt",
+          "startTime": 48.361
+        },
+        {
+          "text": "And I found out that I love water skiing.",
+          "startTime": 50.378,
+          "id": "vtt_cue_22_e17m",
+          "endTime": 53.013
+        },
+        {
+          "endTime": 57.573,
+          "id": "vtt_cue_23_8lcx",
+          "text": "The ten minutes in the water passed very quickly and I didn’t want to stop!",
+          "startTime": 53.484
+        },
+        {
+          "text": "When we got back to the hotel,",
+          "startTime": 58.68,
+          "endTime": 60.267,
+          "id": "vtt_cue_24_pw50"
+        },
+        {
+          "text": "the receptionist asked me,",
+          "endTime": 61.784,
+          "id": "vtt_cue_25_uds2",
+          "startTime": 60.348
+        },
+        {
+          "text": "“So, did you enjoy the water skiing course?”",
+          "endTime": 64.937,
+          "startTime": 62.056,
+          "id": "vtt_cue_26_mru2"
+        },
+        {
+          "startTime": 65.345,
+          "id": "vtt_cue_27_ed87",
+          "endTime": 69.385,
+          "text": "I said, 'Yes' which, for the first time, was the truth."
+        },
+        {
+          "text": "And then later on that evening",
+          "startTime": 70.064,
+          "endTime": 71.659,
+          "id": "vtt_cue_28_elqf"
+        },
+        {
+          "endTime": 72.994,
+          "id": "vtt_cue_29_drq0",
+          "text": "I had a drink in the bar",
+          "startTime": 71.756
+        },
+        {
+          "startTime": 73.019,
+          "text": "with the other water skiers.",
+          "endTime": 74.359,
+          "id": "vtt_cue_30_3rq2"
+        },
+        {
+          "id": "vtt_cue_31_p8a8",
+          "startTime": 74.718,
+          "text": "I felt really happy.",
+          "endTime": 76.163
+        },
+        {
+          "id": "vtt_cue_32_4i5d",
+          "text": "And that was when I realised",
+          "startTime": 76.554,
+          "endTime": 78.094
+        },
+        {
+          "startTime": 78.119,
+          "id": "vtt_cue_33_sho4",
+          "text": "I was enjoying being a ‘Yes Man’ after all.",
+          "endTime": 81.063
+        }
+      ],
+      "description": "Audio desde enlace de Google Drive"
+    },
+    {
+      "description": "Audio desde enlace de Google Drive",
+      "createdAt": 1792361643714,
+      "levelId": "ingles_b1",
+      "category": "conversation",
+      "title": "Lesson A, 02-02",
+      "lessonId": "b1_leccion_2",
+      "audioFileName": "Google Drive (1VBdDmSRJ1E6SVnlhJk1UCiZWpSYokYUa)",
+      "audioUrl": "/api/drive-proxy?id=1VBdDmSRJ1E6SVnlhJk1UCiZWpSYokYUa&type=audio",
+      "level": "B1",
+      "accent": "UK",
+      "id": "item_drive_1792361643714",
+      "audioDuration": 30,
+      "driveFolderUrl": "https://drive.google.com/file/d/1VBdDmSRJ1E6SVnlhJk1UCiZWpSYokYUa/view?usp=drive_link",
+      "segments": [
+        {
+          "id": "vtt_cue_1_715i",
+          "text": "Track 02.02",
+          "startTime": 0.452,
+          "endTime": 2.302
+        },
+        {
+          "startTime": 4.782,
+          "endTime": 5.901,
+          "text": "Day Seven",
+          "speaker": "Narrator",
+          "id": "vtt_cue_2_ubsf"
+        },
+        {
+          "speaker": "Richard",
+          "endTime": 8.307,
+          "startTime": 6.736,
+          "text": "On the last day the holiday,",
+          "id": "vtt_cue_3_h20t"
+        },
+        {
+          "text": "I couldn’t wait for midnight.",
+          "id": "vtt_cue_4_42ks",
+          "startTime": 8.394,
+          "endTime": 10.291
+        },
+        {
+          "startTime": 10.627,
+          "id": "vtt_cue_5_zok8",
+          "text": "At 12 o’clock,",
+          "endTime": 11.603
+        },
+        {
+          "endTime": 14.318,
+          "text": "I could stop answering ‘yes’ to every question.",
+          "id": "vtt_cue_6_29hl",
+          "startTime": 11.628
+        },
+        {
+          "endTime": 16.226,
+          "startTime": 14.916,
+          "text": "The week had been fun,",
+          "id": "vtt_cue_7_fggl"
+        },
+        {
+          "id": "vtt_cue_8_na1v",
+          "text": "but I wanted some control of my life again!",
+          "startTime": 16.258,
+          "endTime": 18.496
+        },
+        {
+          "text": "That evening, I went for one last dinner with some of my new friends.",
+          "startTime": 19.378,
+          "id": "vtt_cue_9_uy6g",
+          "endTime": 23.061
+        },
+        {
+          "endTime": 25.65,
+          "text": "‘So, did you have a good week?’",
+          "id": "vtt_cue_10_0fct",
+          "startTime": 23.73
+        },
+        {
+          "startTime": 25.715,
+          "endTime": 26.715,
+          "text": "one of them asked me.",
+          "id": "vtt_cue_11_zjj0"
+        },
+        {
+          "startTime": 27.215,
+          "text": "‘Yes,’ I said.",
+          "endTime": 28.476,
+          "id": "vtt_cue_12_yi17"
+        },
+        {
+          "id": "vtt_cue_13_qxkf",
+          "startTime": 29.138,
+          "text": "‘What was your favourite thing?’",
+          "endTime": 30.757
+        },
+        {
+          "startTime": 30.782,
+          "text": "she asked.",
+          "id": "vtt_cue_14_qxgz",
+          "endTime": 31.583
+        },
+        {
+          "id": "vtt_cue_15_1rdi",
+          "text": "And do you know what?",
+          "startTime": 32.037,
+          "endTime": 33.06
+        },
+        {
+          "id": "vtt_cue_16_6b3y",
+          "text": "I couldn’t really answer her.",
+          "startTime": 33.166,
+          "endTime": 34.483
+        },
+        {
+          "id": "vtt_cue_17_x6o3",
+          "endTime": 37.017,
+          "text": "There were so many things I had enjoyed.",
+          "startTime": 34.905
+        },
+        {
+          "startTime": 37.71,
+          "text": "I worked as a waiter for a day –",
+          "id": "vtt_cue_18_6rdj",
+          "endTime": 39.615
+        },
+        {
+          "text": "I didn’t get any money for it,",
+          "startTime": 39.824,
+          "id": "vtt_cue_19_cj79",
+          "endTime": 41.364
+        },
+        {
+          "text": "but I made friends with some interesting people",
+          "startTime": 41.389,
+          "id": "vtt_cue_20_srgh",
+          "endTime": 43.334
+        },
+        {
+          "startTime": 43.359,
+          "text": "who came to eat at the restaurant.",
+          "id": "vtt_cue_21_5eer",
+          "endTime": 45.089
+        },
+        {
+          "startTime": 45.686,
+          "endTime": 48.686,
+          "text": "I also spent a day fishing with five Greek fishermen",
+          "id": "vtt_cue_22_qzsz"
+        },
+        {
+          "id": "vtt_cue_23_2kdu",
+          "startTime": 48.79,
+          "text": "and caught several fish.",
+          "endTime": 50.155
+        },
+        {
+          "id": "vtt_cue_24_jowb",
+          "startTime": 50.816,
+          "text": "I stayed at a beach party until six in the morning.",
+          "endTime": 53.673
+        },
+        {
+          "id": "vtt_cue_25_0g0o",
+          "endTime": 56.707,
+          "startTime": 53.906,
+          "text": "Oh, and I won a dancing competition!"
+        },
+        {
+          "text": "Of course, some of my experiences",
+          "endTime": 59.734,
+          "id": "vtt_cue_26_jrcv",
+          "startTime": 57.496
+        },
+        {
+          "startTime": 59.759,
+          "id": "vtt_cue_27_csn1",
+          "endTime": 60.805,
+          "text": "weren’t very good."
+        },
+        {
+          "startTime": 61.523,
+          "id": "vtt_cue_28_9owm",
+          "text": "I took the same boat trip three times …",
+          "endTime": 63.785
+        },
+        {
+          "text": "I went swimming at midnight –",
+          "id": "vtt_cue_29_sed5",
+          "startTime": 64.136,
+          "endTime": 65.882
+        },
+        {
+          "endTime": 68.266,
+          "id": "vtt_cue_30_n3eu",
+          "text": "actually, I liked the swimming,",
+          "startTime": 66.163
+        },
+        {
+          "endTime": 70.53,
+          "text": "but I didn’t like the mosquitoes that",
+          "startTime": 68.491,
+          "id": "vtt_cue_31_f353"
+        },
+        {
+          "text": "bit me when I got out of the sea.",
+          "startTime": 70.555,
+          "id": "vtt_cue_32_oymd",
+          "endTime": 72.237
+        },
+        {
+          "id": "vtt_cue_33_wad9",
+          "startTime": 72.891,
+          "text": "And I spent over 200 euros",
+          "endTime": 75.631
+        },
+        {
+          "startTime": 75.656,
+          "text": "on souvenirs that I hate!",
+          "endTime": 77.703,
+          "id": "vtt_cue_34_emjn"
+        },
+        {
+          "startTime": 78.618,
+          "endTime": 80.404,
+          "text": "It was great to try new things.",
+          "id": "vtt_cue_35_puc3"
+        },
+        {
+          "text": "But I was glad the week was nearly finished.",
+          "endTime": 82.969,
+          "startTime": 80.652,
+          "id": "vtt_cue_36_uayl"
+        },
+        {
+          "id": "vtt_cue_37_kih4",
+          "endTime": 85.289,
+          "text": "I wanted to get back home and relax",
+          "startTime": 83.52799999999999
+        },
+        {
+          "id": "vtt_cue_38_354u",
+          "startTime": 85.314,
+          "endTime": 87.727,
+          "text": "for a day before I started work again on Monday."
+        },
+        {
+          "id": "vtt_cue_39_4e8z",
+          "text": "But Day 7 wasn’t finished yet!",
+          "endTime": 90.864,
+          "startTime": 88.499
+        },
+        {
+          "endTime": 92.494,
+          "text": "Without thinking,",
+          "startTime": 91.407,
+          "id": "vtt_cue_40_yk4x"
+        },
+        {
+          "endTime": 95.408,
+          "id": "vtt_cue_41_h616",
+          "startTime": 92.646,
+          "text": "I asked my new friends what they planned to do next."
+        },
+        {
+          "startTime": 96.047,
+          "text": "They were all smiling at me.",
+          "endTime": 97.626,
+          "id": "vtt_cue_42_rr99"
+        },
+        {
+          "endTime": 99.16,
+          "startTime": 98.184,
+          "text": "One of them said,",
+          "id": "vtt_cue_43_dytv"
+        },
+        {
+          "startTime": 99.519,
+          "endTime": 101.273,
+          "id": "vtt_cue_44_jxqa",
+          "text": "‘We’re flying to Thailand tomorrow."
+        },
+        {
+          "text": "Do you want to come with us?",
+          "endTime": 103.068,
+          "startTime": 101.703,
+          "id": "vtt_cue_45_wmlc"
+        },
+        {
+          "text": "You’d love it!’",
+          "startTime": 103.338,
+          "id": "vtt_cue_46_8r9f",
+          "endTime": 104.307
+        },
+        {
+          "endTime": 106.515,
+          "id": "vtt_cue_47_z4i3",
+          "text": "I looked at my watch.",
+          "startTime": 105.277
+        },
+        {
+          "text": "55.",
+          "startTime": 106.937,
+          "endTime": 108.976,
+          "id": "vtt_cue_48_hkwx",
+          "speaker": "It was 11"
+        }
+      ],
+      "tags": [
+        "Google Drive",
+        "Inglés B1",
+        "Formato VTT"
+      ]
+    },
+    {
+      "segments": [
+        {
+          "text": "Track 02.08",
+          "endTime": 2.357,
+          "startTime": 0.452,
+          "id": "vtt_cue_1_4f6m"
+        },
+        {
+          "speaker": "Narrator",
+          "endTime": 5.24,
+          "text": "1",
+          "id": "vtt_cue_2_pr44",
+          "startTime": 4.574
+        },
+        {
+          "text": "We went away on holiday for three weeks.",
+          "id": "vtt_cue_3_ahzt",
+          "startTime": 6.188,
+          "endTime": 9.117
+        },
+        {
+          "text": "2",
+          "startTime": 10.93,
+          "speaker": "Narrator",
+          "id": "vtt_cue_4_l26v",
+          "endTime": 11.564
+        },
+        {
+          "startTime": 12.337,
+          "text": "We needed to get a visa from the embassy before we travelled.",
+          "id": "vtt_cue_5_4b1t",
+          "endTime": 16.044
+        },
+        {
+          "id": "vtt_cue_6_1xcb",
+          "text": "3",
+          "startTime": 17.928,
+          "endTime": 18.611,
+          "speaker": "Narrator"
+        },
+        {
+          "startTime": 19.654,
+          "text": "We also exchanged some money at the bank.",
+          "endTime": 22.353,
+          "id": "vtt_cue_7_5nqb"
+        },
+        {
+          "id": "vtt_cue_8_6zsq",
+          "speaker": "Narrator",
+          "startTime": 24.261,
+          "endTime": 24.927,
+          "text": "4"
+        },
+        {
+          "text": "We booked all of our accommodation online.",
+          "id": "vtt_cue_9_tg4r",
+          "startTime": 25.78,
+          "endTime": 28.629
+        },
+        {
+          "text": "5",
+          "id": "vtt_cue_10_r4dl",
+          "speaker": "Narrator",
+          "endTime": 31.308,
+          "startTime": 30.483
+        },
+        {
+          "id": "vtt_cue_11_k5u7",
+          "text": "When we arrived,",
+          "endTime": 33.183,
+          "startTime": 32.128
+        },
+        {
+          "id": "vtt_cue_12_7nx1",
+          "startTime": 33.358,
+          "endTime": 35.874,
+          "text": "we checked into our luxury hotel"
+        },
+        {
+          "id": "vtt_cue_13_s4k8",
+          "startTime": 36.033,
+          "text": "and unpacked our luggage.",
+          "endTime": 37.62
+        },
+        {
+          "id": "vtt_cue_14_0kht",
+          "startTime": 39.173,
+          "endTime": 39.927,
+          "speaker": "Narrator",
+          "text": "6"
+        },
+        {
+          "id": "vtt_cue_15_airu",
+          "text": "We did some sightseeing.",
+          "startTime": 40.842,
+          "endTime": 42.509
+        },
+        {
+          "text": "The castles and gardens were gorgeous!",
+          "id": "vtt_cue_16_z1iv",
+          "endTime": 45.797,
+          "startTime": 43.091
+        },
+        {
+          "endTime": 48.301,
+          "text": "7",
+          "startTime": 47.611,
+          "speaker": "Narrator",
+          "id": "vtt_cue_17_qol7"
+        },
+        {
+          "id": "vtt_cue_18_tfua",
+          "text": "We bought souvenirs",
+          "startTime": 49.185,
+          "endTime": 50.653
+        },
+        {
+          "endTime": 52.121,
+          "id": "vtt_cue_19_pf6c",
+          "startTime": 50.678,
+          "text": "for our friends and family."
+        },
+        {
+          "endTime": 54.561,
+          "text": "8",
+          "speaker": "Narrator",
+          "id": "vtt_cue_20_y7im",
+          "startTime": 53.918
+        },
+        {
+          "id": "vtt_cue_21_0bb3",
+          "text": "The second week",
+          "startTime": 55.651,
+          "endTime": 56.754
+        },
+        {
+          "startTime": 56.866,
+          "text": "we checked out of our hotel",
+          "id": "vtt_cue_22_q6ft",
+          "endTime": 58.74
+        },
+        {
+          "endTime": 60.298,
+          "text": "and stayed in a hostel.",
+          "id": "vtt_cue_23_i5pf",
+          "startTime": 58.893
+        },
+        {
+          "startTime": 60.75,
+          "endTime": 62.456,
+          "id": "vtt_cue_24_m5oq",
+          "text": "It was cheap and friendly."
+        },
+        {
+          "speaker": "Narrator",
+          "text": "9",
+          "endTime": 65.046,
+          "id": "vtt_cue_25_jo88",
+          "startTime": 64.157
+        },
+        {
+          "text": "The third week",
+          "startTime": 66.018,
+          "id": "vtt_cue_26_cmgb",
+          "endTime": 67.161
+        },
+        {
+          "endTime": 69.748,
+          "id": "vtt_cue_27_srdy",
+          "text": "we stayed on a campsite by the beach.",
+          "startTime": 67.208
+        },
+        {
+          "id": "vtt_cue_28_pkzc",
+          "endTime": 72.245,
+          "speaker": "Narrator",
+          "startTime": 71.54599999999999,
+          "text": "10"
+        },
+        {
+          "startTime": 73.325,
+          "id": "vtt_cue_29_wbzl",
+          "text": "We had a great adventure",
+          "endTime": 74.96000000000001
+        },
+        {
+          "endTime": 76.889,
+          "id": "vtt_cue_30_matp",
+          "startTime": 75.151,
+          "text": "and we didn’t want to come home."
+        }
+      ],
+      "description": "Audio desde enlace de Google Drive",
+      "title": "Lesson B,  02-08",
+      "audioFileName": "Google Drive (1_8PJBkESZvT7r_U-w5_jMvHq9owFufqd)",
+      "accent": "UK",
+      "id": "item_drive_1792361941078",
+      "lessonId": "b1_leccion_2",
+      "createdAt": 1792361941078,
+      "levelId": "ingles_b1",
+      "audioUrl": "/api/drive-proxy?id=1_8PJBkESZvT7r_U-w5_jMvHq9owFufqd&type=audio",
+      "category": "conversation",
+      "driveFolderUrl": "https://drive.google.com/file/d/1_8PJBkESZvT7r_U-w5_jMvHq9owFufqd/view?usp=drive_link",
+      "level": "B1",
+      "tags": [
+        "Google Drive",
+        "Inglés B1",
+        "Formato VTT"
+      ],
+      "audioDuration": 30
+    },
+    {
+      "audioFileName": "Google Drive (1FtXz1zfWnQSXJmhgazspvH0A-zIsvN95)",
+      "description": "Audio desde enlace de Google Drive",
+      "createdAt": 1792362182255,
+      "accent": "UK",
+      "level": "B1",
+      "segments": [
+        {
+          "id": "vtt_cue_1_rqp5",
+          "endTime": 2.365,
+          "startTime": 0.46,
+          "text": "Track 02.11"
+        },
+        {
+          "endTime": 6.766,
+          "startTime": 5.005,
+          "id": "vtt_cue_2_ijvs",
+          "text": "Well, I was in a rush that"
+        },
+        {
+          "text": "morning and I suppose I set off a bit late.",
+          "id": "vtt_cue_3_ptc5",
+          "endTime": 10.228,
+          "startTime": 6.791
+        },
+        {
+          "endTime": 13.207,
+          "text": "It was raining when I left the house",
+          "id": "vtt_cue_4_cyu9",
+          "startTime": 10.802
+        },
+        {
+          "id": "vtt_cue_5_yecm",
+          "text": "and there was a lot of traffic on the roads.",
+          "startTime": 13.232,
+          "endTime": 15.748
+        },
+        {
+          "id": "vtt_cue_6_zl57",
+          "endTime": 18.203,
+          "startTime": 16.418,
+          "text": "I got to the airport"
+        },
+        {
+          "endTime": 20.425,
+          "startTime": 18.228,
+          "id": "vtt_cue_7_k2hm",
+          "text": "just before the desk closed."
+        },
+        {
+          "text": "When I boarded the plane, all the other",
+          "id": "vtt_cue_8_vc41",
+          "startTime": 21.28,
+          "endTime": 23.787
+        },
+        {
+          "text": "passengers were waiting for me.",
+          "startTime": 23.812,
+          "endTime": 25.947,
+          "id": "vtt_cue_9_mpsc"
+        },
+        {
+          "text": "It was a bit embarrassing,",
+          "endTime": 27.768,
+          "id": "vtt_cue_10_ksgg",
+          "startTime": 26.221
+        },
+        {
+          "text": "but we took off OK.",
+          "id": "vtt_cue_11_tiuh",
+          "startTime": 28.16,
+          "endTime": 29.945
+        },
+        {
+          "endTime": 32.838,
+          "id": "vtt_cue_12_sdu0",
+          "text": "I had a seat in the middle of the plane",
+          "startTime": 30.314
+        },
+        {
+          "startTime": 33.222,
+          "id": "vtt_cue_13_wz44",
+          "text": "and for the first couple of hours it was fine.",
+          "endTime": 36.214
+        },
+        {
+          "id": "vtt_cue_14_4bj1",
+          "text": "So I was reading my book",
+          "endTime": 39.177,
+          "startTime": 36.939
+        },
+        {
+          "startTime": 39.331,
+          "id": "vtt_cue_15_ncxr",
+          "endTime": 41.402,
+          "text": "when one of the flight attendants"
+        },
+        {
+          "id": "vtt_cue_16_eigs",
+          "endTime": 43.085,
+          "text": "came over and spoke to me.",
+          "startTime": 41.427
+        },
+        {
+          "startTime": 43.667,
+          "text": "She said that there was",
+          "id": "vtt_cue_17_w92g",
+          "endTime": 44.596
+        },
+        {
+          "text": "something wrong with her seat",
+          "startTime": 44.621,
+          "endTime": 46.477,
+          "id": "vtt_cue_18_fcku"
+        },
+        {
+          "text": "and that she needed to take mine.",
+          "endTime": 48.853,
+          "id": "vtt_cue_19_zmwb",
+          "startTime": 46.797
+        },
+        {
+          "endTime": 51.417,
+          "startTime": 49.252,
+          "text": "I was the last passenger to check in,",
+          "id": "vtt_cue_20_hp2i"
+        },
+        {
+          "endTime": 52.95,
+          "startTime": 51.442,
+          "id": "vtt_cue_21_5fdl",
+          "text": "so they chose me."
+        },
+        {
+          "text": "I asked the flight attendant",
+          "endTime": 55.478,
+          "startTime": 53.868,
+          "id": "vtt_cue_22_1lsl"
+        },
+        {
+          "id": "vtt_cue_23_ox8h",
+          "text": "where I should sit",
+          "endTime": 56.669,
+          "startTime": 55.503
+        },
+        {
+          "id": "vtt_cue_24_oq1x",
+          "startTime": 56.947,
+          "text": "and she told me that",
+          "endTime": 58.129
+        },
+        {
+          "text": "the only place was the toilet.",
+          "startTime": 58.154,
+          "id": "vtt_cue_25_gd1l",
+          "endTime": 60.098
+        },
+        {
+          "text": "At first, I thought it was a joke,",
+          "startTime": 60.974,
+          "endTime": 63.625,
+          "id": "vtt_cue_26_3hid"
+        },
+        {
+          "startTime": 63.914,
+          "text": "but then I realised that she was serious.",
+          "endTime": 66.771,
+          "id": "vtt_cue_27_eo52"
+        },
+        {
+          "endTime": 70.345,
+          "startTime": 67.535,
+          "text": "So I was sitting on the toilet",
+          "id": "vtt_cue_28_eubj"
+        },
+        {
+          "text": "when the turbulence started.",
+          "id": "vtt_cue_29_6z0c",
+          "startTime": 70.45,
+          "endTime": 72.379
+        },
+        {
+          "startTime": 72.928,
+          "id": "vtt_cue_30_jnhy",
+          "endTime": 75.262,
+          "text": "It was quite frightening because"
+        },
+        {
+          "startTime": 75.351,
+          "text": "of course there was no seatbelt in the toilet.",
+          "endTime": 78.129,
+          "id": "vtt_cue_31_ku9g"
+        },
+        {
+          "id": "vtt_cue_32_t8hd",
+          "startTime": 78.576,
+          "text": "I almost fell off a few times.",
+          "endTime": 81.131
+        },
+        {
+          "id": "vtt_cue_33_u6mk",
+          "endTime": 83.872,
+          "startTime": 81.753,
+          "text": "After the turbulence stopped,"
+        },
+        {
+          "id": "vtt_cue_34_lupl",
+          "text": "I opened the door.",
+          "startTime": 83.912,
+          "endTime": 85.524
+        },
+        {
+          "text": "About five passengers were waiting",
+          "startTime": 85.86,
+          "id": "vtt_cue_35_at1i",
+          "endTime": 88.193
+        },
+        {
+          "id": "vtt_cue_36_d27o",
+          "endTime": 90.218,
+          "text": "outside to use the toilet.",
+          "startTime": 88.218
+        },
+        {
+          "text": "I just closed the door again.",
+          "id": "vtt_cue_37_f25i",
+          "endTime": 92.726,
+          "startTime": 90.82900000000001
+        },
+        {
+          "id": "vtt_cue_38_agt7",
+          "text": "And then to top it all,",
+          "endTime": 95.009,
+          "startTime": 93.247
+        },
+        {
+          "endTime": 97.304,
+          "text": "when we landed at Istanbul",
+          "id": "vtt_cue_39_ciz6",
+          "startTime": 95.201
+        },
+        {
+          "id": "vtt_cue_40_uxxb",
+          "text": "there was a delay of an hour",
+          "startTime": 97.32900000000001,
+          "endTime": 99.114
+        },
+        {
+          "startTime": 99.32300000000001,
+          "endTime": 100.561,
+          "text": "before we could get off the",
+          "id": "vtt_cue_41_82cq"
+        },
+        {
+          "id": "vtt_cue_42_qht9",
+          "endTime": 103.261,
+          "startTime": 100.586,
+          "text": "plane because of a problem in the airport."
+        },
+        {
+          "text": "I still can’t believe they told me",
+          "startTime": 104.041,
+          "endTime": 106.167,
+          "id": "vtt_cue_43_uitu"
+        },
+        {
+          "endTime": 108.95400000000001,
+          "startTime": 106.19200000000001,
+          "id": "vtt_cue_44_ec0k",
+          "text": "to stay in the toilet for two hours."
+        },
+        {
+          "endTime": 110.61500000000001,
+          "id": "vtt_cue_45_wlp9",
+          "startTime": 109.314,
+          "text": "It was terrible."
+        },
+        {
+          "startTime": 111.095,
+          "endTime": 113.706,
+          "text": "You just can’t treat customers like that.",
+          "id": "vtt_cue_46_8cp6"
+        }
+      ],
+      "levelId": "ingles_b1",
+      "driveFolderUrl": "https://drive.google.com/file/d/1FtXz1zfWnQSXJmhgazspvH0A-zIsvN95/view?usp=drive_link",
+      "category": "conversation",
+      "tags": [
+        "Google Drive",
+        "Inglés B1",
+        "Formato VTT"
+      ],
+      "audioUrl": "/api/drive-proxy?id=1FtXz1zfWnQSXJmhgazspvH0A-zIsvN95&type=audio",
+      "audioDuration": 30,
+      "lessonId": "b1_leccion_2",
+      "id": "item_drive_1792362182255",
+      "title": "Lesson B, 02-11"
+    },
+    {
+      "driveFolderUrl": "https://drive.google.com/file/d/1u6G28CmNLEs0QY_4xAfyr3XHVopyNQy8/view?usp=drive_link",
+      "levelId": "ingles_b1",
+      "lessonId": "b1_leccion_2",
+      "audioUrl": "/api/drive-proxy?id=1u6G28CmNLEs0QY_4xAfyr3XHVopyNQy8&type=audio",
+      "category": "conversation",
+      "title": "Lesson B, 02-15",
+      "audioDuration": 30,
+      "accent": "UK",
+      "description": "Audio desde enlace de Google Drive",
+      "segments": [
+        {
+          "text": "Track 02.15",
+          "startTime": 0.452,
+          "endTime": 2.563,
+          "id": "vtt_cue_1_sita"
+        },
+        {
+          "startTime": 4.138,
+          "endTime": 5.019,
+          "id": "vtt_cue_2_bqb9",
+          "text": "1",
+          "speaker": "Narrator"
+        },
+        {
+          "id": "vtt_cue_3_btrm",
+          "endTime": 8.014,
+          "startTime": 6.3,
+          "text": "We were waiting for the bus."
+        },
+        {
+          "speaker": "Narrator",
+          "endTime": 10.605,
+          "startTime": 9.859,
+          "text": "2",
+          "id": "vtt_cue_4_nxni"
+        },
+        {
+          "endTime": 12.755,
+          "text": "He wasn’t hitchhiking.",
+          "id": "vtt_cue_5_gu7f",
+          "startTime": 11.303
+        },
+        {
+          "text": "3",
+          "speaker": "Narrator",
+          "endTime": 15.331,
+          "startTime": 14.411,
+          "id": "vtt_cue_6_hwc1"
+        },
+        {
+          "startTime": 15.704,
+          "text": "They were talking to the driver.",
+          "id": "vtt_cue_7_swo2",
+          "endTime": 17.284
+        },
+        {
+          "id": "vtt_cue_8_bi1g",
+          "text": "4",
+          "endTime": 20.08,
+          "startTime": 19.199,
+          "speaker": "Narrator"
+        },
+        {
+          "text": "He was travelling by train.",
+          "startTime": 20.822,
+          "endTime": 22.743,
+          "id": "vtt_cue_9_m5tf"
+        },
+        {
+          "startTime": 24.468,
+          "text": "5",
+          "id": "vtt_cue_10_y5dv",
+          "speaker": "Narrator",
+          "endTime": 25.325
+        },
+        {
+          "endTime": 27.612,
+          "startTime": 25.778,
+          "id": "vtt_cue_11_diph",
+          "text": "They weren’t helping the passengers."
+        }
+      ],
+      "createdAt": 1792362400571,
+      "level": "B1",
+      "tags": [
+        "Google Drive",
+        "Inglés B1",
+        "Formato VTT"
+      ],
+      "id": "item_drive_1792362400571",
+      "audioFileName": "Google Drive (1u6G28CmNLEs0QY_4xAfyr3XHVopyNQy8)"
+    },
+    {
+      "driveFolderUrl": "https://drive.google.com/file/d/1SMj5b4UcCExRda8bJnFKp6ew8WICUP8g/view?usp=drive_link",
+      "category": "conversation",
+      "createdAt": 1792362529098,
+      "audioFileName": "Google Drive (1SMj5b4UcCExRda8bJnFKp6ew8WICUP8g)",
+      "lessonId": "b1_leccion_2",
+      "audioUrl": "/api/drive-proxy?id=1SMj5b4UcCExRda8bJnFKp6ew8WICUP8g&type=audio",
+      "title": "Lesson C,  02-16",
+      "levelId": "ingles_b1",
+      "audioDuration": 30,
+      "level": "B1",
+      "segments": [
+        {
+          "text": "Track 02.16",
+          "id": "vtt_cue_1_eshj",
+          "endTime": 2.635,
+          "startTime": 0.365
+        },
+        {
+          "startTime": 3.724,
+          "text": "PART 1",
+          "speaker": "Narrator",
+          "id": "vtt_cue_2_rerg",
+          "endTime": 4.891
+        },
+        {
+          "id": "vtt_cue_3_eneg",
+          "startTime": 20.768,
+          "text": "Excuse me … Excuse me!",
+          "endTime": 22.76,
+          "speaker": "Annie"
+        },
+        {
+          "id": "vtt_cue_4_shmc",
+          "speaker": "Employee",
+          "startTime": 23.244,
+          "text": "Yes, how can I help you?",
+          "endTime": 24.546
+        },
+        {
+          "speaker": "Annie",
+          "startTime": 24.688,
+          "endTime": 26.625,
+          "text": "I’m going to Birmingham to visit my brother.",
+          "id": "vtt_cue_5_a9dt"
+        },
+        {
+          "startTime": 27.477,
+          "endTime": 29.032,
+          "speaker": "Employee",
+          "text": "OK. Erm,",
+          "id": "vtt_cue_6_vaj5"
+        },
+        {
+          "id": "vtt_cue_7_ak6x",
+          "endTime": 30.183,
+          "startTime": 29.104,
+          "text": "which train are you taking?"
+        },
+        {
+          "text": "Oh, I don’t know.",
+          "startTime": 30.501,
+          "endTime": 31.676,
+          "speaker": "Annie",
+          "id": "vtt_cue_8_lpgt"
+        },
+        {
+          "text": "What time’s the next train?",
+          "startTime": 31.787,
+          "endTime": 33.183,
+          "id": "vtt_cue_9_mkzt"
+        },
+        {
+          "endTime": 35.31,
+          "text": "The next one leaves in …",
+          "id": "vtt_cue_10_xz1q",
+          "speaker": "Employee",
+          "startTime": 33.414
+        },
+        {
+          "id": "vtt_cue_11_roxs",
+          "startTime": 35.771,
+          "text": "four minutes.",
+          "endTime": 37.017
+        },
+        {
+          "startTime": 37.884,
+          "endTime": 39.289,
+          "text": "How often do the trains leave?",
+          "speaker": "Annie",
+          "id": "vtt_cue_12_kr6x"
+        },
+        {
+          "speaker": "Employee",
+          "startTime": 39.378,
+          "text": "Every … 30 minutes.",
+          "endTime": 40.965,
+          "id": "vtt_cue_13_xhbz"
+        },
+        {
+          "id": "vtt_cue_14_8ttp",
+          "startTime": 40.99,
+          "endTime": 43.839,
+          "text": "So the next one after that is at 15.32."
+        },
+        {
+          "speaker": "Annie",
+          "startTime": 44.032,
+          "endTime": 46.247,
+          "id": "vtt_cue_15_68pw",
+          "text": "OK, great. And er,"
+        },
+        {
+          "text": "which platform does it leave from?",
+          "startTime": 46.653,
+          "id": "vtt_cue_16_f8ws",
+          "endTime": 48.058
+        },
+        {
+          "speaker": "Employee",
+          "text": "That train leaves from …",
+          "id": "vtt_cue_17_rz7n",
+          "endTime": 49.33,
+          "startTime": 48.321
+        },
+        {
+          "startTime": 49.355,
+          "text": "platform 12.",
+          "id": "vtt_cue_18_iam4",
+          "endTime": 50.489
+        },
+        {
+          "startTime": 51.206,
+          "endTime": 52.603,
+          "text": "So, it’s just over there.",
+          "id": "vtt_cue_19_167i"
+        },
+        {
+          "startTime": 53.92,
+          "text": "Sorry, just one more thing.",
+          "endTime": 55.173,
+          "id": "vtt_cue_20_430z",
+          "speaker": "Annie"
+        },
+        {
+          "startTime": 55.198,
+          "id": "vtt_cue_21_ce9n",
+          "endTime": 55.928,
+          "text": "Yes, of course.",
+          "speaker": "Employee"
+        },
+        {
+          "endTime": 58.262,
+          "id": "vtt_cue_22_eh3a",
+          "speaker": "Annie",
+          "startTime": 56.452,
+          "text": "Could you tell me where the ticket office is?"
+        },
+        {
+          "startTime": 58.326,
+          "speaker": "Employee",
+          "text": "It’s over there.",
+          "id": "vtt_cue_23_nn4v",
+          "endTime": 59.239
+        },
+        {
+          "endTime": 61.217,
+          "startTime": 60.098,
+          "id": "vtt_cue_24_7nbc",
+          "text": "But it looks quite busy –"
+        },
+        {
+          "startTime": 61.242,
+          "id": "vtt_cue_25_er0h",
+          "endTime": 62.17,
+          "text": "there’s a long queue."
+        },
+        {
+          "text": "I can sell you a ticket.",
+          "startTime": 62.743,
+          "endTime": 63.791,
+          "id": "vtt_cue_26_o75k"
+        },
+        {
+          "text": "Oh, brilliant!",
+          "startTime": 63.943,
+          "endTime": 64.776,
+          "id": "vtt_cue_27_qp11",
+          "speaker": "Annie"
+        },
+        {
+          "endTime": 66.189,
+          "text": "How much is a ticket?",
+          "id": "vtt_cue_28_a6ab",
+          "startTime": 65.062
+        },
+        {
+          "text": "Well, when do you want to come back?",
+          "speaker": "Employee",
+          "id": "vtt_cue_29_5x5c",
+          "endTime": 67.492,
+          "startTime": 66.357
+        },
+        {
+          "speaker": "Annie",
+          "endTime": 68.962,
+          "text": "Oh, I don’t know.",
+          "startTime": 67.93,
+          "id": "vtt_cue_30_s31o"
+        },
+        {
+          "id": "vtt_cue_31_icqy",
+          "startTime": 69.591,
+          "endTime": 71.115,
+          "text": "Probably tomorrow evening."
+        },
+        {
+          "text": "But on Sunday it’s going to be sunny I think",
+          "startTime": 71.458,
+          "endTime": 73.936,
+          "id": "vtt_cue_32_tb1v"
+        },
+        {
+          "endTime": 78.394,
+          "startTime": 73.936,
+          "id": "vtt_cue_33_u2la",
+          "text": "and my brother’s going to have a party and so maybe I’ll stay until Monday."
+        },
+        {
+          "speaker": "Employee",
+          "text": "The ticket prices change.",
+          "startTime": 78.61,
+          "endTime": 79.809,
+          "id": "vtt_cue_34_tgj5"
+        },
+        {
+          "text": "Sunday is cheaper than Monday.",
+          "startTime": 79.834,
+          "id": "vtt_cue_35_2rfc",
+          "endTime": 81.342
+        },
+        {
+          "id": "vtt_cue_36_zkiv",
+          "speaker": "Annie",
+          "text": "Oh, Sunday then.",
+          "startTime": 81.542,
+          "endTime": 82.77199999999999
+        },
+        {
+          "startTime": 82.947,
+          "id": "vtt_cue_37_k6uq",
+          "endTime": 84.35900000000001,
+          "text": "His parties are never very good."
+        },
+        {
+          "endTime": 85.53,
+          "id": "vtt_cue_38_ectf",
+          "speaker": "Employee",
+          "text": "OK,",
+          "startTime": 84.672
+        },
+        {
+          "endTime": 87.60300000000001,
+          "text": "you want a return to Birmingham.",
+          "id": "vtt_cue_39_b8hz",
+          "startTime": 86.008
+        },
+        {
+          "startTime": 87.628,
+          "id": "vtt_cue_40_ze3c",
+          "text": "Coming back on … Sunday?",
+          "endTime": 89.318
+        },
+        {
+          "speaker": "Annie",
+          "startTime": 89.382,
+          "text": "Yes, that’s right.",
+          "id": "vtt_cue_41_g0rv",
+          "endTime": 90.398
+        },
+        {
+          "startTime": 91.035,
+          "endTime": 92.995,
+          "speaker": "Employee",
+          "text": "So, that’s £26.30.",
+          "id": "vtt_cue_42_srsd"
+        },
+        {
+          "text": "Can I pay by card?",
+          "speaker": "Annie",
+          "endTime": 94.163,
+          "startTime": 93.227,
+          "id": "vtt_cue_43_i9ut"
+        },
+        {
+          "text": "Yes, sure ...",
+          "speaker": "Employee",
+          "id": "vtt_cue_44_t4hk",
+          "startTime": 94.188,
+          "endTime": 94.878
+        },
+        {
+          "startTime": 100.34,
+          "text": "OK, so here’s your card,",
+          "id": "vtt_cue_45_bspm",
+          "endTime": 102.339
+        },
+        {
+          "id": "vtt_cue_46_qghq",
+          "startTime": 102.935,
+          "endTime": 103.872,
+          "text": "and your ticket."
+        },
+        {
+          "endTime": 105.795,
+          "text": "Is there anything else I can help you with?",
+          "startTime": 104.07900000000001,
+          "id": "vtt_cue_47_runq"
+        },
+        {
+          "text": "Actually, there is one more thing.",
+          "endTime": 107.813,
+          "speaker": "Annie",
+          "startTime": 106.098,
+          "id": "vtt_cue_48_m36f"
+        },
+        {
+          "id": "vtt_cue_49_bb2u",
+          "text": "Where can I buy a magazine?",
+          "startTime": 108.186,
+          "endTime": 109.607
+        },
+        {
+          "text": "Is there a newsagent’s here?",
+          "id": "vtt_cue_50_6z5s",
+          "startTime": 109.672,
+          "endTime": 110.815
+        },
+        {
+          "startTime": 110.84,
+          "text": "Yes look – there’s one just over there.",
+          "speaker": "Employee",
+          "id": "vtt_cue_51_et97",
+          "endTime": 111.982
+        },
+        {
+          "speaker": "Annie",
+          "endTime": 113.919,
+          "startTime": 112.126,
+          "id": "vtt_cue_52_ibn2",
+          "text": "Great. Thanks so much."
+        },
+        {
+          "startTime": 113.944,
+          "text": "No problem.",
+          "endTime": 114.523,
+          "id": "vtt_cue_53_z1g8",
+          "speaker": "Employee"
+        },
+        {
+          "startTime": 114.548,
+          "text": "Have a good journey.",
+          "endTime": 115.5,
+          "id": "vtt_cue_54_k20x"
+        }
+      ],
+      "tags": [
+        "Google Drive",
+        "Inglés B1",
+        "Formato VTT"
+      ],
+      "id": "item_drive_1792362529098",
+      "description": "Audio desde enlace de Google Drive",
+      "accent": "UK"
+    },
+    {
+      "isHidden": false,
+      "id": "item_drive_1792362774149",
+      "title": "Lesson C, 02-19",
+      "audioFileName": "Google Drive (1yHa-KnbfGm903s6zGkYFrLZhfYlBAf9w)",
+      "driveFolderUrl": "https://drive.google.com/file/d/1yHa-KnbfGm903s6zGkYFrLZhfYlBAf9w/view?usp=drive_link",
+      "tags": [
+        "Google Drive",
+        "Inglés B1",
+        "Formato VTT"
+      ],
+      "segments": [
+        {
+          "startTime": 0.46,
+          "text": "Track 02.19",
+          "endTime": 2.595,
+          "id": "vtt_cue_1_crmi"
+        },
+        {
+          "startTime": 6.116,
+          "endTime": 9.346,
+          "id": "vtt_cue_2_d5w1",
+          "text": "A: Hi, could you tell me where the museum is, please?"
+        },
+        {
+          "id": "vtt_cue_3_gyn7",
+          "text": "B: Yes, it’s not far.",
+          "startTime": 9.444,
+          "endTime": 11.15
+        },
+        {
+          "startTime": 11.444,
+          "endTime": 12.634,
+          "text": "It’s by the river.",
+          "id": "vtt_cue_4_ziy7"
+        },
+        {
+          "text": "Look on the map – here.",
+          "endTime": 14.809,
+          "startTime": 12.976,
+          "id": "vtt_cue_5_axk3"
+        },
+        {
+          "text": "A: I see. And what time does it open?",
+          "id": "vtt_cue_6_vtf7",
+          "startTime": 15.248,
+          "endTime": 18.088
+        },
+        {
+          "id": "vtt_cue_7_1fb8",
+          "text": "B: From 8 am till 4 pm.",
+          "endTime": 20.536,
+          "startTime": 18.409
+        },
+        {
+          "id": "vtt_cue_8_ze7v",
+          "text": "A: How much is a ticket?",
+          "startTime": 21.075,
+          "endTime": 22.281
+        },
+        {
+          "id": "vtt_cue_9_qk1e",
+          "endTime": 25.028,
+          "startTime": 22.79,
+          "text": "B: For adults, it’s £14."
+        },
+        {
+          "startTime": 25.611,
+          "id": "vtt_cue_10_5dc0",
+          "endTime": 27.008,
+          "text": "A: Where can I buy a ticket?"
+        },
+        {
+          "startTime": 27.279,
+          "endTime": 28.931,
+          "text": "B: I can sell you a ticket here",
+          "id": "vtt_cue_11_1i8d"
+        },
+        {
+          "startTime": 29.123,
+          "text": "or you can buy one at the museum.",
+          "id": "vtt_cue_12_aqkj",
+          "endTime": 30.98
+        },
+        {
+          "id": "vtt_cue_13_vypc",
+          "text": "A: Oh, I’ll buy one here.",
+          "startTime": 31.109,
+          "endTime": 32.863
+        },
+        {
+          "id": "vtt_cue_14_yrv2",
+          "startTime": 33.127,
+          "text": "Can I pay by card?",
+          "endTime": 34.126
+        },
+        {
+          "startTime": 34.214,
+          "endTime": 36.214,
+          "id": "vtt_cue_15_1b43",
+          "text": "B: Of course – that’s no problem."
+        }
+      ],
+      "levelId": "ingles_b1",
+      "audioDuration": 30,
+      "accent": "UK",
+      "createdAt": 1792362774149,
+      "category": "conversation",
+      "level": "B1",
+      "description": "Audio desde enlace de Google Drive",
+      "audioUrl": "/api/drive-proxy?id=1yHa-KnbfGm903s6zGkYFrLZhfYlBAf9w&type=audio",
+      "lessonId": "b1_leccion_2"
+    },
+    {
+      "driveFolderUrl": "https://drive.google.com/file/d/1Z3BODKqDfTMWiTAZyy0dBH2PjiY190Ao/view?usp=drive_link",
+      "audioFileName": "Google Drive (1Z3BODKqDfTMWiTAZyy0dBH2PjiY190Ao)",
+      "id": "item_drive_1792362982282",
+      "accent": "UK",
+      "createdAt": 1792362982282,
+      "category": "conversation",
+      "description": "Audio desde enlace de Google Drive",
+      "title": "Lesson C, 02-23",
+      "audioUrl": "/api/drive-proxy?id=1Z3BODKqDfTMWiTAZyy0dBH2PjiY190Ao&type=audio",
+      "lessonId": "b1_leccion_2",
+      "tags": [
+        "Google Drive",
+        "Inglés B1",
+        "VTT",
+        "VTT Sincronizado"
+      ],
+      "audioDuration": 30,
+      "level": "B1",
+      "levelId": "ingles_b1",
+      "segments": [
+        {
+          "text": "Track 02.23",
+          "id": "vtt_cue_1_g4mv",
+          "startTime": 0.468,
+          "endTime": 2.706
+        },
+        {
+          "text": "PART 2",
+          "startTime": 4.519,
+          "endTime": 5.797,
+          "id": "vtt_cue_2_9o3s",
+          "speaker": "Narrator"
+        },
+        {
+          "startTime": 13.401,
+          "endTime": 14.821,
+          "speaker": "Annie",
+          "text": "He doesn’t live in Birmingham any more!",
+          "id": "vtt_cue_3_r0fs"
+        },
+        {
+          "text": "He doesn’t live in Birmingham any more!",
+          "startTime": 16.157,
+          "id": "vtt_cue_4_snxi",
+          "endTime": 17.514
+        },
+        {
+          "id": "vtt_cue_5_onp3",
+          "text": "He doesn’t live in Birmingham any more!",
+          "endTime": 19.801,
+          "startTime": 18.341
+        },
+        {
+          "speaker": "Employee",
+          "id": "vtt_cue_6_1t1w",
+          "startTime": 20.789,
+          "endTime": 21.321,
+          "text": "Sorry?"
+        },
+        {
+          "startTime": 21.464,
+          "text": "My brother. He moved.",
+          "id": "vtt_cue_7_l6z0",
+          "speaker": "Annie",
+          "endTime": 22.844
+        },
+        {
+          "startTime": 22.933,
+          "endTime": 24.497,
+          "id": "vtt_cue_8_d1eh",
+          "text": "He doesn’t live in Birmingham any more."
+        },
+        {
+          "text": "He lives in Stratford now!",
+          "startTime": 24.769,
+          "endTime": 26.213,
+          "id": "vtt_cue_9_9j9d"
+        },
+        {
+          "text": "Can I change my ticket?",
+          "startTime": 27.255,
+          "id": "vtt_cue_10_635j",
+          "endTime": 28.326
+        }
+      ]
+    },
+    {
+      "audioDuration": 30,
+      "category": "conversation",
+      "level": "B1",
+      "driveFolderUrl": "https://drive.google.com/file/d/1s7BDsgES5Q1Q9Rzxq41ebcTejJzUfzGM/view?usp=drive_link",
+      "audioUrl": "/api/drive-proxy?id=1s7BDsgES5Q1Q9Rzxq41ebcTejJzUfzGM&type=audio",
+      "lessonId": "b1_leccion_2",
+      "levelId": "ingles_b1",
+      "description": "Audio desde enlace de Google Drive",
+      "title": "Lesson D, 02-24",
+      "audioFileName": "Google Drive (1s7BDsgES5Q1Q9Rzxq41ebcTejJzUfzGM)",
+      "accent": "UK",
+      "createdAt": 1792363151480,
+      "segments": [
+        {
+          "id": "vtt_cue_1_b7mu",
+          "endTime": 2.516,
+          "text": "Track 02.24",
+          "startTime": 0.484
+        },
+        {
+          "startTime": 6.482,
+          "speaker": "Lucila",
+          "text": "So when I arrive in Sydney,",
+          "id": "vtt_cue_2_s4sa",
+          "endTime": 9.552
+        },
+        {
+          "id": "vtt_cue_3_vjug",
+          "startTime": 9.749,
+          "endTime": 11.158,
+          "text": "what should I do?"
+        },
+        {
+          "id": "vtt_cue_4_f12m",
+          "startTime": 11.812,
+          "endTime": 14.089,
+          "speaker": "Katie",
+          "text": "What time does your flight get in?"
+        },
+        {
+          "speaker": "Lucila",
+          "text": "At about five o’clock in the evening.",
+          "endTime": 17.125,
+          "startTime": 14.315,
+          "id": "vtt_cue_5_0ol7"
+        },
+        {
+          "startTime": 17.166,
+          "text": "Cool!",
+          "id": "vtt_cue_6_0kxw",
+          "speaker": "Katie",
+          "endTime": 17.879
+        },
+        {
+          "endTime": 20.158,
+          "text": "I finish work at six,",
+          "startTime": 18.126,
+          "id": "vtt_cue_7_ty7d"
+        },
+        {
+          "id": "vtt_cue_8_04za",
+          "endTime": 22.89,
+          "startTime": 20.366,
+          "text": "so we can meet in the city centre."
+        },
+        {
+          "text": "How do I get to the city centre?",
+          "id": "vtt_cue_9_0sc8",
+          "speaker": "Lucila",
+          "startTime": 23.965,
+          "endTime": 26.671
+        },
+        {
+          "startTime": 27.332,
+          "endTime": 29.062,
+          "text": "Look, it’s really easy.",
+          "id": "vtt_cue_10_114q",
+          "speaker": "Katie"
+        },
+        {
+          "endTime": 31.517,
+          "id": "vtt_cue_11_tywm",
+          "startTime": 29.461,
+          "text": "There’s a train from the airport,"
+        },
+        {
+          "startTime": 31.947,
+          "endTime": 34.994,
+          "id": "vtt_cue_12_7hjk",
+          "text": "and you take it to Central Station."
+        },
+        {
+          "startTime": 35.284,
+          "text": "I can meet you there.",
+          "id": "vtt_cue_13_9qzc",
+          "endTime": 36.41
+        },
+        {
+          "text": "Great! I’ll send you a text when I get on the train.",
+          "startTime": 36.435,
+          "speaker": "Lucila",
+          "endTime": 40.578,
+          "id": "vtt_cue_14_zob7"
+        },
+        {
+          "speaker": "Katie",
+          "id": "vtt_cue_15_98gb",
+          "endTime": 42.446,
+          "text": "Not long to wait now.",
+          "startTime": 40.819
+        },
+        {
+          "speaker": "Lucila",
+          "text": "I’m so excited.",
+          "id": "vtt_cue_16_e74l",
+          "endTime": 44.527,
+          "startTime": 42.726
+        },
+        {
+          "startTime": 44.823,
+          "id": "vtt_cue_17_faz4",
+          "speaker": "Katie",
+          "text": "You’re going to love it.",
+          "endTime": 46.648
+        },
+        {
+          "text": "I’ve been here for four months now,",
+          "endTime": 49.586,
+          "id": "vtt_cue_18_z3my",
+          "startTime": 47.07
+        },
+        {
+          "text": "and I’m having a great time.",
+          "id": "vtt_cue_19_g34v",
+          "startTime": 49.611,
+          "endTime": 51.531
+        },
+        {
+          "text": "What do you like the most?",
+          "speaker": "Lucila",
+          "endTime": 54.122,
+          "startTime": 51.979,
+          "id": "vtt_cue_20_s0g8"
+        },
+        {
+          "id": "vtt_cue_21_1kvv",
+          "endTime": 58.109,
+          "text": "Well, I mean, everything.",
+          "startTime": 54.649,
+          "speaker": "Katie"
+        },
+        {
+          "id": "vtt_cue_22_ihyq",
+          "startTime": 58.541,
+          "text": "It’s such a beautiful city.",
+          "endTime": 60.985
+        },
+        {
+          "endTime": 63.567,
+          "id": "vtt_cue_23_np4e",
+          "text": "I’ll never forget arriving in Sydney.",
+          "startTime": 61.25
+        },
+        {
+          "startTime": 63.704,
+          "id": "vtt_cue_24_893b",
+          "endTime": 68.68,
+          "text": "I got here about the same time that you’ll arrive, and I was pretty tired –"
+        },
+        {
+          "startTime": 69.255,
+          "endTime": 71.866,
+          "text": "it’s a long flight from the UK.",
+          "id": "vtt_cue_25_x81c"
+        },
+        {
+          "text": "But as we were landing,",
+          "id": "vtt_cue_26_wk7v",
+          "endTime": 73.718,
+          "startTime": 72.257
+        },
+        {
+          "startTime": 73.82300000000001,
+          "endTime": 75.537,
+          "text": "the airplane flew over the harbour,",
+          "id": "vtt_cue_27_l16h"
+        },
+        {
+          "text": "and I saw the Opera House",
+          "startTime": 75.562,
+          "id": "vtt_cue_28_fiuw",
+          "endTime": 77.08500000000001
+        },
+        {
+          "startTime": 77.11,
+          "id": "vtt_cue_29_d0cr",
+          "text": "and Sydney Harbour Bridge.",
+          "endTime": 78.943
+        },
+        {
+          "text": "It looked just amazing!",
+          "startTime": 79.509,
+          "id": "vtt_cue_30_lyrj",
+          "endTime": 82.207
+        },
+        {
+          "id": "vtt_cue_31_pyfx",
+          "startTime": 82.814,
+          "endTime": 85.027,
+          "text": "Anyway, I completely forgot"
+        },
+        {
+          "endTime": 86.719,
+          "startTime": 85.05199999999999,
+          "id": "vtt_cue_32_qmgc",
+          "text": "that I was feeling tired."
+        },
+        {
+          "endTime": 90.388,
+          "text": "And is it just as exciting",
+          "startTime": 88.182,
+          "speaker": "Lucila",
+          "id": "vtt_cue_33_6nqh"
+        },
+        {
+          "endTime": 92.826,
+          "startTime": 90.413,
+          "id": "vtt_cue_34_nbm2",
+          "text": "once you’re actually in the city?"
+        },
+        {
+          "text": "Definitely.",
+          "endTime": 93.987,
+          "speaker": "Katie",
+          "startTime": 92.86,
+          "id": "vtt_cue_35_cz3h"
+        },
+        {
+          "startTime": 94.425,
+          "id": "vtt_cue_36_dnji",
+          "text": "The thing I really love about it is the sea and the beaches.",
+          "endTime": 98.846
+        },
+        {
+          "text": "You know, I come from Birmingham,",
+          "id": "vtt_cue_37_po7z",
+          "endTime": 101.381,
+          "startTime": 99.064
+        },
+        {
+          "startTime": 101.42,
+          "text": "and the sea is hundreds of miles away,",
+          "endTime": 104.176,
+          "id": "vtt_cue_38_vbc3"
+        },
+        {
+          "id": "vtt_cue_39_2ah8",
+          "text": "but here in Sydney, it’s all around you.",
+          "endTime": 107.59899999999999,
+          "startTime": 104.646
+        },
+        {
+          "id": "vtt_cue_40_2oe0",
+          "speaker": "Lucila",
+          "endTime": 110.705,
+          "startTime": 107.634,
+          "text": "Well, Lima is very near the sea."
+        },
+        {
+          "startTime": 110.923,
+          "text": "I know, but in Sydney",
+          "id": "vtt_cue_41_n96z",
+          "speaker": "Katie",
+          "endTime": 112.86
+        },
+        {
+          "id": "vtt_cue_42_gqt2",
+          "text": "the harbour is such a big",
+          "endTime": 114.17,
+          "startTime": 112.88499999999999
+        },
+        {
+          "startTime": 114.195,
+          "id": "vtt_cue_43_5y8b",
+          "text": "part of the city – you’ll see.",
+          "endTime": 116.25800000000001
+        },
+        {
+          "startTime": 116.58500000000001,
+          "endTime": 117.935,
+          "text": "And the area of Sydney",
+          "id": "vtt_cue_44_gpbi"
+        },
+        {
+          "text": "I live in is a lot of fun.",
+          "startTime": 117.96000000000001,
+          "id": "vtt_cue_45_119w",
+          "endTime": 120.181
+        },
+        {
+          "text": "There are lots of cafés and restaurants,",
+          "endTime": 123.52,
+          "id": "vtt_cue_46_ccnu",
+          "startTime": 120.573
+        },
+        {
+          "startTime": 123.806,
+          "text": "and there’s a great concert hall",
+          "id": "vtt_cue_47_mwwc",
+          "endTime": 125.424
+        },
+        {
+          "text": "nearby where they play live music.",
+          "endTime": 127.593,
+          "id": "vtt_cue_48_og1u",
+          "startTime": 125.449
+        },
+        {
+          "endTime": 130.936,
+          "startTime": 127.88,
+          "speaker": "Lucila",
+          "id": "vtt_cue_49_f48t",
+          "text": "I hope I can find somewhere to live easily."
+        },
+        {
+          "endTime": 132.24099999999999,
+          "text": "You will –",
+          "id": "vtt_cue_50_qo74",
+          "speaker": "Katie",
+          "startTime": 131.43
+        },
+        {
+          "endTime": 134.099,
+          "id": "vtt_cue_51_wshl",
+          "text": "I checked online yesterday,",
+          "startTime": 132.424
+        },
+        {
+          "id": "vtt_cue_52_qiem",
+          "endTime": 136.664,
+          "text": "and there were lots of adverts for housemates.",
+          "startTime": 134.18
+        },
+        {
+          "speaker": "Lucila",
+          "endTime": 137.785,
+          "id": "vtt_cue_53_ekys",
+          "startTime": 136.697,
+          "text": "That’s good."
+        },
+        {
+          "startTime": 138.04,
+          "id": "vtt_cue_54_s7wu",
+          "text": "And thank you for letting me stay",
+          "endTime": 140.494
+        },
+        {
+          "startTime": 140.519,
+          "id": "vtt_cue_55_hh6j",
+          "text": "when I arrive.",
+          "endTime": 141.661
+        },
+        {
+          "text": "No problem.",
+          "endTime": 143.063,
+          "startTime": 142,
+          "speaker": "Katie",
+          "id": "vtt_cue_56_d5pt"
+        },
+        {
+          "startTime": 143.325,
+          "endTime": 145.706,
+          "text": "I’m really looking forward to seeing you again.",
+          "id": "vtt_cue_57_rg79"
+        }
+      ],
+      "id": "item_drive_1792363151480",
       "tags": [
         "Google Drive",
         "Inglés B1",
@@ -1798,114 +3896,127 @@
   ],
   "levels": [
     {
+      "id": "ingles_b1",
+      "createdAt": 1718000000000,
+      "createdById": "user_admin_1",
+      "order": 1,
       "name": "Inglés B1",
       "description": "Nivel intermedio: conversaciones fluidas, reservas, opiniones y planes cotidianos.",
       "teacherIds": [
         "user_admin_1",
-        "user_teacher_1"
-      ],
-      "order": 1,
-      "createdById": "user_admin_1",
-      "id": "ingles_b1",
-      "createdAt": 1718000000000
+        "user_1792357654959_reis",
+        "user_1792357991285_reis"
+      ]
     },
     {
-      "createdAt": 1718000000000,
+      "description": "Nivel intermedio alto: presentaciones, mundo corporativo, debate y argumentación.",
       "teacherIds": [
         "user_teacher_1"
       ],
-      "description": "Nivel intermedio alto: presentaciones, mundo corporativo, debate y argumentación.",
-      "id": "ingles_b2",
-      "order": 2,
       "name": "Inglés B2",
-      "createdById": "user_teacher_1"
+      "createdById": "user_teacher_1",
+      "id": "ingles_b2",
+      "createdAt": 1718000000000,
+      "order": 2
     },
     {
+      "order": 3,
+      "description": "Nivel elemental: situaciones de viaje, indicaciones y compras.",
       "createdAt": 1718000000000,
       "name": "Inglés A2",
       "teacherIds": [
-        "user_admin_1"
+        "user_admin_1",
+        "user_1792357654959_reis",
+        "user_1792357991285_reis"
       ],
-      "order": 3,
-      "description": "Nivel elemental: situaciones de viaje, indicaciones y compras.",
       "id": "ingles_a2",
       "createdById": "user_admin_1"
     },
     {
+      "createdAt": 1718000000000,
       "createdById": "user_admin_1",
-      "description": "Nivel avanzado: discursos académicos, matices idiomáticos y pensamiento complejo.",
       "order": 4,
       "name": "Inglés C1",
       "teacherIds": [
         "user_admin_1"
       ],
       "id": "ingles_c1",
-      "createdAt": 1718000000000
+      "description": "Nivel avanzado: discursos académicos, matices idiomáticos y pensamiento complejo."
     },
     {
-      "description": "Nivel inicial: presentaciones básicas y saludos en el entorno laboral.",
-      "id": "ingles_a1",
-      "name": "Inglés A1",
       "teacherIds": [
         "user_admin_1"
       ],
-      "createdById": "user_admin_1",
+      "description": "Nivel inicial: presentaciones básicas y saludos en el entorno laboral.",
+      "name": "Inglés A1",
       "createdAt": 1718000000000,
-      "order": 5
+      "createdById": "user_admin_1",
+      "order": 5,
+      "id": "ingles_a1"
     }
   ],
   "lessons": [
     {
-      "title": "Lección 1",
-      "isHidden": false,
       "order": 1,
-      "id": "b1_leccion_1",
+      "title": "UNIT 1",
       "subtitle": "COMMUNICATING",
-      "levelId": "ingles_b1"
+      "id": "b1_leccion_1",
+      "levelId": "ingles_b1",
+      "isHidden": false
     },
     {
-      "id": "b1_leccion_2",
-      "title": "Lección 2",
-      "subtitle": "Café, planes de senderismo y tiempo",
+      "subtitle": "TRAVEL AND TOURISM",
       "levelId": "ingles_b1",
+      "isHidden": false,
+      "id": "b1_leccion_2",
+      "title": "UNIT 2",
       "order": 2
     },
     {
+      "order": 1,
       "levelId": "ingles_b2",
-      "title": "Lección 1",
       "id": "b2_leccion_1",
-      "subtitle": "Estrategia de producto y retención Q3",
-      "order": 1
+      "title": "Lección 1",
+      "subtitle": "Estrategia de producto y retención Q3"
     },
     {
-      "order": 1,
-      "subtitle": "Control de seguridad en el aeropuerto y embarque",
       "levelId": "ingles_a2",
+      "subtitle": "Control de seguridad en el aeropuerto y embarque",
       "title": "Lección 1",
+      "order": 1,
       "id": "a2_leccion_1"
     },
     {
-      "order": 1,
-      "title": "Lección 1",
       "levelId": "ingles_c1",
       "id": "c1_leccion_1",
+      "title": "Lección 1",
+      "order": 1,
       "subtitle": "La ciencia de la formación de hábitos"
     },
     {
       "id": "a1_leccion_1",
-      "order": 1,
-      "levelId": "ingles_a1",
       "subtitle": "Primer día en el estudio de diseño",
-      "title": "Lección 1"
+      "levelId": "ingles_a1",
+      "title": "Lección 1",
+      "order": 1
+    },
+    {
+      "id": "lesson_1792363371851_unit_3",
+      "isHidden": false,
+      "title": "UNIT 3",
+      "order": 3,
+      "levelId": "ingles_b1",
+      "subtitle": "MONEY"
     }
   ],
   "deletedItemIds": [
     "item_drive_1792240276755",
     "sample_covent_garden",
-    "item_drive_1792176145497"
+    "item_drive_1792176145497",
+    "sample_weekend_hiking"
   ],
   "deletedLessonIds": [
     "lesson_1792175957420_track_01-21"
   ],
-  "savedAt": 1792357194402
+  "savedAt": 1792431473251
 }

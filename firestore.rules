@@ -36,9 +36,15 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // Connection health check
+    match /test/{testId} {
+      allow read: if true;
+    }
+
     // Course Levels (Pillar 2, 3)
     match /courses/{courseId} {
-      allow read: if isValidId(courseId);
+      allow get: if isValidId(courseId);
+      allow list: if true;
       allow create, update: if isValidId(courseId) &&
         incoming().name is string && incoming().name.size() > 0 && incoming().name.size() <= 150 &&
         incoming().order is number;
@@ -47,7 +53,8 @@ service cloud.firestore {
 
     // Lessons (Pillar 2, 3)
     match /lessons/{lessonId} {
-      allow read: if isValidId(lessonId);
+      allow get: if isValidId(lessonId);
+      allow list: if true;
       allow create, update: if isValidId(lessonId) &&
         incoming().levelId is string && incoming().levelId.size() > 0 && incoming().levelId.size() <= 128 &&
         incoming().title is string && incoming().title.size() > 0 && incoming().title.size() <= 150 &&
@@ -57,7 +64,8 @@ service cloud.firestore {
 
     // Audios and transcripts (Pillar 2, 3, 5)
     match /audios/{audioId} {
-      allow read: if isValidId(audioId);
+      allow get: if isValidId(audioId);
+      allow list: if true;
       allow create, update: if isValidId(audioId) &&
         incoming().title is string && incoming().title.size() > 0 && incoming().title.size() <= 200 &&
         incoming().category is string && incoming().category.size() <= 50 &&
@@ -67,7 +75,8 @@ service cloud.firestore {
 
     // Users and students (Pillar 2, 3, 6)
     match /users/{userId} {
-      allow read: if isValidId(userId);
+      allow get: if isValidId(userId);
+      allow list: if true;
       allow create, update: if isValidId(userId) &&
         incoming().username is string && incoming().username.size() > 0 && incoming().username.size() <= 100 &&
         incoming().name is string && incoming().name.size() > 0 && incoming().name.size() <= 150 &&
@@ -77,7 +86,8 @@ service cloud.firestore {
 
     // Library meta sync tracking
     match /library_meta/{metaId} {
-      allow read, write: if isValidId(metaId);
+      allow get: if isValidId(metaId);
+      allow list, write: if true;
     }
   }
 }

@@ -14,6 +14,7 @@ import {
   collection as collectionServer,
   getDocs as getDocsServer,
 } from 'firebase/firestore';
+import { GoogleGenAI, Type } from '@google/genai';
 
 dotenv.config();
 
@@ -586,6 +587,156 @@ app.get('/api/drive-proxy', async (req: Request, res: Response) => {
   } catch (err: any) {
     console.error('Drive proxy error:', err);
     return res.status(500).json({ error: 'Failed to proxy file from Google Drive', details: err?.message });
+  }
+});
+
+// Gemini Client initialization for intelligent bilingual lexicography & vocabulary inspector
+const geminiApiKey = process.env.GEMINI_API_KEY;
+let aiClient: GoogleGenAI | null = null;
+if (geminiApiKey) {
+  aiClient = new GoogleGenAI({
+    apiKey: geminiApiKey,
+    httpOptions: {
+      headers: {
+        'User-Agent': 'aistudio-build',
+      },
+    },
+  });
+}
+
+// In-memory cache for fast repeated lookups
+const vocabularyCache = new Map<string, any>();
+
+/**
+ * Endpoint for Vocabulary Inspector:
+ * Accurate Spanish translation, natural English definition, precise phonetic IPA, and illustrative example sentence.
+ * Uses Gemini AI with server-side proxy and automatic fallback to bilingual dictionary services.
+ */
+app.post('/api/lookup-word', async (req: Request, res: Response) => {
+  try {
+    const { word, contextSentence } = req.body;
+    if (!word || typeof word !== 'string') {
+      return res.status(400).json({ error: 'Word parameter is required' });
+    }
+
+    const cleanWord = word
+      .trim()
+      .toLowerCase()
+      .replace(/^[.,\/#!$%\^&\*;:{}=\-_`~()?"'«»“”]+|[.,\/#!$%\^&\*;:{}=\-_`~()?"'«»“”]+$/g, '');
+
+    if (!cleanWord) {
+      return res.status(400).json({ error: 'A valid word is required' });
+    }
+
+    const cacheKey = `${cleanWord}:${(contextSentence || '').trim().slice(0, 80)}`;
+    if (vocabularyCache.has(cacheKey)) {
+      return res.json(vocabularyCache.get(cacheKey));
+    }
+
+    // Tier 1: Gemini AI powered lexicography (ideal for context-aware translations & definitions)
+    if (aiClient) {
+      try {
+        const prompt = `You are an expert bilingual English-Spanish lexicographer and teacher for language learners.
+Analyze the English word or phrase: "${cleanWord}"${contextSentence ? ` as used in this sentence: "${contextSentence}"` : ''}.
+Return a structured JSON with:
+- word: the term (in lowercase/canonical or inflected form as appropriate)
+- phonetic: accurate IPA phonetic transcription (e.g., /ˈbentʃmɑːrk/ or /ˌrezərˈveɪʃn/)
+- partOfSpeech: grammatical category (e.g., noun, verb, adjective, adverb, phrasal verb, idiom)
+- spanish: natural and precise Spanish translation matching this context (concise label or short alternative phrase, e.g., "punto de referencia / estándar" or "reunión / cita", avoid lengthy explanations)
+- definition: clear, simple, and accurate English definition explaining what it means in plain English
+- example: a natural, helpful example sentence in English showing real-world usage`;
+
+        const response = await aiClient.models.generateContent({
+          model: 'gemini-3.8-flash',
+          contents: prompt,
+          config: {
+            responseMimeType: 'application/json',
+            responseSchema: {
+              type: Type.OBJECT,
+              properties: {
+                word: { type: Type.STRING },
+                phonetic: { type: Type.STRING },
+                partOfSpeech: { type: Type.STRING },
+                definition: { type: Type.STRING },
+                spanish: { type: Type.STRING },
+                example: { type: Type.STRING },
+              },
+              required: ['word', 'phonetic', 'partOfSpeech', 'definition', 'spanish', 'example'],
+            },
+          },
+        });
+
+        if (response.text) {
+          const parsed = JSON.parse(response.text.trim());
+          if (parsed && parsed.definition && parsed.spanish) {
+            vocabularyCache.set(cacheKey, parsed);
+            return res.json(parsed);
+          }
+        }
+      } catch (geminiError) {
+        console.warn('[Gemini] Vocabulary analysis error, falling back to dictionary services:', geminiError);
+      }
+    }
+
+    // Tier 2: Free Dictionary API + MyMemory bilingual translation fallback
+    let phonetic = `/${cleanWord}/`;
+    let partOfSpeech = 'word';
+    let definition = '';
+    let example = '';
+    let audioUrl = '';
+
+    try {
+      const dictRes = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(cleanWord)}`);
+      if (dictRes.ok) {
+        const dictData = await dictRes.json();
+        if (Array.isArray(dictData) && dictData[0]) {
+          phonetic = dictData[0].phonetic || dictData[0].phonetics?.find((p: any) => p.text)?.text || phonetic;
+          audioUrl = dictData[0].phonetics?.find((p: any) => p.audio && p.audio.length > 0)?.audio || '';
+          const meaning = dictData[0].meanings?.[0];
+          partOfSpeech = meaning?.partOfSpeech || partOfSpeech;
+          definition = meaning?.definitions?.[0]?.definition || '';
+          example = meaning?.definitions?.[0]?.example || '';
+        }
+      }
+    } catch (e) {}
+
+    // Spanish translation query
+    let spanish = '';
+    try {
+      const transRes = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(cleanWord)}&langpair=en|es`);
+      if (transRes.ok) {
+        const transData = await transRes.json();
+        if (transData.responseData?.translatedText) {
+          spanish = transData.responseData.translatedText.toLowerCase();
+        }
+      }
+    } catch (e) {}
+
+    if (!spanish || spanish.toLowerCase() === cleanWord) {
+      spanish = cleanWord;
+    }
+    if (!definition) {
+      definition = `English word: "${cleanWord}". Meaning: ${spanish}.`;
+    }
+    if (!example && contextSentence) {
+      example = contextSentence;
+    }
+
+    const fallbackResult = {
+      word: cleanWord,
+      phonetic,
+      partOfSpeech,
+      definition,
+      spanish,
+      example,
+      audioUrl,
+    };
+
+    vocabularyCache.set(cacheKey, fallbackResult);
+    return res.json(fallbackResult);
+  } catch (err: any) {
+    console.error('Vocabulary lookup error:', err);
+    return res.status(500).json({ error: 'Failed to lookup vocabulary word', details: err?.message });
   }
 });
 
