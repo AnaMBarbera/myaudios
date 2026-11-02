@@ -13,10 +13,12 @@ import {
   Clock, 
   Sparkles,
   RotateCcw,
-  CheckCircle2
+  CheckCircle2,
+  Pencil
 } from 'lucide-react';
 import { AudioTranscriptItem, CefrLevel, Category, Accent, TranscriptSegment, CourseLevel, CourseLesson } from '../types';
 import { parseSRT, parseVTT, parsePlainText, autoDetectAndParseTranscript, formatTime } from '../utils/transcriptParser';
+import { TranscriptSegmentEditorModal } from './TranscriptSegmentEditorModal';
 
 interface AudioTranscriptPairingModalProps {
   initialItem?: AudioTranscriptItem | null;
@@ -58,6 +60,7 @@ export const AudioTranscriptPairingModal: React.FC<AudioTranscriptPairingModalPr
   // Step 2: Transcript source
   const [rawText, setRawText] = useState<string>('');
   const [transcriptType, setTranscriptType] = useState<'upload' | 'paste' | 'existing'>('paste');
+  const [segmentationMode, setSegmentationMode] = useState<'sentences' | 'paragraphs'>('sentences');
   const [segments, setSegments] = useState<TranscriptSegment[]>(initialItem?.segments || []);
   const [detectedFormat, setDetectedFormat] = useState<'vtt' | 'srt' | 'plain' | null>(null);
 
@@ -65,6 +68,12 @@ export const AudioTranscriptPairingModal: React.FC<AudioTranscriptPairingModalPr
   const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false);
   const [currentSyncAudioTime, setCurrentSyncAudioTime] = useState<number>(0);
   const [syncingSentenceIdx, setSyncingSentenceIdx] = useState<number>(0);
+  const [isSegmentEditorOpen, setIsSegmentEditorOpen] = useState<boolean>(false);
+
+  // Check if current segments represent paragraphs (longer text or para_ id)
+  const isParagraphMode = segmentationMode === 'paragraphs' || (
+    segments.length > 0 && segments.some(s => s.text.length > 100 || s.id.startsWith('para_'))
+  );
 
   // Handle audio file input
   const handleAudioFileInput = (file: File) => {
@@ -94,7 +103,7 @@ export const AudioTranscriptPairingModal: React.FC<AudioTranscriptPairingModalPr
       const content = e.target?.result as string;
       if (!content) return;
 
-      const detection = autoDetectAndParseTranscript(content, audioDuration || 30);
+      const detection = autoDetectAndParseTranscript(content, audioDuration || 30, segmentationMode);
       setSegments(detection.segments);
       setDetectedFormat(detection.format);
       setSyncingSentenceIdx(0);
@@ -103,9 +112,10 @@ export const AudioTranscriptPairingModal: React.FC<AudioTranscriptPairingModalPr
   };
 
   // Auto-generate segments from raw text
-  const handleGenerateSegmentsFromText = () => {
+  const handleGenerateSegmentsFromText = (forcedMode?: 'sentences' | 'paragraphs') => {
     if (!rawText.trim()) return;
-    const detection = autoDetectAndParseTranscript(rawText, audioDuration || 30);
+    const mode = forcedMode || segmentationMode;
+    const detection = autoDetectAndParseTranscript(rawText, audioDuration || 30, mode);
     setSegments(detection.segments);
     setDetectedFormat(detection.format);
     setSyncingSentenceIdx(0);
@@ -128,7 +138,7 @@ export const AudioTranscriptPairingModal: React.FC<AudioTranscriptPairingModalPr
         }
 
         // Default end time for current
-        seg.endTime = Number(Math.min(audioDuration || curTime + 5, curTime + 4).toFixed(2));
+        seg.endTime = Number(Math.min(audioDuration || curTime + 15, curTime + (isParagraphMode ? 20 : 5)).toFixed(2));
         copy[syncingSentenceIdx] = seg;
         return copy;
       });
@@ -317,24 +327,69 @@ export const AudioTranscriptPairingModal: React.FC<AudioTranscriptPairingModalPr
               </label>
             </div>
           ) : (
-            <div className="space-y-2">
+            <div className="space-y-3">
+              {/* Segmentation Mode Selector (Sentences vs Paragraphs / Audiobook) */}
+              <div className="flex flex-wrap items-center justify-between gap-2 p-2 bg-slate-100 dark:bg-slate-800/80 rounded-xl border border-slate-200 dark:border-slate-700">
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300">
+                  <span>Modo de división:</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSegmentationMode('sentences');
+                      if (rawText.trim()) handleGenerateSegmentsFromText('sentences');
+                    }}
+                    className={`px-3 py-1.5 text-xs rounded-lg font-medium transition-all cursor-pointer ${
+                      segmentationMode === 'sentences'
+                        ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-300 shadow-xs font-bold'
+                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                    }`}
+                  >
+                    💬 Frase a Frase (Diálogos)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSegmentationMode('paragraphs');
+                      if (rawText.trim()) handleGenerateSegmentsFromText('paragraphs');
+                    }}
+                    className={`px-3 py-1.5 text-xs rounded-lg font-medium transition-all cursor-pointer ${
+                      segmentationMode === 'paragraphs'
+                        ? 'bg-indigo-600 text-white shadow-xs font-bold'
+                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                    }`}
+                  >
+                    📖 Párrafos Completos (Audiolibros)
+                  </button>
+                </div>
+              </div>
+
               <textarea
                 value={rawText}
                 onChange={(e) => setRawText(e.target.value)}
-                rows={4}
-                placeholder="Pega aquí el texto completo o diálogo en inglés. Puedes incluir hablantes al inicio (ej: Host: Hello! Guest: Hi!)..."
-                className="w-full p-3 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-slate-900 dark:text-slate-100"
+                rows={5}
+                placeholder={
+                  segmentationMode === 'paragraphs'
+                    ? "Pega aquí los párrafos del libro o texto largo en inglés. Separa cada párrafo con un salto de línea (Enter dos veces)..."
+                    : "Pega aquí el texto o diálogo en inglés. Se dividirá por oraciones completas (. ! ?)..."
+                }
+                className="w-full p-3 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-slate-900 dark:text-slate-100 font-normal leading-relaxed"
               />
-              <div className="flex items-center justify-between">
+              <div className="flex flex-wrap items-center justify-between gap-2">
                 <span className="text-[11px] text-slate-400">
-                  Se dividirá automáticamente por oraciones para sincronizar.
+                  {segmentationMode === 'paragraphs'
+                    ? '📚 Modo Audiolibro: Se agruparán párrafos enteros para una lectura fluida y marcas de tiempo más cómodas.'
+                    : '💬 Modo Frase: Se dividirá automáticamente por oraciones individuales.'}
                 </span>
                 <button
-                  onClick={handleGenerateSegmentsFromText}
+                  onClick={() => handleGenerateSegmentsFromText()}
                   disabled={!rawText.trim()}
-                  className="px-3 py-1.5 text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/60 rounded-lg hover:bg-indigo-100 cursor-pointer disabled:opacity-50"
+                  className="px-3.5 py-1.5 text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/60 rounded-lg hover:bg-indigo-100 cursor-pointer disabled:opacity-50 transition-colors"
                 >
-                  Convertir en Oraciones ({segments.length} generadas)
+                  {segmentationMode === 'paragraphs'
+                    ? `Convertir en Párrafos (${segments.length} generados)`
+                    : `Convertir en Oraciones (${segments.length} generadas)`}
                 </button>
               </div>
             </div>
@@ -366,18 +421,29 @@ export const AudioTranscriptPairingModal: React.FC<AudioTranscriptPairingModalPr
         {/* Step 3: Interactive Alignment / Segment Preview */}
         {segments.length > 0 && (
           <div className="space-y-3 pt-2 border-t border-slate-100 dark:border-slate-800">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
                 <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block">
                   Paso 3: Sincronización en Vivo (Tap-to-Sync)
                 </label>
                 <p className="text-[11px] text-slate-500">
-                  Reproduce el audio y pulsa "Marcar inicio de frase" cuando empiece a sonar.
+                  {isParagraphMode
+                    ? 'Reproduce el audiolibro y pulsa "Marcar Párrafo Actual" cada vez que el narrador empiece un nuevo párrafo.'
+                    : 'Reproduce el audio y pulsa "Marcar Frase Actual" al inicio de cada frase.'}
                 </p>
               </div>
 
               {audioUrl && (
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsSegmentEditorOpen(true)}
+                    className="px-3 py-1.5 text-xs font-semibold bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 rounded-lg hover:bg-purple-100 cursor-pointer flex items-center gap-1.5 transition-colors"
+                  >
+                    <Pencil className="w-3.5 h-3.5" />
+                    <span>{isParagraphMode ? 'Editar Párrafos' : 'Editar Frases'} ({segments.length})</span>
+                  </button>
+
                   <button
                     onClick={togglePlaySyncAudio}
                     className="px-3 py-1.5 text-xs font-semibold bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 cursor-pointer flex items-center gap-1.5"
@@ -391,7 +457,11 @@ export const AudioTranscriptPairingModal: React.FC<AudioTranscriptPairingModalPr
                     className="px-3.5 py-1.5 text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white rounded-lg cursor-pointer flex items-center gap-1.5 shadow-xs animate-pulse"
                   >
                     <Clock className="w-3.5 h-3.5" />
-                    <span>Marcar Frase Actual #{syncingSentenceIdx + 1}</span>
+                    <span>
+                      {isParagraphMode 
+                        ? `Marcar Párrafo Actual #${syncingSentenceIdx + 1}` 
+                        : `Marcar Frase Actual #${syncingSentenceIdx + 1}`}
+                    </span>
                   </button>
                 </div>
               )}
@@ -438,6 +508,14 @@ export const AudioTranscriptPairingModal: React.FC<AudioTranscriptPairingModalPr
                     </div>
 
                     <div className="flex items-center gap-1 shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => setIsSegmentEditorOpen(true)}
+                        title="Editar frase y tiempos"
+                        className="p-1 hover:text-purple-600 cursor-pointer text-slate-400"
+                      >
+                        <Pencil className="w-3 h-3" />
+                      </button>
                       <button
                         onClick={() => {
                           if (audioRef.current) {
@@ -584,6 +662,28 @@ export const AudioTranscriptPairingModal: React.FC<AudioTranscriptPairingModalPr
         </div>
 
       </div>
+
+      {isSegmentEditorOpen && (
+        <TranscriptSegmentEditorModal
+          item={{
+            id: initialItem?.id || 'temp_pairing_item',
+            title: title || 'Audio en proceso de emparejamiento',
+            audioDuration: audioDuration || 30,
+            audioUrl: audioUrl || '',
+            segments,
+            level,
+            accent,
+            category,
+            tags: [],
+            createdAt: initialItem?.createdAt || Date.now(),
+          }}
+          audioBlobUrl={audioUrl || null}
+          onClose={() => setIsSegmentEditorOpen(false)}
+          onSave={(newSegments) => {
+            setSegments(newSegments);
+          }}
+        />
+      )}
     </div>
   );
 };

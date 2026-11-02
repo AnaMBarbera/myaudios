@@ -31,6 +31,7 @@ const DATA_DIR = path.resolve(__dirname, 'data');
 const LIBRARY_FILE = path.resolve(DATA_DIR, 'library.json');
 const AUDIOS_DIR = path.resolve(DATA_DIR, 'audios');
 const USERS_FILE = path.resolve(DATA_DIR, 'users.json');
+const VOCABULARY_FILE = path.resolve(DATA_DIR, 'vocabulary.json');
 const CONFIG_FILE = path.resolve(__dirname, 'firebase-applet-config.json');
 
 // Initialize Firebase Firestore on Server for persistent cloud storage
@@ -99,8 +100,6 @@ async function readUsers() {
       if (!snap.empty) {
         const users: any[] = [];
         snap.forEach((d) => users.push(d.data()));
-        // Keep local cache file updated
-        await fs.promises.writeFile(USERS_FILE, JSON.stringify(users, null, 2), 'utf-8');
         return users;
       }
     } catch (err) {
@@ -150,6 +149,151 @@ async function writeUsers(users: any[]) {
   }
 }
 
+async function readVocabulary(): Promise<any[]> {
+  if (firestoreDb) {
+    try {
+      const snap = await getDocsServer(collectionServer(firestoreDb, 'vocabulary'));
+      if (!snap.empty) {
+        const words: any[] = [];
+        snap.forEach((d) => words.push(d.data()));
+        return words;
+      }
+    } catch (err) {
+      console.warn('[Firestore] Error reading vocabulary from Firestore:', err);
+    }
+  }
+
+  if (fs.existsSync(VOCABULARY_FILE)) {
+    try {
+      const data = await fs.promises.readFile(VOCABULARY_FILE, 'utf-8');
+      const parsed = JSON.parse(data);
+      if (firestoreDb && Array.isArray(parsed) && parsed.length > 0) {
+        for (const w of parsed) {
+          if (w && w.id) {
+            setDocServer(docServer(firestoreDb, 'vocabulary', w.id), w).catch(() => {});
+          }
+        }
+      }
+      return parsed;
+    } catch (e) {
+      console.error('Error reading vocabulary file:', e);
+    }
+  }
+
+  return [];
+}
+
+async function writeWord(word: any) {
+  if (!word || !word.id) return;
+  const current = await readVocabulary();
+  const existingIdx = current.findIndex((w: any) => w.id === word.id || w.word?.toLowerCase() === word.word?.toLowerCase());
+  if (existingIdx >= 0) {
+    current[existingIdx] = word;
+  } else {
+    current.unshift(word);
+  }
+  await fs.promises.writeFile(VOCABULARY_FILE, JSON.stringify(current, null, 2), 'utf-8');
+  if (firestoreDb) {
+    try {
+      await setDocServer(docServer(firestoreDb, 'vocabulary', word.id), word);
+    } catch (err) {
+      console.warn('[Firestore] Error saving word to Firestore:', err);
+    }
+  }
+}
+
+async function deleteWordFromDb(wordId: string) {
+  const current = await readVocabulary();
+  const filtered = current.filter((w: any) => w.id !== wordId);
+  await fs.promises.writeFile(VOCABULARY_FILE, JSON.stringify(filtered, null, 2), 'utf-8');
+  if (firestoreDb) {
+    try {
+      await deleteDocServer(docServer(firestoreDb, 'vocabulary', wordId));
+    } catch (err) {
+      console.warn('[Firestore] Error deleting word from Firestore:', err);
+    }
+  }
+}
+
+/**
+ * Endpoints for Vocabulary (Mi Vocabulario) - Persisted in Firebase Firestore + Local cache
+ */
+app.get('/api/vocabulary', async (_req: Request, res: Response) => {
+  try {
+    const words = await readVocabulary();
+    return res.json(words);
+  } catch (err: any) {
+    console.error('Error fetching vocabulary:', err);
+    return res.status(500).json({ error: 'Failed to fetch vocabulary', details: err?.message });
+  }
+});
+
+app.post('/api/vocabulary', async (req: Request, res: Response) => {
+  try {
+    const payload = req.body;
+    if (!payload || typeof payload !== 'object') {
+      return res.status(400).json({ error: 'Invalid payload' });
+    }
+    const word = (payload.word && typeof payload.word === 'object') ? payload.word : payload;
+    if (!word || typeof word !== 'object' || !word.id || !word.word) {
+      return res.status(400).json({ error: 'Invalid word object' });
+    }
+    await writeWord(word);
+    return res.json({ success: true, word });
+  } catch (err: any) {
+    console.error('Error saving vocabulary word:', err);
+    return res.status(500).json({ error: 'Failed to save vocabulary word', details: err?.message });
+  }
+});
+
+app.delete('/api/vocabulary/:id', async (req: Request, res: Response) => {
+  try {
+    const wordId = req.params.id;
+    if (!wordId) {
+      return res.status(400).json({ error: 'Missing word ID' });
+    }
+    await deleteWordFromDb(wordId);
+    return res.json({ success: true });
+  } catch (err: any) {
+    console.error('Error deleting vocabulary word:', err);
+    return res.status(500).json({ error: 'Failed to delete vocabulary word', details: err?.message });
+  }
+});
+
+app.post('/api/vocabulary/sync', async (req: Request, res: Response) => {
+  try {
+    const { words } = req.body;
+    if (!Array.isArray(words)) {
+      return res.status(400).json({ error: 'Array of words expected' });
+    }
+    const current = await readVocabulary();
+    const map = new Map<string, any>();
+    for (const w of current) {
+      if (w && w.id) map.set(w.id, w);
+    }
+    for (const w of words) {
+      if (w && w.id) {
+        if (!map.has(w.id) || (w.addedAt && w.addedAt > (map.get(w.id)?.addedAt || 0))) {
+          map.set(w.id, w);
+        }
+      }
+    }
+    const merged = Array.from(map.values());
+    await fs.promises.writeFile(VOCABULARY_FILE, JSON.stringify(merged, null, 2), 'utf-8');
+    if (firestoreDb) {
+      for (const w of merged) {
+        if (w && w.id) {
+          setDocServer(docServer(firestoreDb, 'vocabulary', w.id), w).catch(() => {});
+        }
+      }
+    }
+    return res.json({ success: true, count: merged.length, words: merged });
+  } catch (err: any) {
+    console.error('Error syncing vocabulary:', err);
+    return res.status(500).json({ error: 'Failed to sync vocabulary', details: err?.message });
+  }
+});
+
 /**
  * Endpoint to get server-persisted library (audios, lessons, levels, deletions)
  */
@@ -160,7 +304,6 @@ app.get('/api/library', async (_req: Request, res: Response) => {
         const metaDoc = await getDocServer(docServer(firestoreDb, 'library_meta', 'current'));
         if (metaDoc.exists()) {
           const libraryData = metaDoc.data();
-          await fs.promises.writeFile(LIBRARY_FILE, JSON.stringify(libraryData, null, 2), 'utf-8');
           return res.json(libraryData);
         }
       } catch (err) {

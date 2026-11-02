@@ -20,6 +20,7 @@ import { AudioTranscriptItem, SavedWord, CourseLevel, CourseLesson, AppUser } fr
 import { SAMPLE_AUDIO_ITEMS, INITIAL_COURSE_LEVELS, INITIAL_COURSE_LESSONS } from './data/sampleAudios';
 import { UnifiedAudioPlayer } from './utils/audioEngine';
 import { fetchServerLibrary, persistServerLibrary } from './services/apiSync';
+import { fetchServerVocabulary, persistWordToCloud, deleteWordFromCloud, syncVocabularyToCloud } from './services/vocabularySync';
 import { getCurrentUser, setCurrentUser, logout, getPermissions } from './services/authService';
 import { LoginModal } from './components/LoginModal';
 import { UserManagementModal } from './components/UserManagementModal';
@@ -172,15 +173,39 @@ export default function App() {
   useEffect(() => {
     async function loadData() {
       try {
-        const [serverData, loadedCustom, loadedLevels, loadedLessons, loadedWords] = await Promise.all([
+        const [serverData, serverWords, loadedCustom, loadedLevels, loadedLessons, loadedWords] = await Promise.all([
           fetchServerLibrary(),
+          fetchServerVocabulary().catch(() => []),
           getAllCustomItems().catch(() => []),
           getAllCourseLevels().catch(() => []),
           getAllCourseLessons().catch(() => []),
           getAllWords().catch(() => []),
         ]);
 
-        setSavedWords(loadedWords || []);
+        // Merge words from cloud (Firebase Firestore) and local IndexedDB
+        const wordMap = new Map<string, SavedWord>();
+        for (const w of (loadedWords || [])) {
+          if (w && w.id) wordMap.set(w.id, w);
+        }
+        for (const w of (serverWords || [])) {
+          if (w && w.id) {
+            wordMap.set(w.id, w);
+          }
+        }
+        const mergedWords = Array.from(wordMap.values());
+        setSavedWords(mergedWords);
+
+        // Keep local IndexedDB updated with cloud words
+        for (const w of (serverWords || [])) {
+          saveWord(w).catch(() => {});
+        }
+        // If there are local words not yet synced to cloud, sync them up
+        if ((loadedWords || []).length > 0 && Array.isArray(serverWords)) {
+          const unsynced = (loadedWords || []).filter(lw => !serverWords.some(sw => sw.id === lw.id));
+          if (unsynced.length > 0) {
+            syncVocabularyToCloud(mergedWords).catch(() => {});
+          }
+        }
 
         // 1. Merge Deleted IDs from both local and server
         const combinedDeletedItems = Array.from(new Set([
@@ -636,8 +661,9 @@ export default function App() {
   const handleSaveWord = async (word: SavedWord) => {
     try {
       await saveWord(word);
+      persistWordToCloud(word).catch(err => console.warn('Could not persist word to cloud:', err));
       setSavedWords(prev => {
-        const existingIdx = prev.findIndex(w => w.word.toLowerCase() === word.word.toLowerCase());
+        const existingIdx = prev.findIndex(w => w.id === word.id || w.word.toLowerCase() === word.word.toLowerCase());
         if (existingIdx >= 0) {
           const copy = [...prev];
           copy[existingIdx] = word;
@@ -656,6 +682,7 @@ export default function App() {
     const updated = { ...word, mastered: !word.mastered };
     try {
       await saveWord(updated);
+      persistWordToCloud(updated).catch(err => console.warn('Could not persist updated word to cloud:', err));
       setSavedWords(prev => prev.map(w => w.id === wordId ? updated : w));
     } catch (err) {
       console.error('Failed to update word:', err);
@@ -665,6 +692,7 @@ export default function App() {
   const handleDeleteWord = async (wordId: string) => {
     try {
       await deleteWord(wordId);
+      deleteWordFromCloud(wordId).catch(err => console.warn('Could not delete word from cloud:', err));
       setSavedWords(prev => prev.filter(w => w.id !== wordId));
     } catch (err) {
       console.error('Failed to delete word:', err);

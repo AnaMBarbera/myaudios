@@ -89,5 +89,16 @@ service cloud.firestore {
       allow get: if isValidId(metaId);
       allow list, write: if true;
     }
+
+    // Vocabulary Bank (Pillar 2, 3, 5)
+    match /vocabulary/{wordId} {
+      allow get: if isValidId(wordId);
+      allow list: if true;
+      allow create, update: if isValidId(wordId) &&
+        incoming().word is string && incoming().word.size() > 0 && incoming().word.size() <= 150 &&
+        incoming().definition is string &&
+        incoming().spanish is string;
+      allow delete: if isValidId(wordId);
+    }
   }
 }

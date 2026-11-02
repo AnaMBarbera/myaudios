@@ -218,7 +218,8 @@ export function parseSRT(content: string): TranscriptSegment[] {
  */
 export function autoDetectAndParseTranscript(
   content: string, 
-  audioDuration?: number
+  audioDuration?: number,
+  plainTextMode: 'sentences' | 'paragraphs' = 'sentences'
 ): { segments: TranscriptSegment[]; format: 'vtt' | 'srt' | 'plain'; cueCount: number } {
   const cleaned = content.replace(/^\uFEFF/, '').trim();
   if (!cleaned) {
@@ -251,12 +252,20 @@ export function autoDetectAndParseTranscript(
     }
   }
 
-  // 3. Fallback: Plain text sentence segmentation only if no timestamp cues were found
-  const segments = parsePlainText(cleaned, audioDuration);
+  // 3. Fallback: Plain text segmentation (by sentences or whole paragraphs)
+  const segments = parsePlainText(cleaned, audioDuration, plainTextMode);
   return { segments, format: 'plain', cueCount: segments.length };
 }
 
-export function parsePlainText(content: string, audioDuration?: number): TranscriptSegment[] {
+export function parsePlainText(
+  content: string, 
+  audioDuration?: number,
+  mode: 'sentences' | 'paragraphs' = 'sentences'
+): TranscriptSegment[] {
+  if (mode === 'paragraphs') {
+    return parsePlainTextByParagraphs(content, audioDuration);
+  }
+
   const normalized = content.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
   const rawSentences: string[] = [];
   const lines = normalized.split('\n');
@@ -296,11 +305,150 @@ export function parsePlainText(content: string, audioDuration?: number): Transcr
     const endTime = Number(((idx + 1) * avgDuration).toFixed(2));
 
     return {
-      id: `plain_${Date.now()}_${idx}`,
+      id: `plain_${Date.now()}_${idx}_${Math.random().toString(36).substring(2, 6)}`,
       startTime,
       endTime,
       speaker,
       text,
+    };
+  });
+}
+
+/**
+ * Parses raw text by full paragraphs (separated by blank lines / double returns).
+ * Ideal for audiobooks, stories, and long articles.
+ * Allocates time proportionally according to paragraph character length.
+ */
+export function parsePlainTextByParagraphs(content: string, audioDuration?: number): TranscriptSegment[] {
+  const normalized = content.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  
+  // Split by double newlines or 2+ consecutive blank lines
+  const rawBlocks = normalized.split(/\n\s*\n+/);
+  const paragraphs: string[] = [];
+
+  for (const block of rawBlocks) {
+    const trimmed = block.trim().replace(/\n+/g, ' ');
+    if (trimmed) {
+      paragraphs.push(trimmed);
+    }
+  }
+
+  // Fallback: If no double newlines exist, group every 3 lines or sentences
+  if (paragraphs.length <= 1 && normalized.includes('\n')) {
+    const singleLines = normalized.split('\n').map(l => l.trim()).filter(Boolean);
+    if (singleLines.length > 2) {
+      paragraphs.length = 0;
+      for (let i = 0; i < singleLines.length; i += 3) {
+        paragraphs.push(singleLines.slice(i, i + 3).join(' '));
+      }
+    }
+  }
+
+  const total = paragraphs.length;
+  if (total === 0) return [];
+
+  const totalDuration = audioDuration && audioDuration > 0 ? audioDuration : total * 15;
+  const totalChars = paragraphs.reduce((sum, p) => sum + Math.max(20, p.length), 0);
+
+  let currentStart = 0;
+  return paragraphs.map((para, idx) => {
+    let speaker: string | undefined;
+    let text = para;
+    const speakerMatch = para.match(/^([A-Za-z0-9_\s]{2,25}):\s*([\s\S]*)$/);
+    if (speakerMatch) {
+      speaker = speakerMatch[1].trim();
+      text = speakerMatch[2].trim();
+    }
+
+    // Allocate time proportionally to length
+    const paraChars = Math.max(20, text.length);
+    const paraDuration = Math.max(2, (paraChars / totalChars) * totalDuration);
+    const startTime = Number(currentStart.toFixed(2));
+    const isLast = idx === total - 1;
+    const endTime = isLast 
+      ? Number(totalDuration.toFixed(2)) 
+      : Number((currentStart + paraDuration).toFixed(2));
+
+    currentStart += paraDuration;
+
+    return {
+      id: `para_${Date.now()}_${idx}_${Math.random().toString(36).substring(2, 6)}`,
+      startTime,
+      endTime: Math.max(startTime + 0.5, endTime),
+      speaker,
+      text,
+    };
+  });
+}
+
+/**
+ * Groups an array of single-sentence segments into full paragraphs (e.g. 2, 3, 4 sentences per paragraph)
+ * preserving precise start time of first sentence and end time of last sentence.
+ */
+export function groupSegmentsIntoParagraphs(
+  segments: TranscriptSegment[], 
+  groupSize: number = 3
+): TranscriptSegment[] {
+  if (!segments || segments.length === 0) return [];
+  const validSize = Math.max(2, groupSize);
+  const grouped: TranscriptSegment[] = [];
+
+  for (let i = 0; i < segments.length; i += validSize) {
+    const chunk = segments.slice(i, i + validSize);
+    if (chunk.length === 0) continue;
+
+    const first = chunk[0];
+    const last = chunk[chunk.length - 1];
+    const combinedText = chunk.map(c => c.text.trim()).join(' ');
+    const combinedTranslations = chunk
+      .map(c => c.translation?.trim())
+      .filter(Boolean)
+      .join(' ');
+
+    grouped.push({
+      id: `para_group_${Date.now()}_${grouped.length}_${Math.random().toString(36).substring(2, 6)}`,
+      startTime: first.startTime,
+      endTime: Math.max(first.startTime + 0.5, last.endTime),
+      speaker: first.speaker,
+      text: combinedText,
+      translation: combinedTranslations || undefined,
+    });
+  }
+
+  return grouped;
+}
+
+/**
+ * Splits a paragraph segment back into individual sentence segments.
+ */
+export function splitSegmentIntoSentences(seg: TranscriptSegment): TranscriptSegment[] {
+  const matches = seg.text.match(/[^.!?]+[.!?]+(\s+|$)|[^.!?]+$/g);
+  if (!matches || matches.length <= 1) {
+    return [seg];
+  }
+
+  const sentences = matches.map(s => s.trim()).filter(Boolean);
+  const total = sentences.length;
+  const segDuration = Math.max(0.5, seg.endTime - seg.startTime);
+  const totalChars = sentences.reduce((acc, s) => acc + Math.max(10, s.length), 0);
+
+  let currentStart = seg.startTime;
+  return sentences.map((s, idx) => {
+    const chars = Math.max(10, s.length);
+    const duration = (chars / totalChars) * segDuration;
+    const start = Number(currentStart.toFixed(2));
+    const end = idx === total - 1 
+      ? Number(seg.endTime.toFixed(2)) 
+      : Number((currentStart + duration).toFixed(2));
+
+    currentStart += duration;
+
+    return {
+      id: `split_${Date.now()}_${idx}_${Math.random().toString(36).substring(2, 6)}`,
+      startTime: start,
+      endTime: Math.max(start + 0.2, end),
+      speaker: seg.speaker,
+      text: s,
     };
   });
 }

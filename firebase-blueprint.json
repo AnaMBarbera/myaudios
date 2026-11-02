@@ -208,6 +208,58 @@
         }
       },
       "required": ["id", "levelId", "title", "order"]
+    },
+    "VocabularyWord": {
+      "title": "VocabularyWord",
+      "description": "User saved vocabulary term with definitions, translations and audio examples",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique word identifier"
+        },
+        "word": {
+          "type": "string",
+          "description": "English term or phrase"
+        },
+        "phonetic": {
+          "type": "string",
+          "description": "IPA phonetic transcription"
+        },
+        "partOfSpeech": {
+          "type": "string",
+          "description": "Grammatical category (noun, verb, etc.)"
+        },
+        "definition": {
+          "type": "string",
+          "description": "English definition"
+        },
+        "spanish": {
+          "type": "string",
+          "description": "Spanish translation"
+        },
+        "example": {
+          "type": "string",
+          "description": "Usage example sentence"
+        },
+        "sourceAudioId": {
+          "type": "string",
+          "description": "Source audio ID where the word was found"
+        },
+        "sourceAudioTitle": {
+          "type": "string",
+          "description": "Title of the source audio"
+        },
+        "addedAt": {
+          "type": "number",
+          "description": "Timestamp when added"
+        },
+        "mastered": {
+          "type": "boolean",
+          "description": "Whether the word has been mastered"
+        }
+      },
+      "required": ["id", "word", "definition", "spanish", "addedAt"]
     }
   },
   "firestore": {
@@ -226,6 +278,10 @@
     "/lessons/{lessonId}": {
       "schema": "CourseLesson",
       "description": "Collection of individual lessons belonging to courses"
+    },
+    "/vocabulary/{wordId}": {
+      "schema": "VocabularyWord",
+      "description": "Collection of user saved vocabulary terms and definitions"
     }
   }
 }

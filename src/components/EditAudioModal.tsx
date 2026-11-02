@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { X, Headphones, Check, Eye, EyeOff, Trash2, Folder, BookOpen, FileText } from 'lucide-react';
+import { X, Headphones, Check, Eye, EyeOff, Trash2, Folder, BookOpen, FileText, Pencil } from 'lucide-react';
 import { AudioTranscriptItem, CourseLevel, CourseLesson, CefrLevel, Accent, TranscriptSegment } from '../types';
 import { VTTAttachModal } from './VTTAttachModal';
+import { TranscriptSegmentEditorModal } from './TranscriptSegmentEditorModal';
 
 interface EditAudioModalProps {
   item: AudioTranscriptItem;
@@ -32,6 +33,7 @@ export const EditAudioModal: React.FC<EditAudioModalProps> = ({
   const [isHidden, setIsHidden] = useState(Boolean(item.isHidden));
   const [segments, setSegments] = useState<TranscriptSegment[]>(item.segments || []);
   const [isVttModalOpen, setIsVttModalOpen] = useState<boolean>(false);
+  const [isSegmentEditorOpen, setIsSegmentEditorOpen] = useState<boolean>(false);
 
   // Available lessons for current level
   const currentLessons = lessons.filter(l => l.levelId === levelId);
@@ -210,14 +212,27 @@ export const EditAudioModal: React.FC<EditAudioModalProps> = ({
               </div>
             </div>
 
-            <button
-              type="button"
-              onClick={() => setIsVttModalOpen(true)}
-              className="px-3 py-1.5 rounded-lg font-semibold cursor-pointer transition-colors bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 text-xs flex items-center gap-1.5"
-            >
-              <FileText className="w-3.5 h-3.5" />
-              <span>{segments.length > 0 ? 'Reemplazar .VTT' : '+ Cargar .VTT'}</span>
-            </button>
+            <div className="flex items-center gap-2">
+              {segments.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setIsSegmentEditorOpen(true)}
+                  className="px-3 py-1.5 rounded-lg font-semibold cursor-pointer transition-colors bg-purple-50 border border-purple-200 hover:bg-purple-100 dark:bg-purple-950/60 dark:border-purple-800 text-purple-700 dark:text-purple-300 text-xs flex items-center gap-1.5"
+                >
+                  <Pencil className="w-3.5 h-3.5" />
+                  <span>Editar Frases ({segments.length})</span>
+                </button>
+              )}
+
+              <button
+                type="button"
+                onClick={() => setIsVttModalOpen(true)}
+                className="px-3 py-1.5 rounded-lg font-semibold cursor-pointer transition-colors bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 text-xs flex items-center gap-1.5"
+              >
+                <FileText className="w-3.5 h-3.5" />
+                <span>{segments.length > 0 ? 'Reemplazar .VTT' : '+ Cargar .VTT'}</span>
+              </button>
+            </div>
           </div>
 
           {/* Visibility toggle (Ocultar / Mostrar) */}
@@ -297,6 +312,17 @@ export const EditAudioModal: React.FC<EditAudioModalProps> = ({
           currentSegmentsCount={segments.length}
           onClose={() => setIsVttModalOpen(false)}
           onSaveSegments={(newSegments) => {
+            setSegments(newSegments);
+          }}
+        />
+      )}
+
+      {isSegmentEditorOpen && (
+        <TranscriptSegmentEditorModal
+          item={{ ...item, title: title || item.title, segments }}
+          audioBlobUrl={null}
+          onClose={() => setIsSegmentEditorOpen(false)}
+          onSave={(newSegments) => {
             setSegments(newSegments);
           }}
         />

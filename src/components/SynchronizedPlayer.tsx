@@ -33,6 +33,7 @@ import { UnifiedAudioPlayer } from '../utils/audioEngine';
 import { formatTime, autoDetectAndParseTranscript } from '../utils/transcriptParser';
 import { lookupWord, playWordSpeech, WordDefinitionResult } from '../utils/dictionary';
 import { VTTAttachModal } from './VTTAttachModal';
+import { TranscriptSegmentEditorModal } from './TranscriptSegmentEditorModal';
 
 interface SynchronizedPlayerProps {
   item: AudioTranscriptItem;
@@ -74,6 +75,22 @@ export const SynchronizedPlayer: React.FC<SynchronizedPlayerProps> = ({
   const [isLoopingSegment, setIsLoopingSegment] = useState<boolean>(false);
   const [isAutoPause, setIsAutoPause] = useState<boolean>(false);
   const [isVttModalOpen, setIsVttModalOpen] = useState<boolean>(false);
+  const [isSegmentEditorOpen, setIsSegmentEditorOpen] = useState<boolean>(false);
+
+  // Check if item has paragraph-like segments or title indicates audiobook
+  const isAudiobookContent = Boolean(
+    (item.segments && item.segments.some(s => s.id.startsWith('para_') || s.text.length > 120)) ||
+    item.title.toLowerCase().includes('audiolibro') ||
+    item.title.toLowerCase().includes('audiobook') ||
+    item.title.toLowerCase().includes('libro') ||
+    item.title.toLowerCase().includes('chapter') ||
+    item.title.toLowerCase().includes('capítulo')
+  );
+
+  const [displayLayout, setDisplayLayout] = useState<'cards' | 'book'>(() => {
+    return isAudiobookContent ? 'book' : 'cards';
+  });
+  const [bookFontSerif, setBookFontSerif] = useState<boolean>(false);
 
   // Determine if item has a valid parsed transcript or only placeholder/empty
   const hasRealSegments = Boolean(
@@ -260,8 +277,9 @@ export const SynchronizedPlayer: React.FC<SynchronizedPlayerProps> = ({
 
   const handleSaveInspectedWord = () => {
     if (!inspectedWord) return;
+    const safeWordKey = inspectedWord.word.toLowerCase().replace(/[^a-zA-Z0-9_-]/g, '_') || 'term';
     const newWord: SavedWord = {
-      id: `w_${Date.now()}_${inspectedWord.word}`,
+      id: `w_${Date.now()}_${safeWordKey}`,
       word: inspectedWord.word,
       phonetic: inspectedWord.phonetic || `/${inspectedWord.word}/`,
       definition: inspectedWord.definition,
@@ -353,6 +371,17 @@ export const SynchronizedPlayer: React.FC<SynchronizedPlayerProps> = ({
           {/* Quick Audio Actions: Edit, VTT, Hide, Delete */}
           {(canEditContent || canDeleteContent) && (
             <div className="flex flex-wrap items-center gap-2 mt-2 hidden-student">
+              {canEditContent && (
+                <button
+                  onClick={() => setIsSegmentEditorOpen(true)}
+                  className="px-2.5 py-1 text-xs rounded-lg border border-purple-200 dark:border-purple-800 bg-purple-50 dark:bg-purple-950/60 hover:bg-purple-100 dark:hover:bg-purple-900/60 text-purple-700 dark:text-purple-300 flex items-center gap-1.5 cursor-pointer font-semibold transition-colors shadow-2xs"
+                  title="Editar texto, marcas de tiempo, añadir o eliminar frases"
+                >
+                  <Pencil className="w-3.5 h-3.5" />
+                  <span>Editar Frases & Tiempos</span>
+                </button>
+              )}
+
               {canEditContent && (
                 <button
                   onClick={() => setIsVttModalOpen(true)}
@@ -603,35 +632,87 @@ export const SynchronizedPlayer: React.FC<SynchronizedPlayerProps> = ({
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Synchronized Transcript View (2 Columns) */}
           <div className="lg:col-span-2 space-y-4">
-            {/* Guidance banner and VTT/Translation tools - hidden while audio is playing to maximize screen space */}
-            {!isPlaying && (
-              <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500 dark:text-slate-400 px-1 py-1 transition-all duration-200">
-                <div className="flex items-center gap-2">
-                  <span>Pulsa cualquier palabra para ver su significado y pronunciación</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => setIsVttModalOpen(true)}
-                    className="flex items-center gap-1.5 text-indigo-600 dark:text-indigo-400 hover:underline font-semibold cursor-pointer"
-                  >
-                    <FileText className="w-3.5 h-3.5" />
-                    <span>{hasRealSegments ? 'Actualizar .VTT' : '+ Cargar .VTT'}</span>
-                  </button>
-                  <button
-                    onClick={() => setShowTranslations(!showTranslations)}
-                    className="flex items-center gap-1.5 text-indigo-600 dark:text-indigo-400 hover:underline font-medium cursor-pointer"
-                  >
-                    {showTranslations ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-                    <span>{showTranslations ? 'Ocultar traducciones' : 'Mostrar traducciones'}</span>
-                  </button>
-                </div>
+            {/* Guidance banner and VTT/Translation tools */}
+            <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500 dark:text-slate-400 px-1 py-1 transition-all duration-200">
+              {/* Layout Mode Selector (Frases vs Audiolibro / Párrafos) */}
+              <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 p-0.5 rounded-lg border border-slate-200 dark:border-slate-700">
+                <button
+                  type="button"
+                  onClick={() => setDisplayLayout('cards')}
+                  className={`px-2.5 py-1 text-xs rounded-md font-medium transition-colors cursor-pointer flex items-center gap-1 ${
+                    displayLayout === 'cards'
+                      ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-300 shadow-2xs font-bold'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                  }`}
+                >
+                  <span>💬 Frases</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setDisplayLayout('book')}
+                  className={`px-2.5 py-1 text-xs rounded-md font-medium transition-colors cursor-pointer flex items-center gap-1 ${
+                    displayLayout === 'book'
+                      ? 'bg-indigo-600 text-white shadow-2xs font-bold'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                  }`}
+                  title="Modo lector continuo optimizado para audiolibros y párrafos largos"
+                >
+                  <BookOpen className="w-3.5 h-3.5" />
+                  <span>📖 Audiolibro (Párrafos)</span>
+                </button>
               </div>
-            )}
 
-            {/* Scrollable Transcript List */}
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                {displayLayout === 'book' && (
+                  <button
+                    type="button"
+                    onClick={() => setBookFontSerif(!bookFontSerif)}
+                    className={`px-2 py-1 rounded-md text-[11px] font-medium border transition-colors cursor-pointer ${
+                      bookFontSerif
+                        ? 'bg-amber-100 dark:bg-amber-950/60 border-amber-300 dark:border-amber-700 text-amber-900 dark:text-amber-200 font-serif'
+                        : 'bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300'
+                    }`}
+                    title="Alternar entre tipografía de libro (Serif) y moderna (Sans)"
+                  >
+                    {bookFontSerif ? 'Fuente: Libro (Serif)' : 'Fuente: Sans'}
+                  </button>
+                )}
+
+                {canEditContent && (
+                  <button
+                    onClick={() => setIsSegmentEditorOpen(true)}
+                    className="flex items-center gap-1.5 text-purple-600 dark:text-purple-400 hover:underline font-semibold cursor-pointer hidden-student"
+                    title="Editar párrafos, marcas de tiempo o agrupar texto"
+                  >
+                    <Pencil className="w-3.5 h-3.5" />
+                    <span>{displayLayout === 'book' ? 'Editar Párrafos' : 'Editar Frases'}</span>
+                  </button>
+                )}
+                <button
+                  onClick={() => setIsVttModalOpen(true)}
+                  className="flex items-center gap-1.5 text-indigo-600 dark:text-indigo-400 hover:underline font-semibold cursor-pointer"
+                >
+                  <FileText className="w-3.5 h-3.5" />
+                  <span>{hasRealSegments ? 'Actualizar .VTT' : '+ Cargar .VTT'}</span>
+                </button>
+                <button
+                  onClick={() => setShowTranslations(!showTranslations)}
+                  className="flex items-center gap-1.5 text-indigo-600 dark:text-indigo-400 hover:underline font-medium cursor-pointer"
+                >
+                  {showTranslations ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                  <span className="hidden sm:inline">{showTranslations ? 'Ocultar traducción' : 'Mostrar traducción'}</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Scrollable Transcript List (Cards or Audiobook Paragraphs) */}
             <div 
               ref={transcriptContainerRef}
-              className="space-y-3 max-h-[50vh] sm:max-h-[58vh] lg:max-h-[620px] overflow-y-auto pr-1 transcript-scroll overscroll-contain touch-pan-y"
+              className={`max-h-[50vh] sm:max-h-[58vh] lg:max-h-[620px] overflow-y-auto pr-1 transcript-scroll overscroll-contain touch-pan-y ${
+                displayLayout === 'book'
+                  ? 'space-y-4 p-3 sm:p-5 bg-amber-50/20 dark:bg-slate-900/50 rounded-2xl border border-slate-200/80 dark:border-slate-800'
+                  : 'space-y-3'
+              }`}
               style={{ WebkitOverflowScrolling: 'touch' }}
             >
               {!hasRealSegments ? (
@@ -662,10 +743,10 @@ export const SynchronizedPlayer: React.FC<SynchronizedPlayerProps> = ({
                   </div>
                   <div className="max-w-md mx-auto space-y-1.5">
                     <h3 className="text-base font-bold text-slate-900 dark:text-white">
-                      No aparece la transcripción .VTT para este audio
+                      No aparece la transcripción para este audio
                     </h3>
                     <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                      Para que el texto aparezca y se sincronice frase a frase con las marcas de tiempo exactas del audio, sube tu archivo <strong>.vtt</strong> o pega su contenido aquí.
+                      Sube tu archivo de texto o subtítulos <strong>.vtt</strong> para sincronizar la lectura párrafo a párrafo o frase a frase.
                     </p>
                   </div>
                   <div className="flex flex-wrap items-center justify-center gap-3 pt-1">
@@ -686,16 +767,146 @@ export const SynchronizedPlayer: React.FC<SynchronizedPlayerProps> = ({
                 const isActive = activeSegment?.id === seg.id;
                 const words = seg.text.split(/\s+/);
                 
-                // Calculate sentence-internal progress
+                // Calculate sentence/paragraph progress
                 const segDuration = Math.max(0.1, seg.endTime - seg.startTime);
                 const segElapsed = Math.max(0, Math.min(currentTime - seg.startTime, segDuration));
                 const segProgressPercent = isActive ? (segElapsed / segDuration) * 100 : 0;
                 
-                // Approximate active word index in sentence
+                // Approximate active word index in segment
                 const activeWordIndex = isActive 
                   ? Math.floor((segElapsed / segDuration) * words.length) 
                   : -1;
 
+                // Dedicated Audiobook Paragraph View
+                if (displayLayout === 'book') {
+                  return (
+                    <div
+                      key={seg.id}
+                      ref={(el) => {
+                        if (el) segmentRefs.current.set(seg.id, el);
+                        else segmentRefs.current.delete(seg.id);
+                      }}
+                      className={`relative p-4 sm:p-5 rounded-xl transition-all duration-200 border ${
+                        bookFontSerif ? 'font-serif' : 'font-sans'
+                      } ${
+                        isActive
+                          ? 'bg-indigo-50/90 dark:bg-indigo-950/60 border-l-4 border-l-indigo-600 border-t-indigo-300/60 border-r-indigo-300/60 border-b-indigo-300/60 dark:border-indigo-800 shadow-md ring-2 ring-indigo-500/20'
+                          : 'bg-white/90 dark:bg-slate-900/90 border-slate-200/80 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
+                      }`}
+                    >
+                      {/* Live paragraph progress line */}
+                      {isActive && (
+                        <div className="absolute top-0 left-0 right-0 h-1 bg-indigo-100 dark:bg-indigo-900/60 overflow-hidden rounded-t-xl">
+                          <div 
+                            className="h-full bg-indigo-600 transition-all duration-75"
+                            style={{ width: `${segProgressPercent}%` }}
+                          />
+                        </div>
+                      )}
+
+                      {/* Header bar of paragraph */}
+                      <div className="flex items-center justify-between gap-2 pb-2 mb-2 border-b border-slate-100 dark:border-slate-800/80 text-xs">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <button
+                            onClick={() => handleJumpToSegment(seg)}
+                            className={`px-2 py-0.5 rounded text-xs font-mono font-medium transition-colors cursor-pointer flex items-center gap-1 ${
+                              isActive
+                                ? 'bg-indigo-600 text-white shadow-xs'
+                                : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
+                            }`}
+                          >
+                            <Play className="w-2.5 h-2.5 fill-current" />
+                            <span>{formatTime(seg.startTime)}</span>
+                          </button>
+
+                          <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1">
+                            <BookOpen className="w-3 h-3 text-indigo-500" />
+                            <span>Párrafo {idx + 1}</span>
+                          </span>
+
+                          {seg.speaker && (
+                            <span className="font-bold text-slate-800 dark:text-slate-200">
+                              {seg.speaker}:
+                            </span>
+                          )}
+
+                          {isActive && isPlaying && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold uppercase tracking-wider animate-pulse">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                              <span>Leyendo ({formatTime(currentTime, true)})</span>
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="flex items-center gap-1">
+                          <button
+                            onClick={() => {
+                              handleJumpToSegment(seg);
+                              setIsLoopingSegment(true);
+                              playerEngine.setLoopSegment(seg);
+                            }}
+                            title="Repetir solo este párrafo"
+                            className={`text-xs px-2 py-1 rounded transition-colors cursor-pointer flex items-center gap-1 ${
+                              isLoopingSegment && activeSegment?.id === seg.id
+                                ? 'bg-amber-500 text-white font-bold'
+                                : 'text-slate-400 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+                            }`}
+                          >
+                            <Repeat className="w-3.5 h-3.5" />
+                            <span className="text-[10px] hidden sm:inline">Repetir</span>
+                          </button>
+
+                          {canEditContent && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setIsSegmentEditorOpen(true);
+                              }}
+                              title="Editar este párrafo y sus marcas de tiempo"
+                              className="text-xs p-1.5 rounded transition-colors cursor-pointer flex items-center gap-1 text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800 hidden-student"
+                            >
+                              <Pencil className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Paragraph text with full word interactivity */}
+                      <p className="text-base sm:text-lg leading-relaxed text-slate-900 dark:text-slate-100 font-normal">
+                        {words.map((w, wIdx) => {
+                          const isCurrentSpokenWord = isActive && wIdx === activeWordIndex;
+                          return (
+                            <span
+                              key={wIdx}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleWordClick(w, seg.text);
+                              }}
+                              role="button"
+                              tabIndex={0}
+                              className={`rounded px-1 py-0.5 cursor-pointer transition-all inline-block select-none active:bg-indigo-300 dark:active:bg-indigo-700 ${
+                                isCurrentSpokenWord
+                                  ? 'bg-indigo-600 text-white font-semibold scale-105 shadow-xs'
+                                  : 'hover:bg-indigo-100 dark:hover:bg-indigo-900/60 hover:text-indigo-900 dark:hover:text-indigo-200'
+                              }`}
+                            >
+                              {w}{' '}
+                            </span>
+                          );
+                        })}
+                      </p>
+
+                      {/* Spanish Translation */}
+                      {showTranslations && seg.translation && (
+                        <p className="mt-3 text-xs sm:text-sm text-slate-600 dark:text-slate-400 border-t border-slate-100 dark:border-slate-800/80 pt-2.5 leading-relaxed font-light italic">
+                          {seg.translation}
+                        </p>
+                      )}
+                    </div>
+                  );
+                }
+
+                // Standard Sentence Cards View
                 return (
                   <div
                     key={seg.id}
@@ -767,6 +978,19 @@ export const SynchronizedPlayer: React.FC<SynchronizedPlayerProps> = ({
                           {isLoopingSegment && activeSegment?.id === seg.id ? 'Repitiendo' : 'Bucle'}
                         </span>
                       </button>
+
+                      {canEditContent && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setIsSegmentEditorOpen(true);
+                          }}
+                          title="Editar esta frase y sus marcas de tiempo"
+                          className="text-xs p-1.5 rounded transition-colors cursor-pointer flex items-center gap-1 text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800 hidden-student"
+                        >
+                          <Pencil className="w-3.5 h-3.5" />
+                        </button>
+                      )}
                     </div>
 
                     {/* Interactive English Sentence Text with word highlight */}
@@ -1120,6 +1344,25 @@ export const SynchronizedPlayer: React.FC<SynchronizedPlayerProps> = ({
               ...item,
               segments: newSegments,
               tags: Array.from(new Set([...item.tags, 'VTT Sincronizado'])),
+            };
+            if (onUpdateItem) {
+              onUpdateItem(updatedItem);
+            }
+            playerEngine.loadTrack(updatedItem, audioBlobUrl);
+          }}
+        />
+      )}
+
+      {/* Phrase & Timing Segment Editor Modal */}
+      {isSegmentEditorOpen && (
+        <TranscriptSegmentEditorModal
+          item={item}
+          audioBlobUrl={audioBlobUrl}
+          onClose={() => setIsSegmentEditorOpen(false)}
+          onSave={(updatedSegments) => {
+            const updatedItem: AudioTranscriptItem = {
+              ...item,
+              segments: updatedSegments,
             };
             if (onUpdateItem) {
               onUpdateItem(updatedItem);

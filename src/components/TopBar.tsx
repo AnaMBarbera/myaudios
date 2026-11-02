@@ -13,7 +13,9 @@ import {
   LogOut, 
   ChevronDown, 
   LogIn, 
-  Sparkles 
+  Sparkles,
+  Menu,
+  X 
 } from 'lucide-react';
 import { AppUser, UserRole, CourseLevel } from '../types';
 
@@ -49,16 +51,35 @@ export const TopBar: React.FC<TopBarProps> = ({
   canManageUsers,
 }) => {
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setUserDropdownOpen(false);
       }
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(e.target as Node)) {
+        // Also check if click was not on hamburger button
+        const target = e.target as HTMLElement;
+        if (!target.closest('[data-mobile-menu-toggle]')) {
+          setMobileMenuOpen(false);
+        }
+      }
+    };
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setUserDropdownOpen(false);
+        setMobileMenuOpen(false);
+      }
     };
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
   }, []);
 
   const getRoleBadge = (role: UserRole) => {
@@ -89,34 +110,35 @@ export const TopBar: React.FC<TopBarProps> = ({
   };
 
   return (
-    <header className={`z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 ${
-      activeView === 'player' ? 'relative md:sticky md:top-0' : 'sticky top-0'
-    }`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4 sm:gap-8">
+    <header className="sticky top-0 z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2 sm:gap-6">
         
-        {/* Zone 1: Single text element wordmark */}
-        <div className="flex items-center gap-3 shrink-0">
+        {/* Zone 1: Wordmark / Logo */}
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           <button 
-            onClick={() => onNavigate('library')}
-            className="flex items-center gap-2.5 text-left group cursor-pointer focus:outline-none"
+            onClick={() => {
+              onNavigate('library');
+              setMobileMenuOpen(false);
+            }}
+            className="flex items-center gap-2 sm:gap-2.5 text-left group cursor-pointer focus:outline-none"
           >
-            <div className="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-sm shadow-indigo-600/30 group-hover:scale-105 transition-transform">
+            <div className="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-sm shadow-indigo-600/30 group-hover:scale-105 transition-transform shrink-0">
               <Headphones className="w-5 h-5" />
             </div>
             <div>
-              <span className="text-lg font-bold tracking-tight text-slate-900 dark:text-white whitespace-nowrap block leading-tight">
+              <span className="text-base sm:text-lg font-bold tracking-tight text-slate-900 dark:text-white whitespace-nowrap block leading-tight">
                 Zona Sonora
               </span>
-              <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 block leading-none">
+              <span className="text-[10px] sm:text-[11px] font-medium text-slate-500 dark:text-slate-400 block leading-none">
                 Audio & Transcript Studio
               </span>
             </div>
           </button>
         </div>
 
-        {/* Zone 2: Navigation links only visible when logged in */}
+        {/* Zone 2: Desktop Horizontal Navigation (Only on XL >= 1280px to protect tablets & mobile) */}
         {currentUser && (
-          <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600 dark:text-slate-300">
+          <nav className="hidden xl:flex items-center gap-5 lg:gap-6 text-sm font-medium text-slate-600 dark:text-slate-300">
             <button
               onClick={() => onNavigate('library')}
               className={`cursor-pointer whitespace-nowrap transition-colors hover:text-indigo-600 dark:hover:text-indigo-400 flex items-center gap-1.5 ${
@@ -175,12 +197,12 @@ export const TopBar: React.FC<TopBarProps> = ({
           </nav>
         )}
 
-        {/* Zone 3: Actions + User Profile */}
-        <div className="flex items-center gap-2.5 shrink-0">
+        {/* Zone 3: Actions + User Profile + Hamburger Toggle */}
+        <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
           {canEditContent && (
             <button
               onClick={onOpenUpload}
-              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 shadow-sm transition-colors whitespace-nowrap cursor-pointer hidden-student"
+              className="hidden xl:flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 shadow-sm transition-colors whitespace-nowrap cursor-pointer hidden-student"
               title="Importar audios o sincronizaciones"
             >
               <Plus className="w-3.5 h-3.5" />
@@ -307,9 +329,140 @@ export const TopBar: React.FC<TopBarProps> = ({
               </div>
             )}
           </div>
-        </div>
 
+          {/* Mobile / Tablet Hamburger Toggle */}
+          {currentUser && (
+            <button
+              data-mobile-menu-toggle
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="xl:hidden p-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/80 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 transition-colors cursor-pointer flex items-center justify-center focus:outline-none"
+              aria-label={mobileMenuOpen ? 'Cerrar menú' : 'Abrir menú de navegación'}
+              title={mobileMenuOpen ? 'Cerrar menú' : 'Menú'}
+            >
+              {mobileMenuOpen ? (
+                <X className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+              ) : (
+                <Menu className="w-5 h-5" />
+              )}
+            </button>
+          )}
+        </div>
       </div>
+
+      {/* Mobile & Tablet Dropdown Navigation Menu */}
+      {mobileMenuOpen && currentUser && (
+        <div
+          ref={mobileMenuRef}
+          className="xl:hidden border-t border-slate-200/80 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-4 py-3 shadow-lg animate-in slide-in-from-top-2 duration-150 space-y-1.5"
+        >
+          <div className="flex flex-col gap-1 text-sm font-medium text-slate-700 dark:text-slate-200">
+            <button
+              onClick={() => {
+                onNavigate('library');
+                setMobileMenuOpen(false);
+              }}
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors cursor-pointer text-left ${
+                activeView === 'library'
+                  ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 font-semibold'
+                  : 'hover:bg-slate-100 dark:hover:bg-slate-800/70'
+              }`}
+            >
+              <Library className="w-4 h-4 text-indigo-500 shrink-0" />
+              <span>Biblioteca de Audios</span>
+            </button>
+
+            {hasActiveTrack && (
+              <button
+                onClick={() => {
+                  onNavigate('player');
+                  setMobileMenuOpen(false);
+                }}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors cursor-pointer text-left ${
+                  activeView === 'player'
+                    ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 font-semibold'
+                    : 'hover:bg-slate-100 dark:hover:bg-slate-800/70'
+                }`}
+              >
+                <Headphones className="w-4 h-4 text-emerald-500 shrink-0" />
+                <div className="min-w-0 flex-1 truncate">
+                  <span>Reproductor</span>
+                  {activeTrackTitle && (
+                    <span className="text-xs text-slate-400 block truncate font-normal">
+                      {activeTrackTitle}
+                    </span>
+                  )}
+                </div>
+              </button>
+            )}
+
+            <button
+              onClick={() => {
+                onNavigate('vocabulary');
+                setMobileMenuOpen(false);
+              }}
+              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-colors cursor-pointer text-left ${
+                activeView === 'vocabulary'
+                  ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 font-semibold'
+                  : 'hover:bg-slate-100 dark:hover:bg-slate-800/70'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <BookmarkCheck className="w-4 h-4 text-indigo-500 shrink-0" />
+                <span>Mi Vocabulario</span>
+              </div>
+              <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300">
+                {savedWordsCount}
+              </span>
+            </button>
+
+            <button
+              onClick={() => {
+                onNavigate('guide');
+                setMobileMenuOpen(false);
+              }}
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors cursor-pointer text-left ${
+                activeView === 'guide'
+                  ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 font-semibold'
+                  : 'hover:bg-slate-100 dark:hover:bg-slate-800/70'
+              }`}
+            >
+              <BookOpen className="w-4 h-4 text-indigo-500 shrink-0" />
+              <span>Método</span>
+            </button>
+
+            {canEditContent && (
+              <>
+                <div className="border-t border-slate-100 dark:border-slate-800 my-1 hidden-student" />
+                <button
+                  onClick={() => {
+                    onNavigate('pairing');
+                    setMobileMenuOpen(false);
+                  }}
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors cursor-pointer text-left hidden-student ${
+                    activeView === 'pairing'
+                      ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 font-semibold'
+                      : 'hover:bg-slate-100 dark:hover:bg-slate-800/70'
+                  }`}
+                >
+                  <Link2 className="w-4 h-4 text-indigo-500 shrink-0" />
+                  <span>Emparejar & Sincronizar</span>
+                </button>
+
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    onOpenUpload();
+                  }}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors cursor-pointer text-left text-indigo-600 dark:text-indigo-400 font-semibold hover:bg-indigo-50 dark:hover:bg-indigo-950/40 hidden-student"
+                >
+                  <Plus className="w-4 h-4 shrink-0" />
+                  <span>+ Enlace Drive / .VTT</span>
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </header>
   );
 };
